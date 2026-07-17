@@ -9,10 +9,6 @@ export type CreateDatabasePoolOptions = {
   connectionTimeoutMillis?: number;
 };
 
-/**
- * Creates a Postgres connection pool.
- * Does not verify connectivity — call `checkDatabaseConnectivity` when needed.
- */
 export function createDatabasePool(options: CreateDatabasePoolOptions): Pool {
   return new Pool({
     connectionString: options.connectionString,
@@ -41,6 +37,39 @@ export async function query<T extends QueryResultRow = QueryResultRow>(
   params?: unknown[],
 ): Promise<QueryResult<T>> {
   return pool.query<T>(text, params);
+}
+
+export type TenantSessionOptions = {
+  tenantId?: string;
+  bypassRls?: boolean;
+};
+
+/**
+ * Runs work on a dedicated client with optional RLS session variables.
+ */
+export async function withTenantSession<T>(
+  pool: Pool,
+  options: TenantSessionOptions,
+  work: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    if (options.bypassRls) {
+      await client.query(`SELECT set_config('app.bypass_rls', 'on', true)`);
+    }
+    if (options.tenantId) {
+      await client.query(`SELECT set_config('app.tenant_id', $1, true)`, [options.tenantId]);
+    }
+    const result = await work(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export type { Pool, PoolClient, QueryResult };

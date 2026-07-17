@@ -2,7 +2,8 @@
 
 Canonical decisions for 3D Print OS. Detailed ADRs live under `docs/adr/`.
 
-Backend host wiring (config, DB pool, errors, logging, health): see [BACKEND_FOUNDATION.md](./BACKEND_FOUNDATION.md).
+Backend host wiring (config, DB pool, errors, logging, health): see [BACKEND_FOUNDATION.md](./BACKEND_FOUNDATION.md).  
+Auth + multi-tenancy: see [AUTH_AND_TENANCY.md](./AUTH_AND_TENANCY.md).
 
 ## Shape
 

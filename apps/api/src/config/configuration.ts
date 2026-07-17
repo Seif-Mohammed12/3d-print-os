@@ -11,6 +11,10 @@ export type AppConfig = {
   throttleTtlMs: number;
   throttleLimit: number;
   dbRequiredOnBoot: boolean;
+  jwtAccessSecret: string;
+  jwtRefreshSecret: string;
+  jwtAccessTtlSeconds: number;
+  jwtRefreshTtlDays: number;
 };
 
 export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
@@ -26,6 +30,10 @@ export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     throttleTtlMs: parsed.THROTTLE_TTL_MS,
     throttleLimit: parsed.THROTTLE_LIMIT,
     dbRequiredOnBoot: parsed.DB_REQUIRED_ON_BOOT,
+    jwtAccessSecret: parsed.JWT_ACCESS_SECRET,
+    jwtRefreshSecret: parsed.JWT_REFRESH_SECRET,
+    jwtAccessTtlSeconds: parsed.JWT_ACCESS_TTL_SECONDS,
+    jwtRefreshTtlDays: parsed.JWT_REFRESH_TTL_DAYS,
   };
 }
 

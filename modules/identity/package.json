@@ -16,7 +16,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
+  "dependencies": {
+    "@3d-print-os/persistence": "workspace:*",
+    "argon2": "^0.41.1",
+    "pg": "^8.13.1"
+  },
   "devDependencies": {
+    "@types/pg": "^8.11.10",
     "typescript": "^5.7.3"
   }
 }

@@ -30,6 +30,10 @@ export const envSchema = z.object({
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
   /** When false, API still boots if DB is down; /health/ready reports degraded. */
   DB_REQUIRED_ON_BOOT: booleanFromString.default(false),
+  JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters'),
+  JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
+  JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
+  JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

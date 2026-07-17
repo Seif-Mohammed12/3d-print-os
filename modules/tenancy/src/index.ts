@@ -1,5 +1,2 @@
-﻿/**
- * Module shell: tenancy
- * Clean Architecture layers are prepared; business logic is intentionally empty.
- */
-export const MODULE_NAME = 'tenancy' as const;
+﻿export { TenancyService, TenancyDomainError } from './application/tenancy.service';
+export { TenancyRepository } from './infrastructure/tenancy.repository';

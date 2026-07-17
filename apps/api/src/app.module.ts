@@ -5,9 +5,11 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import configuration from './config/configuration';
 import { HealthModule } from './health/health.module';
+import { IdentityModule } from './identity/identity.module';
 import { PersistenceModule } from './infrastructure/persistence/persistence.module';
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
+import { TenancyModule } from './tenancy/tenancy.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
       },
     }),
     PersistenceModule,
+    IdentityModule,
+    TenancyModule,
     HealthModule,
   ],
   providers: [

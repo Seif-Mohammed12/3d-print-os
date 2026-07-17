@@ -57,5 +57,18 @@ export default tseslint.config(
       'no-console': 'off',
     },
   },
+  {
+    files: ['tools/**/*.{ts,js,mjs}'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['apps/api/**/*.ts', 'apps/worker/**/*.ts'],
+    rules: {
+      // Nest DI / decorators need runtime class references
+      '@typescript-eslint/consistent-type-imports': 'off',
+    },
+  },
   eslintConfigPrettier,
 );

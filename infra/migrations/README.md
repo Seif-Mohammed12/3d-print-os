@@ -1,5 +1,13 @@
 # Migrations
 
-Versioned SQL migrations will be added when persistence is implemented (M0/M1).
+Apply with:
 
-Do not apply ad-hoc schema changes in production.
+```bash
+pnpm db:migrate
+```
+
+Requires `DATABASE_URL` (see `.env.example`).
+
+Current:
+
+- `0001_identity_tenancy.sql` — tenants, shops, users, RBAC, refresh tokens, RLS

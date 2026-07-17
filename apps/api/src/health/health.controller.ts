@@ -4,8 +4,10 @@ import type { Response } from 'express';
 
 import type { HealthResponse, ReadyHealthResponse } from '@3d-print-os/contracts';
 
+import { Public } from '../identity/auth.decorators';
 import { HealthService } from './health.service';
 
+@Public()
 @SkipThrottle()
 @Controller('health')
 export class HealthController {
