@@ -1,5 +1,3 @@
-/**
- * Object storage package shell. S3 signed URL adapters land in M3.
- */
-
-export const STORAGE_PACKAGE = '@3d-print-os/storage' as const;
+export type { ObjectStoragePort, ObjectStorageSignedUpload } from './types';
+export { STORAGE_PACKAGE } from './types';
+export { SupabaseObjectStorage, type SupabaseStorageConfig } from './supabase-object-storage';

@@ -34,6 +34,11 @@ export const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
   JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  SUPABASE_URL: z.string().url('SUPABASE_URL must be a valid URL'),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
+  UPLOAD_BUCKET: z.string().min(1).default('model-files'),
+  UPLOAD_MAX_BYTES: z.coerce.number().int().positive().default(52_428_800),
+  UPLOAD_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(600),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

@@ -4,6 +4,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import configuration from './config/configuration';
+import { GeometryModule } from './geometry/geometry.module';
 import { HealthModule } from './health/health.module';
 import { IdentityModule } from './identity/identity.module';
 import { PersistenceModule } from './infrastructure/persistence/persistence.module';
@@ -30,6 +31,7 @@ import { TenancyModule } from './tenancy/tenancy.module';
     PersistenceModule,
     IdentityModule,
     TenancyModule,
+    GeometryModule,
     HealthModule,
   ],
   providers: [

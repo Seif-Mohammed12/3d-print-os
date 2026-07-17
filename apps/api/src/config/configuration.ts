@@ -15,6 +15,11 @@ export type AppConfig = {
   jwtRefreshSecret: string;
   jwtAccessTtlSeconds: number;
   jwtRefreshTtlDays: number;
+  supabaseUrl: string;
+  supabaseServiceRoleKey: string;
+  uploadBucket: string;
+  uploadMaxBytes: number;
+  uploadSignedUrlTtlSeconds: number;
 };
 
 export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
@@ -34,6 +39,11 @@ export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     jwtRefreshSecret: parsed.JWT_REFRESH_SECRET,
     jwtAccessTtlSeconds: parsed.JWT_ACCESS_TTL_SECONDS,
     jwtRefreshTtlDays: parsed.JWT_REFRESH_TTL_DAYS,
+    supabaseUrl: parsed.SUPABASE_URL,
+    supabaseServiceRoleKey: parsed.SUPABASE_SERVICE_ROLE_KEY,
+    uploadBucket: parsed.UPLOAD_BUCKET,
+    uploadMaxBytes: parsed.UPLOAD_MAX_BYTES,
+    uploadSignedUrlTtlSeconds: parsed.UPLOAD_SIGNED_URL_TTL_SECONDS,
   };
 }
 

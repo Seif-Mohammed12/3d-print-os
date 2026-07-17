@@ -1,0 +1,3 @@
+export const MODEL_UPLOAD_SERVICE = 'MODEL_UPLOAD_SERVICE' as const;
+export const MODEL_FILES_REPOSITORY = 'MODEL_FILES_REPOSITORY' as const;
+export const OBJECT_STORAGE = 'OBJECT_STORAGE' as const;

@@ -11,3 +11,4 @@ Requires `DATABASE_URL` (see `.env.example`).
 Current:
 
 - `0001_identity_tenancy.sql` — tenants, shops, users, RBAC, refresh tokens, RLS
+- `0002_model_files.sql` — model file metadata, models permissions, storage bucket seed

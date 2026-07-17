@@ -14,6 +14,6 @@ describe('rbac seed map', () => {
   });
 
   it('limits customer permissions', () => {
-    expect(ROLE_PERMISSION_MAP.customer).toEqual(['roles:read']);
+    expect(ROLE_PERMISSION_MAP.customer).toEqual(['roles:read', 'models:read', 'models:write']);
   });
 });

@@ -6,6 +6,8 @@ export const PERMISSION_CODES = [
   'shops:read',
   'shops:write',
   'roles:read',
+  'models:read',
+  'models:write',
 ] as const;
 
 export type PermissionCode = (typeof PERMISSION_CODES)[number];
@@ -23,9 +25,18 @@ export const ROLE_PERMISSION_MAP: Record<RoleCode, readonly PermissionCode[]> = 
     'shops:read',
     'shops:write',
     'roles:read',
+    'models:read',
+    'models:write',
   ],
-  employee: ['settings:read', 'members:read', 'shops:read', 'roles:read'],
-  customer: ['roles:read'],
+  employee: [
+    'settings:read',
+    'members:read',
+    'shops:read',
+    'roles:read',
+    'models:read',
+    'models:write',
+  ],
+  customer: ['roles:read', 'models:read', 'models:write'],
 };
 
 export const ROLE_DISPLAY_NAMES: Record<RoleCode, string> = {

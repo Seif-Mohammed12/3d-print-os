@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@3d-print-os/contracts": "workspace:*",
+    "@3d-print-os/geometry": "workspace:*",
     "@3d-print-os/identity": "workspace:*",
     "@3d-print-os/observability": "workspace:*",
     "@3d-print-os/persistence": "workspace:*",
     "@3d-print-os/shared-kernel": "workspace:*",
+    "@3d-print-os/storage": "workspace:*",
     "@3d-print-os/tenancy": "workspace:*",
     "@nestjs/common": "^11.0.5",
     "@nestjs/config": "^4.0.0",
