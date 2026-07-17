@@ -2,6 +2,8 @@
 
 Canonical decisions for 3D Print OS. Detailed ADRs live under `docs/adr/`.
 
+Backend host wiring (config, DB pool, errors, logging, health): see [BACKEND_FOUNDATION.md](./BACKEND_FOUNDATION.md).
+
 ## Shape
 
 - **Modular monolith** first (NestJS API + Worker)
@@ -40,16 +42,16 @@ Canonical decisions for 3D Print OS. Detailed ADRs live under `docs/adr/`.
 
 ## Shared packages
 
-| Package         | Role                        |
-| --------------- | --------------------------- |
-| `shared-kernel` | Branded IDs, `Result`       |
-| `contracts`     | Shared API types / version  |
-| `observability` | Pino logger factory         |
-| `persistence`   | DB/RLS (shell)              |
-| `messaging`     | Outbox/queue (shell)        |
-| `storage`       | Object storage (shell)      |
-| `authz`         | Permissions helpers (shell) |
-| `testing`       | Test utilities              |
+| Package         | Role                               |
+| --------------- | ---------------------------------- |
+| `shared-kernel` | Branded IDs, `Result`              |
+| `contracts`     | Shared API types / version         |
+| `persistence`   | Postgres pool + connectivity check |
+| `observability` | Pino logger factory                |
+| `messaging`     | Outbox/queue (shell)               |
+| `storage`       | Object storage (shell)             |
+| `authz`         | Permissions helpers (shell)        |
+| `testing`       | Test utilities                     |
 
 ## Non-goals (current milestone)
 

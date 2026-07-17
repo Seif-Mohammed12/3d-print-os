@@ -74,7 +74,10 @@ Health check:
 
 ```bash
 curl http://localhost:3000/api/v1/health
+curl http://localhost:3000/api/v1/health/ready
 ```
+
+Backend foundation details: [docs/BACKEND_FOUNDATION.md](docs/BACKEND_FOUNDATION.md).
 
 ### Docker Compose
 
