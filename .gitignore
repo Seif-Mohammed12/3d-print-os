@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Builds
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.next/
+.vite/
+out/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / OS
+logs/
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Test / cache
+.turbo/
+.cache/
+tmp/
+temp/
+
+# Docker volumes
+data/
+
+# Python workers (future)
+__pycache__/
+.venv/
+*.pyc
+
+# Misc
+*.local

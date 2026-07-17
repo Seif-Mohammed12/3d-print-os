@@ -1,0 +1,26 @@
+---
+description: Core engineering standards for 3D Print OS (always apply)
+alwaysApply: true
+---
+
+# 3D Print OS — Core Standards
+
+Prioritize: Security → Reliability → Maintainability → Scalability → Performance → Speed.
+
+Full standards: `docs/ENGINEERING_STANDARDS.md`
+
+## Non-negotiables
+
+- Multi-tenant: every query, cache key, job, and storage path is tenant-scoped; cross-tenant IDs → `404`
+- Clean Architecture per module: `interface` → `application` → `domain`; infra implements ports only
+- No cross-module table sharing; use ports or outbox events
+- Money: integer minor units + currency; never silently mutate issued quotes
+- API errors: stable `error.code`, standard envelope, correct HTTP status
+- Logs: structured (Pino); include `request_id` / `tenant_id`; never log secrets or STL bodies
+- Commits: Conventional Commits; branches: short-lived `feat|fix|chore|hotfix/...` from `main`
+- Before large design changes: explain architecture, trade-offs, risks; wait for approval
+
+## Naming
+
+- Folders: kebab-case | React components: PascalCase.tsx | Other TS: kebab-case.ts
+- DB/API JSON: snake_case | Error codes: dot.case

@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint · Format · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build workspace packages
+        run: >
+          pnpm --filter @3d-print-os/shared-kernel
+          --filter @3d-print-os/contracts
+          --filter @3d-print-os/observability
+          --filter @3d-print-os/persistence
+          --filter @3d-print-os/messaging
+          --filter @3d-print-os/storage
+          --filter @3d-print-os/authz
+          --filter @3d-print-os/testing
+          run build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build apps
+        run: >
+          pnpm --filter @3d-print-os/api
+          --filter @3d-print-os/worker
+          --filter @3d-print-os/web-admin
+          --filter @3d-print-os/web-portal
+          run build

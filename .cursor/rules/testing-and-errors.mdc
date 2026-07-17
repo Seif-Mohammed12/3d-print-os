@@ -1,0 +1,20 @@
+---
+description: Testing strategy and error-handling conventions
+globs: "{apps,modules,packages}/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing
+
+- Unit-test domain rules, pricing, and state machines next to code (`*.spec.ts`)
+- Integration-test API + DB + RLS for persistence/HTTP (`*.integration.spec.ts`)
+- Every new tenant-scoped API/table needs a cross-tenant isolation test
+- Commercial paths (quotes, orders, inventory, authz) require automated tests before merge
+- Shared factories live in `packages/testing`
+
+# Errors
+
+- Map domain errors to stable API codes (`quote.expired`, `order.invalid_transition`)
+- AuthZ fail closed; no empty catches; sanitize `500` messages
+- Honor `Idempotency-Key` on quote/order/payment/stock movement creates
+- Prefer explicit transition endpoints over free-form status patches

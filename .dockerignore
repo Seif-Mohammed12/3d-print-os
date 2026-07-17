@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.git
+.github
+.vscode
+.cursor
+*.md
+apps/web-admin
+apps/web-portal
+data

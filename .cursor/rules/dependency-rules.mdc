@@ -1,0 +1,24 @@
+---
+description: Module and package dependency boundaries
+globs: "{apps,modules,packages}/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Dependency rules
+
+Allowed:
+
+- `apps` → `modules` | `packages`
+- `modules/<x>/interface` → `application` → `domain`
+- `modules/<x>/infrastructure` → own application/domain + `packages`
+- Cross-module only via `packages/contracts` or published ports/events
+
+Forbidden:
+
+- `domain` importing Nest, Drizzle, React, HTTP, or other modules’ infra
+- `packages/*` importing `apps/*` or `modules/*`
+- Circular module imports
+- Catch-all `utils` dumping unrelated concerns
+- New runtime dependency without PR justification
+
+Prefer reusable modules in `packages/` or module ports over copy-paste.

@@ -1,0 +1,48 @@
+:root {
+  color-scheme: light;
+  --bg: #eef4f1;
+  --ink: #14201b;
+  --muted: #4d5c56;
+  --accent: #0b3d2e;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(11, 61, 46, 0.14), transparent 45%),
+    linear-gradient(165deg, #f2f7f4 0%, #dce8e2 100%);
+  color: var(--ink);
+}
+
+.shell {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+.lede {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
