@@ -3,10 +3,12 @@ import { Search, Plus, MoreVertical } from 'lucide-react';
 
 import { useCustomers } from '../hooks/use-customers';
 import type { Customer } from '../model/customer-types';
+import { AddCustomerDialog } from './add-customer-dialog';
 
 export function CustomerList() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data, isLoading, error } = useCustomers({ search, page, per_page: 10 });
 
   if (isLoading) {
@@ -30,7 +32,10 @@ export function CustomerList() {
             className="pl-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
-        <button className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+        <button
+          onClick={() => setIsDialogOpen(true)}
+          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
           <Plus className="h-4 w-4" />
           Add Customer
         </button>
@@ -98,6 +103,8 @@ export function CustomerList() {
           </div>
         </div>
       )}
+
+      <AddCustomerDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
     </div>
   );
 }

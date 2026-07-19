@@ -8,6 +8,7 @@ import {
   IsNotEmpty,
   IsObject,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum OrderStatus {
   PENDING = 'pending',
@@ -80,6 +81,7 @@ export class UpdateOrderDto {
   paymentStatus?: PaymentStatus;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(0)
   paidAmountCents?: number;
@@ -159,15 +161,17 @@ export class OrderListQueryDto {
   search?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   page?: number = 1;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(100)
-  perPage?: number = 20;
+  per_page?: number = 20;
 }
 
 export class CreateOrderHistoryDto {
@@ -194,10 +198,12 @@ export class CreateOrderItemDto {
   itemName!: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   quantity?: number = 1;
 
+  @Type(() => Number)
   @IsInt()
   @Min(0)
   unitPriceCents!: number;
@@ -213,11 +219,13 @@ export class UpdateOrderItemDto {
   itemName?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   quantity?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(0)
   unitPriceCents?: number;

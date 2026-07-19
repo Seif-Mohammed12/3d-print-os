@@ -11,6 +11,7 @@ import {
   IsNotEmpty,
   IsInt,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum PrinterTechnology {
   FDM = 'FDM',
@@ -219,15 +220,17 @@ export class PrinterListQueryDto {
   search?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   page?: number = 1;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(100)
-  perPage?: number = 20;
+  per_page?: number = 20;
 }
 
 export class CreatePrinterProfileDto {

@@ -150,6 +150,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.62.7
         version: 5.101.2(react@19.2.7)
+      '@types/three':
+        specifier: ^0.169.0
+        version: 0.169.0
       axios:
         specifier: ^1.7.9
         version: 1.18.1
@@ -171,6 +174,9 @@ importers:
       tailwind-merge:
         specifier: ^2.6.0
         version: 2.6.1
+      three:
+        specifier: ^0.169.0
+        version: 0.169.0
       zod:
         specifier: ^3.24.1
         version: 3.25.76

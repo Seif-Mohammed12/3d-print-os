@@ -48,17 +48,26 @@ export class PrintersController {
 
   @Get()
   async list(@Query() query: PrinterListQueryDto, @CurrentAuth() auth: RequestAuthContext) {
-    return this.printerService.list(
+    const result = await this.printerService.list(
       {
         shopId: query.shopId,
         status: query.status,
         technology: query.technology,
         search: query.search,
         page: query.page,
-        perPage: query.perPage,
+        perPage: query.per_page,
       },
       auth.tenantId,
     );
+    return {
+      data: result.data,
+      meta: {
+        total: result.total,
+        page: result.page,
+        per_page: result.perPage,
+        total_pages: Math.ceil(result.total / result.perPage),
+      },
+    };
   }
 
   @Get(':id')

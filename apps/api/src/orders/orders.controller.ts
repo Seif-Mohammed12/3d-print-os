@@ -61,7 +61,7 @@ export class OrdersController {
 
   @Get()
   async list(@Query() query: OrderListQueryDto, @CurrentAuth() auth: RequestAuthContext) {
-    return this.orderService.list(
+    const result = await this.orderService.list(
       {
         shopId: query.shopId,
         customerId: query.customerId,
@@ -71,10 +71,19 @@ export class OrdersController {
         deliveryStatus: query.deliveryStatus,
         search: query.search,
         page: query.page,
-        perPage: query.perPage,
+        perPage: query.per_page,
       },
       auth.tenantId,
     );
+    return {
+      data: result.data,
+      meta: {
+        total: result.total,
+        page: result.page,
+        per_page: result.perPage,
+        total_pages: Math.ceil(result.total / result.perPage),
+      },
+    };
   }
 
   @Get(':id')

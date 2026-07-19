@@ -13,6 +13,8 @@ import { OrdersModule } from './orders/orders.module';
 import { PrintersModule } from './printers/printers.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { MLModule } from './ml/ml.module';
+import { CustomersModule } from './customers/customers.module';
+import { PricingModule } from './pricing/pricing.module';
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { TenancyModule } from './tenancy/tenancy.module';
@@ -44,6 +46,8 @@ import { QuotesModule } from './quotes/quotes.module';
     OrdersModule,
     AnalyticsModule,
     MLModule,
+    CustomersModule,
+    PricingModule,
     HealthModule,
   ],
   providers: [

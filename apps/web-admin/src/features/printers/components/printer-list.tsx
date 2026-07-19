@@ -3,6 +3,7 @@ import { Search, Plus, MoreVertical } from 'lucide-react';
 
 import { usePrinters } from '../hooks/use-printers';
 import type { Printer } from '../model/printer-types';
+import { AddPrinterDialog } from './add-printer-dialog';
 
 const statusColors: Record<string, string> = {
   active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -12,6 +13,7 @@ const statusColors: Record<string, string> = {
 
 export function PrinterList() {
   const [page, setPage] = useState(1);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data, isLoading, error } = usePrinters({ page, per_page: 10 });
 
   if (isLoading) {
@@ -33,7 +35,10 @@ export function PrinterList() {
             className="pl-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
-        <button className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+        <button
+          onClick={() => setIsDialogOpen(true)}
+          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
           <Plus className="h-4 w-4" />
           Add Printer
         </button>
@@ -45,9 +50,15 @@ export function PrinterList() {
             <tr className="border-b border-border bg-muted/50">
               <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Name</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Model</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Manufacturer</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Technology</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Build Volume</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-foreground">
+                Manufacturer
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-foreground">
+                Technology
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-foreground">
+                Build Volume
+              </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-foreground">Status</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">Actions</th>
             </tr>
@@ -63,7 +74,9 @@ export function PrinterList() {
                   {printer.build_volume_x}×{printer.build_volume_y}×{printer.build_volume_z}mm
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusColors[printer.status]}`}>
+                  <span
+                    className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusColors[printer.status]}`}
+                  >
                     {printer.status}
                   </span>
                 </td>
@@ -88,7 +101,8 @@ export function PrinterList() {
       {data && data.meta.total_pages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, data.meta.total)} of {data.meta.total} printers
+            Showing {(page - 1) * 10 + 1} to {Math.min(page * 10, data.meta.total)} of{' '}
+            {data.meta.total} printers
           </p>
           <div className="flex gap-2">
             <button
@@ -108,6 +122,8 @@ export function PrinterList() {
           </div>
         </div>
       )}
+
+      <AddPrinterDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
     </div>
   );
 }

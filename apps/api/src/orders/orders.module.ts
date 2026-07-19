@@ -24,6 +24,6 @@ import { DATABASE_POOL } from '../config/tokens';
       useExisting: OrderService,
     },
   ],
-  exports: [OrderService],
+  exports: [OrderService, 'ORDER_SERVICE'],
 })
 export class OrdersModule {}

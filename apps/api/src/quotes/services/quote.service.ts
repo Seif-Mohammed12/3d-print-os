@@ -3,7 +3,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Quote, QuoteListParams } from '../repositories/quote.repository';
 import { QuoteRepository } from '../repositories/quote.repository';
 import { GeometryIntegrationService } from './geometry-integration.service';
-import { PricingIntegrationService } from './pricing-integration.service';
+import { PrintEstimatorService } from './print-estimator.service';
+import { CostCalculatorService } from './cost-calculator.service';
+import { PricingEngineService } from './pricing-engine.service';
 import { OrderService } from '../../orders/services/order.service';
 
 @Injectable()
@@ -11,7 +13,9 @@ export class QuoteService {
   constructor(
     private repo: QuoteRepository,
     private geometryService: GeometryIntegrationService,
-    private pricingService: PricingIntegrationService,
+    private printEstimatorService: PrintEstimatorService,
+    private costCalculatorService: CostCalculatorService,
+    private pricingEngineService: PricingEngineService,
     private orderService: OrderService,
   ) {}
 
@@ -57,22 +61,42 @@ export class QuoteService {
     // Calculate quote data from analysis
     const quoteData = this.geometryService.calculateQuoteFromAnalysis(analysis);
 
-    // Calculate estimated time
-    const estimatedTimeMinutes = this.pricingService.calculateEstimatedTime(
-      quoteData.estimated_volume_mm3,
-      quote.layer_height_mm ?? 0.2,
-      quote.infill_percentage ?? 20,
+    // Use new estimation pipeline
+    // Step 1: Print estimation
+    const printEstimation = this.printEstimatorService.estimatePrint(
+      {
+        volumeMm3: quoteData.estimated_volume_mm3,
+        surfaceAreaMm2: quoteData.surface_area_mm2,
+        boundingBox: {
+          x: quoteData.bounding_box_x_mm,
+          y: quoteData.bounding_box_y_mm,
+          z: quoteData.bounding_box_z_mm,
+        },
+        layerHeightMm: quote.layer_height_mm ?? 0.2,
+        infillPercentage: quote.infill_percentage ?? 20,
+        nozzleSizeMm: 0.4,
+        wallCount: 3,
+        printSpeedMmPerS: 60,
+        travelSpeedMmPerS: 120,
+        accelerationMmPerS2: 1000,
+      },
+      'PLA',
     );
 
-    // Calculate pricing
-    const pricing = await this.pricingService.calculatePrice(
-      quoteData.estimated_volume_mm3,
-      estimatedTimeMinutes,
-      quote.material_id ?? undefined,
-      quote.printer_id ?? undefined,
-      quoteData.risk_percentage,
-      quoteData.difficulty_score,
-      tenantId,
+    // Step 2: Cost calculation
+    const costBreakdown = this.costCalculatorService.calculateCost(printEstimation);
+
+    // Step 3: Pricing engine
+    const customerPricing = this.pricingEngineService.calculateCustomerPrice(
+      costBreakdown,
+      printEstimation,
+      {
+        profitMarginPercentage: 20,
+        minimumPriceCents: 500,
+        complexityMultiplier: 1.0,
+        rushMultiplier: 1.5,
+        isRushOrder: false,
+      },
     );
 
     // Update quote with analysis and pricing results
@@ -84,21 +108,21 @@ export class QuoteService {
         bounding_box_x_mm: quoteData.bounding_box_x_mm,
         bounding_box_y_mm: quoteData.bounding_box_y_mm,
         bounding_box_z_mm: quoteData.bounding_box_z_mm,
-        difficulty_score: quoteData.difficulty_score,
-        risk_percentage: quoteData.risk_percentage,
-        risk_factors: quoteData.risk_factors,
-        estimated_time_minutes: estimatedTimeMinutes,
-        estimated_weight_grams: Math.round((quoteData.estimated_volume_mm3 / 1000) * 1.24), // Default PLA density
-        material_cost_cents: pricing.material_cost_cents,
-        machine_time_cost_cents: pricing.machine_time_cost_cents,
-        electricity_cost_cents: pricing.electricity_cost_cents,
-        maintenance_cost_cents: pricing.maintenance_cost_cents,
-        post_processing_cost_cents: pricing.post_processing_cost_cents,
-        failure_risk_cost_cents: pricing.failure_risk_cost_cents,
-        subtotal_cents: pricing.subtotal_cents,
-        tax_cents: pricing.tax_cents,
-        total_cents: pricing.total_cents,
-        currency: pricing.currency,
+        difficulty_score: printEstimation.difficultyScore,
+        risk_percentage: printEstimation.riskPercentage,
+        risk_factors: printEstimation.riskFactors,
+        estimated_time_minutes: printEstimation.time.totalTimeMinutes,
+        estimated_weight_grams: printEstimation.material.estimatedWeightGrams,
+        material_cost_cents: costBreakdown.materialCostCents,
+        machine_time_cost_cents: costBreakdown.machineTimeCostCents,
+        electricity_cost_cents: costBreakdown.electricityCostCents,
+        maintenance_cost_cents: costBreakdown.maintenanceCostCents,
+        post_processing_cost_cents: costBreakdown.postProcessingCostCents,
+        failure_risk_cost_cents: costBreakdown.failureRiskCostCents,
+        subtotal_cents: customerPricing.subtotalCents,
+        tax_cents: customerPricing.taxCents,
+        total_cents: customerPricing.totalPriceCents,
+        currency: customerPricing.currency,
       },
       tenantId,
       'system',
