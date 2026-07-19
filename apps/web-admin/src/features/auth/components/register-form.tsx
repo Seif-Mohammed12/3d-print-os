@@ -65,10 +65,11 @@ export function RegisterForm() {
           id="password"
           type="password"
           required
+          minLength={8}
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="••••••••"
+          placeholder="•••••••• (min 8 characters)"
         />
       </div>
       <div>
@@ -93,11 +94,15 @@ export function RegisterForm() {
           id="tenantSlug"
           type="text"
           required
+          pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
           value={formData.tenantSlug}
-          onChange={(e) => setFormData({ ...formData, tenantSlug: e.target.value })}
+          onChange={(e) => setFormData({ ...formData, tenantSlug: e.target.value.toLowerCase() })}
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="my-business"
+          placeholder="my-business (lowercase, hyphens only)"
         />
+        <p className="mt-1 text-xs text-muted-foreground">
+          Lowercase letters, numbers, and hyphens only
+        </p>
       </div>
       <div>
         <label htmlFor="shopName" className="block text-sm font-medium text-foreground">

@@ -11,6 +11,7 @@ import { PersistenceModule } from './infrastructure/persistence/persistence.modu
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { TenancyModule } from './tenancy/tenancy.module';
+import { QuotesModule } from './quotes/quotes.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TenancyModule } from './tenancy/tenancy.module';
     IdentityModule,
     TenancyModule,
     GeometryModule,
+    QuotesModule,
     HealthModule,
   ],
   providers: [
