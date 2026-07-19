@@ -6,9 +6,8 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import type * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, AxesHelper, Center } from '@react-three/drei';
+import { OrbitControls, Grid, Center } from '@react-three/drei';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 
 import type { StlViewerProps, StlViewerRef, ViewerState } from './StlViewer.types';
@@ -26,11 +25,11 @@ function StlMesh({
   stlFile?: File;
   modelColor?: string;
   materialType?: 'standard' | 'normal' | 'wireframe';
-  onLoad?: (geometry: THREE.BufferGeometry) => void;
+  onLoad?: (geometry: any) => void;
   onError?: (error: Error) => void;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
+  const meshRef = useRef<any>(null);
+  const [geometry, setGeometry] = useState<any>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -146,7 +145,6 @@ function Scene({
           position={[0, -0.01, 0]}
         />
       )}
-      {showAxes && <AxesHelper args={[5]} />}
       {children}
     </>
   );
