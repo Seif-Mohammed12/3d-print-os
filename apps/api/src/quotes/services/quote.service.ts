@@ -4,6 +4,7 @@ import type { Quote, QuoteListParams } from '../repositories/quote.repository';
 import { QuoteRepository } from '../repositories/quote.repository';
 import { GeometryIntegrationService } from './geometry-integration.service';
 import { PricingIntegrationService } from './pricing-integration.service';
+import { OrderService } from '../../orders/services/order.service';
 
 @Injectable()
 export class QuoteService {
@@ -11,6 +12,7 @@ export class QuoteService {
     private repo: QuoteRepository,
     private geometryService: GeometryIntegrationService,
     private pricingService: PricingIntegrationService,
+    private orderService: OrderService,
   ) {}
 
   async create(data: {
@@ -63,13 +65,14 @@ export class QuoteService {
     );
 
     // Calculate pricing
-    const pricing = this.pricingService.calculatePrice(
+    const pricing = await this.pricingService.calculatePrice(
       quoteData.estimated_volume_mm3,
       estimatedTimeMinutes,
       quote.material_id ?? undefined,
       quote.printer_id ?? undefined,
       quoteData.risk_percentage,
       quoteData.difficulty_score,
+      tenantId,
     );
 
     // Update quote with analysis and pricing results
@@ -190,5 +193,68 @@ export class QuoteService {
     }
 
     await this.repo.delete(id, tenantId);
+  }
+
+  async convertToOrder(quoteId: string, tenantId: string, userId: string | null) {
+    const quote = await this.findById(quoteId, tenantId);
+
+    // Check if order already exists for this quote
+    const existingOrder = await this.orderService.findByQuoteId(quoteId, tenantId);
+    if (existingOrder) {
+      return existingOrder;
+    }
+
+    // Create order from quote
+    const order = await this.orderService.createFromQuote({
+      tenantId,
+      shop_id: quote.shop_id,
+      customer_id: quote.customer_id,
+      quote_id: quote.id,
+      status: 'accepted',
+      subtotal_cents: quote.subtotal_cents ?? 0,
+      tax_cents: quote.tax_cents ?? 0,
+      total_cents: quote.total_cents ?? 0,
+      currency: quote.currency ?? 'USD',
+      payment_status: 'pending',
+      paid_amount_cents: 0,
+      payment_method: null,
+      payment_reference: null,
+      paid_at: null,
+      production_status: 'not_started',
+      printer_id: quote.printer_id ?? null,
+      started_at: null,
+      completed_at: null,
+      quality_check_status: null,
+      quality_check_notes: null,
+      quality_check_at: null,
+      delivery_status: 'not_shipped',
+      shipping_address: null,
+      tracking_number: null,
+      shipped_at: null,
+      delivered_at: null,
+      internal_notes: null,
+      customer_notes: quote.internal_notes ?? null,
+      cancellation_reason: null,
+      created_by: userId,
+      updated_by: userId,
+    });
+
+    // Update quote status
+    await this.update(quoteId, { status: 'approved' }, tenantId, userId ?? 'system');
+
+    // Create order history
+    await this.orderService.createHistory(
+      order.id,
+      {
+        old_status: null,
+        new_status: 'accepted',
+        status_type: 'order',
+        changed_by: userId,
+        notes: 'Order created from quote',
+      },
+      tenantId,
+    );
+
+    return order;
   }
 }

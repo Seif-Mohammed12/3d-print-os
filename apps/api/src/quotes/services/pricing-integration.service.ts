@@ -1,11 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, NotFoundException } from '@nestjs/common';
 
-interface MaterialPricing {
-  id: string;
-  name: string;
-  price_per_gram_cents: number;
-  density_g_per_cm3: number;
-}
+import { MaterialService } from '../../materials/services/material.service';
+import type { Material } from '../../materials/repositories/material.repository';
 
 interface PrinterPricing {
   id: string;
@@ -32,14 +28,6 @@ interface PricingCalculation {
 export class PricingIntegrationService {
   private readonly logger = new Logger(PricingIntegrationService.name);
 
-  // Default material pricing (in production, fetch from database)
-  private readonly defaultMaterials: Record<string, MaterialPricing> = {
-    pla: { id: 'pla', name: 'PLA', price_per_gram_cents: 20, density_g_per_cm3: 1.24 },
-    abs: { id: 'abs', name: 'ABS', price_per_gram_cents: 25, density_g_per_cm3: 1.04 },
-    petg: { id: 'petg', name: 'PETG', price_per_gram_cents: 28, density_g_per_cm3: 1.27 },
-    resin: { id: 'resin', name: 'Resin', price_per_gram_cents: 50, density_g_per_cm3: 1.2 },
-  };
-
   // Default printer pricing (in production, fetch from database)
   private readonly defaultPrinters: Record<string, PrinterPricing> = {
     fdm_basic: {
@@ -65,23 +53,70 @@ export class PricingIntegrationService {
     },
   };
 
-  calculatePrice(
+  constructor(@Inject(MaterialService) private materialService: MaterialService) {}
+
+  async calculatePrice(
     volumeMm3: number,
     estimatedTimeMinutes: number,
     materialId?: string,
     printerId?: string,
     riskPercentage: number = 0,
     difficultyScore: number = 1,
-  ): PricingCalculation {
-    // Get material pricing
-    const material = this.defaultMaterials[materialId ?? 'pla'] ?? this.defaultMaterials.pla;
+    tenantId?: string,
+  ): Promise<PricingCalculation> {
+    // Get material pricing from database
+    let material: Material | null = null;
+    if (materialId && tenantId) {
+      try {
+        material = await this.materialService.findById(materialId, tenantId);
+      } catch (error) {
+        this.logger.warn(`Material ${materialId} not found, using fallback pricing`);
+      }
+    }
+
+    // Fallback to default if material not found or no tenantId
+    if (!material) {
+      // Use default PLA pricing as fallback
+      material = {
+        id: 'default',
+        tenant_id: '',
+        name: 'Default PLA',
+        brand: null,
+        material_type: 'PLA',
+        color: null,
+        color_code: null,
+        density_g_per_cm3: 1.24,
+        price_per_gram_cents: 20,
+        price_per_kg_cents: 20000,
+        nozzle_temperature_min_celsius: null,
+        nozzle_temperature_max_celsius: null,
+        bed_temperature_min_celsius: null,
+        bed_temperature_max_celsius: null,
+        chamber_temperature_celsius: null,
+        recommended_layer_height_mm: null,
+        recommended_infill_percentage: null,
+        print_speed_mm_per_min: null,
+        tensile_strength_mpa: null,
+        flexural_strength_mpa: null,
+        impact_strength_j_per_m: null,
+        elongation_at_break_percentage: null,
+        storage_conditions: null,
+        shelf_life_months: null,
+        is_active: true,
+        notes: null,
+        created_by: null,
+        updated_by: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    }
 
     // Get printer pricing
     const printer =
       this.defaultPrinters[printerId ?? 'fdm_basic'] ?? this.defaultPrinters.fdm_basic;
 
-    if (!material || !printer) {
-      throw new Error('Material or printer pricing not found');
+    if (!printer) {
+      throw new Error('Printer pricing not found');
     }
 
     // Calculate estimated weight (volume in mm3 -> cm3 -> grams)
@@ -162,10 +197,6 @@ export class PricingIntegrationService {
     const estimatedTimeMinutes = Math.round(baseTimeMinutes * layerHeightFactor * infillFactor);
 
     return Math.max(5, estimatedTimeMinutes); // Minimum 5 minutes
-  }
-
-  getAvailableMaterials(): MaterialPricing[] {
-    return Object.values(this.defaultMaterials);
   }
 
   getAvailablePrinters(): PrinterPricing[] {

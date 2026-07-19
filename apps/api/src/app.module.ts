@@ -8,6 +8,8 @@ import { GeometryModule } from './geometry/geometry.module';
 import { HealthModule } from './health/health.module';
 import { IdentityModule } from './identity/identity.module';
 import { PersistenceModule } from './infrastructure/persistence/persistence.module';
+import { MaterialsModule } from './materials/materials.module';
+import { OrdersModule } from './orders/orders.module';
 import { PrintersModule } from './printers/printers.module';
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
@@ -36,6 +38,8 @@ import { QuotesModule } from './quotes/quotes.module';
     GeometryModule,
     QuotesModule,
     PrintersModule,
+    MaterialsModule,
+    OrdersModule,
     HealthModule,
   ],
   providers: [

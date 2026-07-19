@@ -8,9 +8,11 @@ import { QuoteService } from './services/quote.service';
 import { GeometryIntegrationService } from './services/geometry-integration.service';
 import { PricingIntegrationService } from './services/pricing-integration.service';
 import { DATABASE_POOL } from '../config/tokens';
+import { MaterialsModule } from '../materials/materials.module';
+import { OrdersModule } from '../orders/orders.module';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, MaterialsModule, OrdersModule],
   controllers: [QuotesController],
   providers: [
     {
@@ -20,12 +22,18 @@ import { DATABASE_POOL } from '../config/tokens';
     },
     {
       provide: QuoteService,
-      inject: ['QUOTE_REPOSITORY', GeometryIntegrationService, PricingIntegrationService],
+      inject: [
+        'QUOTE_REPOSITORY',
+        GeometryIntegrationService,
+        PricingIntegrationService,
+        'ORDER_SERVICE',
+      ],
       useFactory: (
         repo: QuoteRepository,
         geometryService: GeometryIntegrationService,
         pricingService: PricingIntegrationService,
-      ) => new QuoteService(repo, geometryService, pricingService),
+        orderService: any,
+      ) => new QuoteService(repo, geometryService, pricingService, orderService),
     },
     GeometryIntegrationService,
     PricingIntegrationService,

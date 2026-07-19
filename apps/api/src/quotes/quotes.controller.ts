@@ -15,6 +15,12 @@ import { QuoteService } from './services/quote.service';
 export class QuotesController {
   constructor(private quoteService: QuoteService) {}
 
+  @Post(':id/convert-to-order')
+  async convertToOrder(@Param('id') id: string, @CurrentAuth() auth: RequestAuthContext) {
+    const order = await this.quoteService.convertToOrder(id, auth.tenantId, auth.userId ?? null);
+    return { data: order };
+  }
+
   @Post()
   async create(@Body() dto: CreateQuoteDto, @CurrentAuth() auth: RequestAuthContext) {
     const quote = await this.quoteService.create({
