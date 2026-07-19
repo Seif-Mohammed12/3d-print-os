@@ -63,12 +63,13 @@ CREATE TABLE IF NOT EXISTS quotes (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
     -- Constraints
+    -- Note: customer_id, material_id, printer_id FKs deferred until those tables are created
     CONSTRAINT fk_quotes_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
     CONSTRAINT fk_quotes_shop FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE,
-    CONSTRAINT fk_quotes_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_quotes_model FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_quotes_material FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE SET NULL,
-    CONSTRAINT fk_quotes_printer FOREIGN KEY (printer_id) REFERENCES printers(id) ON DELETE SET NULL
+    CONSTRAINT fk_quotes_model FOREIGN KEY (model_id) REFERENCES model_files(id) ON DELETE RESTRICT
+    -- CONSTRAINT fk_quotes_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
+    -- CONSTRAINT fk_quotes_material FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE SET NULL,
+    -- CONSTRAINT fk_quotes_printer FOREIGN KEY (printer_id) REFERENCES printers(id) ON DELETE SET NULL
 );
 
 -- Indexes for efficient queries
