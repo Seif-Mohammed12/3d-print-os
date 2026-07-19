@@ -32,7 +32,7 @@ export interface CreateCustomerInput {
   notes?: string;
 }
 
-export interface UpdateCustomerInput extends Partial<CreateCustomerInput> {}
+export type UpdateCustomerInput = Partial<CreateCustomerInput>;
 
 export interface CustomerListParams {
   page?: number;
