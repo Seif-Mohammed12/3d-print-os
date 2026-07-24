@@ -41,3 +41,12 @@ export type LoginInput = {
   password: string;
   tenantSlug?: string;
 };
+
+export type RegisterCustomerInput = {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+  companyName?: string;
+  tenantSlug?: string;
+};

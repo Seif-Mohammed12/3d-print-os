@@ -19,6 +19,7 @@ import { GlobalExceptionFilter } from './shared/filters/global-exception.filter'
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { TenancyModule } from './tenancy/tenancy.module';
 import { QuotesModule } from './quotes/quotes.module';
+import { PortalModule } from './portal/portal.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { QuotesModule } from './quotes/quotes.module';
     MLModule,
     CustomersModule,
     PricingModule,
+    PortalModule,
     HealthModule,
   ],
   providers: [

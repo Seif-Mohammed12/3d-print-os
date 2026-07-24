@@ -5,7 +5,7 @@ import { AuthDomainError, type AuthService } from '@3d-print-os/identity';
 import { AppError } from '../shared/errors/app.error';
 import { CurrentAuth, Public } from './auth.decorators';
 import type { RequestAuthContext } from './auth.types';
-import { LoginDto, LogoutDto, RefreshDto, RegisterDto } from './dto/auth.dto';
+import { LoginDto, LogoutDto, RefreshDto, RegisterDto, CustomerRegisterDto } from './dto/auth.dto';
 import { AUTH_SERVICE } from './identity.tokens';
 
 function mapAuthError(error: unknown): never {
@@ -37,6 +37,47 @@ export class AuthController {
         ...(body.shopCode !== undefined ? { shopCode: body.shopCode } : {}),
         ...(body.defaultCurrency !== undefined ? { defaultCurrency: body.defaultCurrency } : {}),
         ...(body.timezone !== undefined ? { timezone: body.timezone } : {}),
+      });
+      return {
+        data: {
+          user: {
+            id: result.session.user.id,
+            email: result.session.user.email,
+            full_name: result.session.user.fullName,
+          },
+          tenant: {
+            id: result.session.tenant.id,
+            slug: result.session.tenant.slug,
+            name: result.session.tenant.name,
+          },
+          roles: result.session.roles,
+          permissions: result.session.permissions,
+          tokens: {
+            access_token: result.tokens.accessToken,
+            refresh_token: result.tokens.refreshToken,
+            expires_in: result.tokens.expiresInSeconds,
+            token_type: result.tokens.tokenType,
+          },
+        },
+      };
+    } catch (error) {
+      mapAuthError(error);
+    }
+  }
+
+  @Public()
+  @Post('register-customer')
+  async registerCustomer(@Body() body: CustomerRegisterDto) {
+    try {
+      // For customer registration, we'll use a default tenant if none provided
+      // This is a simplified version - in production you'd want tenant selection
+      const result = await (this.authService as any).registerCustomer({
+        email: body.email,
+        password: body.password,
+        fullName: body.fullName,
+        phone: body.phone,
+        companyName: body.companyName,
+        tenantSlug: body.tenantSlug,
       });
       return {
         data: {

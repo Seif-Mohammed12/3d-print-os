@@ -106,3 +106,32 @@ export class UpdateMemberDto {
   @IsString()
   status?: 'active' | 'disabled' | 'invited';
 }
+
+export class CustomerRegisterDto {
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(128)
+  password!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(120)
+  fullName!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  companyName?: string;
+
+  @IsOptional()
+  @IsString()
+  tenantSlug?: string;
+}

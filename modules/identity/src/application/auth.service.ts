@@ -3,7 +3,13 @@ import { createHash, randomBytes } from 'node:crypto';
 import * as argon2 from 'argon2';
 
 import type { IdentityRepository } from '../infrastructure/identity.repository';
-import type { AuthSession, AuthTokens, LoginInput, RegisterTenantInput } from '../domain/types';
+import type {
+  AuthSession,
+  AuthTokens,
+  LoginInput,
+  RegisterTenantInput,
+  RegisterCustomerInput,
+} from '../domain/types';
 
 export class AuthDomainError extends Error {
   constructor(
@@ -36,13 +42,8 @@ export class AuthService {
     input: RegisterTenantInput,
   ): Promise<{ session: AuthSession; tokens: AuthTokens }> {
     this.assertPassword(input.password);
-    const slug = this.normalizeSlug(input.tenantSlug);
 
     return this.repo.withBypass(async (client) => {
-      if (await this.repo.slugExists(client, slug)) {
-        throw new AuthDomainError('Tenant slug already taken', 'tenant.slug_taken', 409);
-      }
-
       const existingUser = await this.repo.findUserByEmail(client, input.email);
       if (existingUser) {
         throw new AuthDomainError('Email already registered', 'auth.email_taken', 409);
@@ -55,31 +56,116 @@ export class AuthService {
         passwordHash,
       });
 
-      const tenant = await this.repo.createTenant(client, {
-        slug,
-        name: input.tenantName,
-        defaultCurrency: input.defaultCurrency ?? 'EGP',
-        timezone: input.timezone ?? 'Africa/Cairo',
-      });
-
-      const shop = await this.repo.createShop(client, {
-        tenantId: tenant.id,
-        code: (input.shopCode ?? 'MAIN').toUpperCase(),
-        name: input.shopName,
-        timezone: input.timezone ?? 'Africa/Cairo',
-      });
-
-      const roleIds = await this.repo.seedSystemRoles(client, tenant.id);
-      const ownerRoleId = roleIds.get('owner');
-      if (!ownerRoleId) {
-        throw new AuthDomainError('Failed to seed owner role', 'auth.seed_failed', 500);
+      // Use existing tenant or default to first available
+      let tenant;
+      if (input.tenantSlug) {
+        tenant = await this.repo.findTenantBySlug(client, input.tenantSlug);
+      }
+      if (!tenant) {
+        const tenants = await this.repo.listTenants(client);
+        if (tenants.length === 0) {
+          throw new AuthDomainError('No tenant available', 'auth.no_tenant', 500);
+        }
+        tenant = tenants[0];
       }
 
+      if (!tenant) {
+        throw new AuthDomainError('Failed to resolve tenant', 'auth.tenant_resolution_failed', 500);
+      }
+
+      // Default to customer role for all new registrations
+      const customerRole = await this.repo.findRoleByCode(client, 'customer');
+      if (!customerRole) {
+        throw new AuthDomainError('Customer role not found', 'auth.role_not_found', 500);
+      }
+
+      // Create customer record
+      await this.repo.createCustomer(client, {
+        userId: user.id,
+        tenantId: tenant.id,
+        phone: undefined,
+        companyName: undefined,
+      });
+
+      // Create membership with customer role
       await this.repo.createMembership(client, {
         tenantId: tenant.id,
         userId: user.id,
-        defaultShopId: shop.id,
-        roleIds: [ownerRoleId],
+        defaultShopId: null,
+        roleIds: [customerRole.id],
+      });
+
+      const session = await this.repo.loadSession(client, {
+        userId: user.id,
+        tenantId: tenant.id,
+      });
+      if (!session) {
+        throw new AuthDomainError('Failed to load session', 'auth.session_failed', 500);
+      }
+
+      const tokens = await this.issueTokens(client, session);
+      return { session, tokens };
+    });
+  }
+
+  async registerCustomer(
+    input: RegisterCustomerInput,
+  ): Promise<{ session: AuthSession; tokens: AuthTokens }> {
+    this.assertPassword(input.password);
+
+    return this.repo.withBypass(async (client) => {
+      const existingUser = await this.repo.findUserByEmail(client, input.email);
+      if (existingUser) {
+        throw new AuthDomainError('Email already registered', 'auth.email_taken', 409);
+      }
+
+      const passwordHash = await argon2.hash(input.password, { type: argon2.argon2id });
+      const user = await this.repo.createUser(client, {
+        email: input.email,
+        fullName: input.fullName,
+        passwordHash,
+      });
+
+      // Use provided tenant slug or default to first available tenant
+      let tenant;
+      if (input.tenantSlug) {
+        tenant = await this.repo.findTenantBySlug(client, input.tenantSlug);
+        if (!tenant) {
+          throw new AuthDomainError('Tenant not found', 'auth.tenant_not_found', 404);
+        }
+      } else {
+        // Get first available tenant (in production, you'd want proper tenant selection)
+        const tenants = await this.repo.listTenants(client);
+        if (tenants.length === 0) {
+          throw new AuthDomainError('No tenant available', 'auth.no_tenant', 500);
+        }
+        tenant = tenants[0];
+      }
+
+      if (!tenant) {
+        throw new AuthDomainError('Failed to resolve tenant', 'auth.tenant_resolution_failed', 500);
+      }
+
+      // Get customer role
+      const customerRole = await this.repo.findRoleByCode(client, 'customer');
+      if (!customerRole) {
+        throw new AuthDomainError('Customer role not found', 'auth.role_not_found', 500);
+      }
+
+      // Create customer record
+      await this.repo.createCustomer(client, {
+        userId: user.id,
+        tenantId: tenant.id,
+        phone: input.phone,
+        companyName: input.companyName,
+      });
+
+      // Create membership with customer role (customers don't need default shop)
+      await this.repo.createMembership(client, {
+        tenantId: tenant.id,
+        userId: user.id,
+        defaultShopId: null,
+        roleIds: [customerRole.id],
       });
 
       const session = await this.repo.loadSession(client, {

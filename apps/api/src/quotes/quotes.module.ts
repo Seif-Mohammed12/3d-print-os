@@ -4,7 +4,6 @@ import type { Pool } from 'pg';
 
 import { QuoteRepository } from './repositories/quote.repository';
 import { QuotesController } from './quotes.controller';
-import { PrintPreparationController } from './print-preparation.controller';
 import { QuoteService } from './services/quote.service';
 import { GeometryIntegrationService } from './services/geometry-integration.service';
 import { PricingIntegrationService } from './services/pricing-integration.service';
@@ -29,13 +28,36 @@ import { OrderService } from '../orders/services/order.service';
 
 @Module({
   imports: [HttpModule, MaterialsModule, OrdersModule],
-  controllers: [QuotesController, PrintPreparationController],
+  controllers: [QuotesController],
   providers: [
+    // Base services (no dependencies)
+    GeometryAnalyzerService,
+    MeshAnalyzerService,
+    SurfaceDetectorService,
+    OrientationGeneratorService,
+    OrientationEvaluatorService,
+    SupportEstimatorService,
+    RiskAnalyzerService,
+    ScoringEngineService,
+    OrientationOptimizerService,
+    SupportAnalyzerService,
+    GeometricSupportAnalyzerService,
+
+    // Integration services (depend on base services)
+    GeometryIntegrationService,
+    PricingIntegrationService,
+    PrintEstimatorService,
+    CostCalculatorService,
+    PricingEngineService,
+
+    // Repository
     {
       provide: 'QUOTE_REPOSITORY',
       inject: [DATABASE_POOL],
       useFactory: (pool: Pool) => new QuoteRepository(pool),
     },
+
+    // Main service (depends on integration services)
     {
       provide: QuoteService,
       inject: [
@@ -63,22 +85,6 @@ import { OrderService } from '../orders/services/order.service';
           orderService as OrderService,
         ),
     },
-    GeometryIntegrationService,
-    PricingIntegrationService,
-    PrintEstimatorService,
-    CostCalculatorService,
-    PricingEngineService,
-    GeometryAnalyzerService,
-    MeshAnalyzerService,
-    SurfaceDetectorService,
-    OrientationGeneratorService,
-    OrientationEvaluatorService,
-    SupportEstimatorService,
-    RiskAnalyzerService,
-    ScoringEngineService,
-    OrientationOptimizerService,
-    SupportAnalyzerService,
-    GeometricSupportAnalyzerService,
   ],
   exports: [
     QuoteService,
@@ -90,6 +96,7 @@ import { OrderService } from '../orders/services/order.service';
     GeometryAnalyzerService,
     OrientationOptimizerService,
     SupportAnalyzerService,
+    PrintEstimatorService,
     MeshAnalyzerService,
     SurfaceDetectorService,
     OrientationGeneratorService,

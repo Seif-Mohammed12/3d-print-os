@@ -5,12 +5,14 @@ import { ThemeProvider } from '../shared/components/theme-provider';
 import { ToastProvider } from '../shared/components/feedback/toast-provider';
 import { ErrorBoundary } from '../shared/components/error-boundary';
 import { AppLayout } from '../shared/components/layout/app-layout';
+import { PortalLayout } from '../shared/components/layout/portal-layout';
 import { LoginPage } from './auth/login-page';
 import { RegisterPage } from './auth/register-page';
 import { ModelAnalysisPage } from './intelligence/model-analysis-page';
-import { PrintabilityPage } from './intelligence/printability-page';
 import { QuoteGeneratorPage } from './intelligence/quote-generator-page';
-import { RecommendationsPage } from './intelligence/recommendations-page';
+import { PortalUploadPage } from './portal/portal-upload-page';
+import { PortalQuotesPage } from './portal/portal-quotes-page';
+import { PortalOrdersPage } from './portal/portal-orders-page';
 import { PrintQueuePage } from './production/queue-page';
 import { PrinterFleetPage } from './production/fleet-page';
 import { MaterialInventoryPage } from './production/materials-page';
@@ -23,10 +25,15 @@ import { ConfigPrintersPage } from './config/printers-page';
 import { ConfigMaterialsPage } from './config/materials-page';
 import { ConfigPricingPage } from './config/pricing-page';
 import { ConfigSettingsPage } from './config/settings-page';
-import { useAuthGuard } from '../shared/hooks/use-auth-guard';
+import { useBusinessGuard, useCustomerGuard } from '../shared/hooks/use-role-guard';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  useAuthGuard();
+function BusinessRoute({ children }: { children: React.ReactNode }) {
+  useBusinessGuard();
+  return <>{children}</>;
+}
+
+function CustomerRoute({ children }: { children: React.ReactNode }) {
+  useCustomerGuard();
   return <>{children}</>;
 }
 
@@ -40,19 +47,45 @@ export function App() {
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/portal/login" element={<LoginPage />} />
+                <Route path="/portal/register" element={<RegisterPage />} />
+                <Route path="/dashboard" element={<Navigate to="/portal/upload" replace />} />
+                <Route path="/" element={<Navigate to="/portal/upload" replace />} />
+
+                {/* Portal Routes - Customer Access */}
                 <Route
-                  path="/"
+                  path="/portal"
                   element={
-                    <ProtectedRoute>
-                      <AppLayout />
-                    </ProtectedRoute>
+                    <CustomerRoute>
+                      <PortalLayout />
+                    </CustomerRoute>
                   }
                 >
-                  <Route index element={<Navigate to="/intelligence/model-analysis" replace />} />
+                  <Route index element={<Navigate to="/portal/upload" replace />} />
+                  <Route path="upload" element={<PortalUploadPage />} />
+                  <Route path="quotes" element={<PortalQuotesPage />} />
+                  <Route path="orders" element={<PortalOrdersPage />} />
+                </Route>
+
+                {/* Business App Routes - Business Role Access */}
+                <Route
+                  path="/app"
+                  element={
+                    <BusinessRoute>
+                      <AppLayout />
+                    </BusinessRoute>
+                  }
+                >
+                  <Route
+                    index
+                    element={<Navigate to="/app/intelligence/model-analysis" replace />}
+                  />
+                  <Route
+                    path="dashboard"
+                    element={<Navigate to="/app/intelligence/model-analysis" replace />}
+                  />
                   <Route path="intelligence/model-analysis" element={<ModelAnalysisPage />} />
-                  <Route path="intelligence/printability" element={<PrintabilityPage />} />
                   <Route path="intelligence/quote-generator" element={<QuoteGeneratorPage />} />
-                  <Route path="intelligence/recommendations" element={<RecommendationsPage />} />
                   <Route path="production/queue" element={<PrintQueuePage />} />
                   <Route path="production/fleet" element={<PrinterFleetPage />} />
                   <Route path="production/materials" element={<MaterialInventoryPage />} />

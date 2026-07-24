@@ -16,6 +16,7 @@ interface AnalysisResult {
   supportVolume: number;
   totalMaterial: number;
   optimalOrientation: { axis: string; angle: number };
+  estimatedPriceRange?: { min: number; max: number };
 }
 
 interface Triangle {
@@ -834,6 +835,38 @@ export function ModelAnalysisPage() {
         printabilityScore,
       });
 
+      // Calculate estimated price range using pricing rules
+      const plaCost = parseFloat(localStorage.getItem('plaCost') || '2.5');
+      const fdmRate = parseFloat(localStorage.getItem('fdmRate') || '25');
+      const electricityRate = parseFloat(localStorage.getItem('electricityRate') || '25');
+      const maintenanceRate = parseFloat(localStorage.getItem('maintenanceRate') || '50');
+      const postProcessingRate = parseFloat(localStorage.getItem('postProcessingRate') || '500');
+      const taxRate = parseFloat(localStorage.getItem('taxRate') || '14');
+      const minimumOrder = parseFloat(localStorage.getItem('minimumOrder') || '500');
+
+      const materialCost = weight * plaCost;
+      const printTimeHours = estimatedTimeMinutes / 60;
+      const machineTimeCost = printTimeHours * fdmRate;
+      const electricityCost = printTimeHours * electricityRate;
+      const maintenanceCost = printTimeHours * maintenanceRate;
+      const postProcessingCost = postProcessingRate;
+
+      const baseCost =
+        materialCost + machineTimeCost + electricityCost + maintenanceCost + postProcessingCost;
+
+      // Calculate price range with different margins (10% - 30%)
+      const minMargin = baseCost * 0.1;
+      const maxMargin = baseCost * 0.3;
+
+      const minSubtotal = Math.max(minimumOrder, baseCost + minMargin);
+      const maxSubtotal = Math.max(minimumOrder, baseCost + maxMargin);
+
+      const minTax = minSubtotal * (taxRate / 100);
+      const maxTax = maxSubtotal * (taxRate / 100);
+
+      const minPrice = Math.round(minSubtotal + minTax);
+      const maxPrice = Math.round(maxSubtotal + maxTax);
+
       // Set basic analysis from client-side results
       setAnalysisResult({
         volume: Math.round(volumeCM3 * 10) / 10,
@@ -848,6 +881,7 @@ export function ModelAnalysisPage() {
         supportVolume: Math.round(supportVolume * 10) / 10,
         totalMaterial: Math.round(totalMaterial * 10) / 10,
         optimalOrientation,
+        estimatedPriceRange: { min: minPrice, max: maxPrice },
       });
     } catch (error) {
       console.error('Error analyzing STL file:', error);
@@ -989,6 +1023,28 @@ export function ModelAnalysisPage() {
                     recommendations={aiAnalysisResult.support.recommendations}
                     isAnalyzing={false}
                   />
+                </div>
+              )}
+
+              {analysisResult && analysisResult.estimatedPriceRange && (
+                <div className="rounded-lg border border-border bg-card p-6">
+                  <h3 className="mb-4 text-lg font-semibold text-foreground">
+                    Estimated Price Range
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Based on model analysis</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Final price may vary based on material and settings
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-foreground">
+                        {analysisResult.estimatedPriceRange.min} -{' '}
+                        {analysisResult.estimatedPriceRange.max} EGP
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

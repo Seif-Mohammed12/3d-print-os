@@ -20,4 +20,5 @@ export type {
   AuthUser,
   LoginInput,
   RegisterTenantInput,
+  RegisterCustomerInput,
 } from './domain/types';

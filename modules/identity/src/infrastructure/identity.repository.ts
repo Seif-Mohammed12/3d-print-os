@@ -411,4 +411,50 @@ export class IdentityRepository {
     ]);
     return (result.rowCount ?? 0) > 0;
   }
+
+  async findTenantBySlug(
+    client: PoolClient,
+    slug: string,
+  ): Promise<{ id: string; slug: string; name: string } | null> {
+    const result = await client.query<{ id: string; slug: string; name: string }>(
+      `SELECT id, slug, name FROM tenants WHERE slug = lower($1) AND status = 'active' LIMIT 1`,
+      [slug],
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async listTenants(
+    client: PoolClient,
+  ): Promise<Array<{ id: string; slug: string; name: string }>> {
+    const result = await client.query<{ id: string; slug: string; name: string }>(
+      `SELECT id, slug, name FROM tenants WHERE status = 'active' ORDER BY name`,
+    );
+    return result.rows;
+  }
+
+  async findRoleByCode(client: PoolClient, code: string): Promise<{ id: string } | null> {
+    const result = await client.query<{ id: string }>(
+      `SELECT id FROM roles WHERE code = $1 AND tenant_id IS NULL LIMIT 1`,
+      [code],
+    );
+    return result.rows[0] ?? null;
+  }
+
+  async createCustomer(
+    client: PoolClient,
+    input: {
+      userId: string;
+      tenantId: string;
+      phone?: string;
+      companyName?: string;
+    },
+  ): Promise<string> {
+    const result = await client.query<{ id: string }>(
+      `INSERT INTO portal_customers (user_id, tenant_id, phone, company_name)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id`,
+      [input.userId, input.tenantId, input.phone ?? null, input.companyName ?? null],
+    );
+    return result.rows[0]!.id;
+  }
 }
