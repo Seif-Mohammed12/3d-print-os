@@ -1,0 +1,18 @@
+# Netlify deploys the web app (staff app + customer portal) from this monorepo.
+# The API and geometry service are hosted separately; point the web app at the API
+# with VITE_API_BASE_URL in Netlify's environment variables.
+
+[build]
+  base = "/"
+  command = "pnpm --filter @3d-print-os/web-admin run build"
+  publish = "apps/web-admin/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "9.15.4"
+
+# Single-page app: let the client router handle /app, /login, /portal/... on load and refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
