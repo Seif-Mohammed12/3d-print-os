@@ -48,5 +48,5 @@ export type RegisterCustomerInput = {
   fullName: string;
   phone?: string;
   companyName?: string;
-  tenantSlug?: string;
+  tenantSlug: string;
 };

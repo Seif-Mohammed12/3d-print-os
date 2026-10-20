@@ -131,7 +131,8 @@ export class CustomerRegisterDto {
   @MaxLength(120)
   companyName?: string;
 
-  @IsOptional()
   @IsString()
-  tenantSlug?: string;
+  @MinLength(1)
+  @MaxLength(63)
+  tenantSlug!: string;
 }

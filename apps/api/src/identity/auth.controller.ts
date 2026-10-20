@@ -69,15 +69,13 @@ export class AuthController {
   @Post('register-customer')
   async registerCustomer(@Body() body: CustomerRegisterDto) {
     try {
-      // For customer registration, we'll use a default tenant if none provided
-      // This is a simplified version - in production you'd want tenant selection
-      const result = await (this.authService as any).registerCustomer({
+      const result = await this.authService.registerCustomer({
         email: body.email,
         password: body.password,
         fullName: body.fullName,
-        phone: body.phone,
-        companyName: body.companyName,
         tenantSlug: body.tenantSlug,
+        ...(body.phone !== undefined ? { phone: body.phone } : {}),
+        ...(body.companyName !== undefined ? { companyName: body.companyName } : {}),
       });
       return {
         data: {
