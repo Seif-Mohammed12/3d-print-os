@@ -44,3 +44,6 @@ __pycache__/
 
 # Misc
 *.local
+
+# Claude Code session worktrees (local only)
+.claude/worktrees/
