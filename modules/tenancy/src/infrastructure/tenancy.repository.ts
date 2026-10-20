@@ -17,9 +17,12 @@ export class TenancyRepository {
       status: string;
       default_currency: string;
       timezone: string;
+      tax_rate_bps: number | null;
     }>(
-      `SELECT id, slug, name, status, default_currency, timezone
-       FROM tenants WHERE id = $1`,
+      `SELECT t.id, t.slug, t.name, t.status, t.default_currency, t.timezone, ts.tax_rate_bps
+       FROM tenants t
+       LEFT JOIN tenant_settings ts ON ts.tenant_id = t.id
+       WHERE t.id = $1`,
       [tenantId],
     );
     const row = result.rows[0];
@@ -31,45 +34,39 @@ export class TenancyRepository {
       slug: row.slug,
       name: row.name,
       status: row.status,
-      defaultCurrency: row.default_currency,
+      defaultCurrency: row.default_currency.trim(),
       timezone: row.timezone,
+      taxRateBps: row.tax_rate_bps ?? 0,
     };
   }
 
   async updateTenant(
     client: PoolClient,
     tenantId: string,
-    input: { name?: string; timezone?: string; defaultCurrency?: string },
+    input: { name?: string; timezone?: string; defaultCurrency?: string; taxRateBps?: number },
   ) {
-    const result = await client.query<{
-      id: string;
-      slug: string;
-      name: string;
-      status: string;
-      default_currency: string;
-      timezone: string;
-    }>(
+    const updated = await client.query(
       `UPDATE tenants
        SET name = COALESCE($2, name),
            timezone = COALESCE($3, timezone),
            default_currency = COALESCE($4, default_currency),
            updated_at = now()
-       WHERE id = $1
-       RETURNING id, slug, name, status, default_currency, timezone`,
+       WHERE id = $1`,
       [tenantId, input.name ?? null, input.timezone ?? null, input.defaultCurrency ?? null],
     );
-    const row = result.rows[0];
-    if (!row) {
+    if (!updated.rowCount) {
       return null;
     }
-    return {
-      id: row.id,
-      slug: row.slug,
-      name: row.name,
-      status: row.status,
-      defaultCurrency: row.default_currency,
-      timezone: row.timezone,
-    };
+    if (input.taxRateBps !== undefined) {
+      // Older tenants may not have a settings row yet.
+      await client.query(
+        `INSERT INTO tenant_settings (tenant_id, tax_rate_bps)
+         VALUES ($1, $2)
+         ON CONFLICT (tenant_id) DO UPDATE SET tax_rate_bps = EXCLUDED.tax_rate_bps, updated_at = now()`,
+        [tenantId, input.taxRateBps],
+      );
+    }
+    return this.getTenant(client, tenantId);
   }
 
   async listShops(client: PoolClient, tenantId: string) {

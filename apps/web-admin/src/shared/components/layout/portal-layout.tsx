@@ -1,64 +1,57 @@
-import { Outlet, Link } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
+import { NavLink, Outlet } from 'react-router-dom';
 
+import { cn } from '../../lib/utils';
 import { useAuthStore } from '../../stores/auth-store';
+import { ThemeToggle, UserMenu } from './user-menu';
+
+const links = [
+  { to: '/portal/upload', label: 'Get a quote' },
+  { to: '/portal/quotes', label: 'Your quotes' },
+  { to: '/portal/orders', label: 'Your orders' },
+];
 
 export function PortalLayout() {
-  const { user, logout } = useAuthStore();
-
-  const handleLogout = async () => {
-    await logout();
-  };
+  const tenant = useAuthStore((state) => state.tenant);
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <Link to="/portal/upload" className="text-xl font-bold text-foreground">
-                3D Print OS
-              </Link>
-              <nav className="flex gap-4">
-                <Link
-                  to="/portal/upload"
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                >
-                  Get Quote
-                </Link>
-                <Link
-                  to="/portal/quotes"
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                >
-                  My Quotes
-                </Link>
-                <Link
-                  to="/portal/orders"
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                >
-                  My Orders
-                </Link>
-              </nav>
-            </div>
-            <div className="flex items-center gap-4">
-              {user && (
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-foreground">{user.full_name}</span>
-                </div>
-              )}
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </button>
-            </div>
-          </div>
+      <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4 sm:px-6">
+          <NavLink to="/portal/upload" className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-semibold text-primary-foreground">
+              3D
+            </span>
+            <span className="text-sm font-semibold text-foreground">
+              {tenant?.name ?? 'Print OS'}
+            </span>
+          </NavLink>
+          <div className="flex-1" />
+          <ThemeToggle />
+          <UserMenu signOutTo="/portal/login" />
         </div>
+        <nav
+          className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 sm:px-6"
+          aria-label="Portal"
+        >
+          {links.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                cn(
+                  '-mb-px whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'border-primary text-foreground'
+                    : 'border-transparent text-muted-foreground hover:text-foreground',
+                )
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
+        </nav>
       </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <Outlet />
       </main>
     </div>

@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 import { CustomerRepository } from '../customers/repositories/customer.repository';
 import { MLRepository } from '../ml/repositories/ml.repository';
 import { OrderRepository } from '../orders/repositories/order.repository';
-import { PortalService } from '../portal/portal.service';
 import { PricingRepository } from '../pricing/repositories/pricing.repository';
 import { PrinterRepository } from '../printers/repositories/printer.repository';
 import { QuoteRepository } from '../quotes/repositories/quote.repository';
@@ -19,8 +18,8 @@ type RecordedQuery = { text: string; params: unknown[] };
 
 /**
  * Every `SELECT 1 FROM <table>` existence check finds a row unless it asks for FOREIGN_ID,
- * which stands for a row owned by another tenant. Other SELECTs return one row so that
- * lookups like the portal's customer record succeed.
+ * which stands for a row owned by another tenant. Portal quotes go through quotes.create;
+ * the portal's own model-ownership check is covered in portal/portal.repository.spec.ts.
  */
 function fakePool(): { pool: Pool; queries: RecordedQuery[] } {
   const queries: RecordedQuery[] = [];
@@ -29,9 +28,6 @@ function fakePool(): { pool: Pool; queries: RecordedQuery[] } {
     if (/^\s*SELECT 1 FROM/i.test(text)) {
       const found = params[0] !== FOREIGN_ID;
       return { rows: found ? [{}] : [], rowCount: found ? 1 : 0 };
-    }
-    if (/^\s*SELECT id FROM portal_customers/i.test(text)) {
-      return { rows: [{ id: ID }], rowCount: 1 };
     }
     return { rows: [], rowCount: 0 };
   };
@@ -203,12 +199,6 @@ const cases: ReferenceCase[] = [
         shop_id: ids('shops'),
         export_type: 'price_prediction',
       } as never),
-  ],
-  [
-    'portal.createQuoteRequest rejects a foreign model file id',
-    'model_files',
-    (p, ids) =>
-      new PortalService(p).createQuoteRequest(ID, TENANT, { modelFileId: ids('model_files') }),
   ],
 ];
 

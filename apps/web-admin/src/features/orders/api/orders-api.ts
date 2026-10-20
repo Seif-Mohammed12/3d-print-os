@@ -1,52 +1,30 @@
-import { apiClient } from '../../../shared/api/api-client';
-import { handleApiError } from '../../../shared/api/api-error-handler';
-import type { Order, CreateOrderInput, UpdateOrderInput, OrderListParams } from '../model/order-types';
+import { ApiError } from '../../../shared/api/api-error-handler';
+import { http } from '../../../shared/api/http';
+import type {
+  Order,
+  OrderHistoryEntry,
+  OrderListParams,
+  PrintOutcome,
+  RecordPrintOutcomeInput,
+  UpdateOrderInput,
+} from '../model/order-types';
 
 export const ordersApi = {
-  async list(params?: OrderListParams) {
+  list: (params: OrderListParams) => http.list<Order>('/orders', params),
+  get: (id: string) => http.get<Order>(`/orders/${id}`),
+  update: (id: string, input: UpdateOrderInput) => http.patch<Order>(`/orders/${id}`, input),
+  history: (id: string) => http.get<OrderHistoryEntry[]>(`/orders/${id}/history`),
+  /** Null until staff record what the job actually took. */
+  getOutcome: async (id: string): Promise<PrintOutcome | null> => {
     try {
-      const response = await apiClient.instance.get<{ data: Order[]; meta: { total: number; page: number; per_page: number; total_pages: number } }>(
-        '/orders',
-        { params }
-      );
-      return response.data;
+      return await http.get<PrintOutcome>(`/orders/${id}/print-outcome`);
     } catch (error) {
-      handleApiError(error);
+      if (error instanceof ApiError && error.statusCode === 404) {
+        return null;
+      }
+      throw error;
     }
   },
-
-  async get(id: string): Promise<Order> {
-    try {
-      const response = await apiClient.instance.get<{ data: Order }>(`/orders/${id}`);
-      return response.data.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
-  async create(data: CreateOrderInput): Promise<Order> {
-    try {
-      const response = await apiClient.instance.post<{ data: Order }>('/orders', data);
-      return response.data.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
-  async update(id: string, data: UpdateOrderInput): Promise<Order> {
-    try {
-      const response = await apiClient.instance.patch<{ data: Order }>(`/orders/${id}`, data);
-      return response.data.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
-  async delete(id: string): Promise<void> {
-    try {
-      await apiClient.instance.delete(`/orders/${id}`);
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
+  recordOutcome: (id: string, input: RecordPrintOutcomeInput) =>
+    http.put<PrintOutcome>(`/orders/${id}/print-outcome`, input),
 };

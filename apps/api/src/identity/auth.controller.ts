@@ -3,7 +3,7 @@ import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { AuthDomainError, type AuthService } from '@3d-print-os/identity';
 
 import { AppError } from '../shared/errors/app.error';
-import { CurrentAuth, Public } from './auth.decorators';
+import { CurrentAuth, CustomerAccess, Public } from './auth.decorators';
 import type { RequestAuthContext } from './auth.types';
 import { LoginDto, LogoutDto, RefreshDto, RegisterDto, CustomerRegisterDto } from './dto/auth.dto';
 import { AUTH_SERVICE } from './identity.tokens';
@@ -177,6 +177,7 @@ export class AuthController {
   }
 
   @Get('me')
+  @CustomerAccess()
   async me(@CurrentAuth() auth: RequestAuthContext) {
     try {
       const session = await this.authService.getSession(auth.userId, auth.tenantId);

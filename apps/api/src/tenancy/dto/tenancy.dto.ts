@@ -1,4 +1,14 @@
-import { IsBoolean, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  Matches,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateTenantDto {
   @IsOptional()
@@ -16,6 +26,13 @@ export class UpdateTenantDto {
   @IsString()
   @MaxLength(3)
   defaultCurrency?: string;
+
+  /** Sales tax / VAT in basis points: 1400 = 14%. */
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(10000)
+  taxRateBps?: number;
 }
 
 export class CreateShopDto {

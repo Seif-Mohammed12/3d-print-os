@@ -26,7 +26,7 @@ export class TenancyService {
 
   async updateCurrentTenant(
     tenantId: string,
-    input: { name?: string; timezone?: string; defaultCurrency?: string },
+    input: { name?: string; timezone?: string; defaultCurrency?: string; taxRateBps?: number },
   ) {
     const tenant = await this.repo.withTenant(tenantId, (client) =>
       this.repo.updateTenant(client, tenantId, input),

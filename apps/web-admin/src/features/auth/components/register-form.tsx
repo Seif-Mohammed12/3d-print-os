@@ -1,138 +1,234 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
-import { useRegister } from '../hooks/use-auth';
-import type { RegisterData } from '../model/auth-types';
+import { getErrorMessage } from '../../../shared/api/api-error-handler';
+import { PORTAL_TENANT_SLUG } from '../../../shared/lib/constants';
+import { Button, ErrorNotice, Field, Input } from '../../../shared/ui';
+import { useRegister, useRegisterCustomer } from '../hooks/use-auth';
 
-export function RegisterForm() {
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48);
+}
+
+/** Creates a new shop (tenant) and its owner account. */
+export function BusinessRegisterForm() {
   const navigate = useNavigate();
   const register = useRegister();
-  const [formData, setFormData] = useState<RegisterData>({
+  const [form, setForm] = useState({
+    fullName: '',
     email: '',
     password: '',
-    fullName: '',
     tenantName: '',
     tenantSlug: '',
-    shopName: '',
+    slugEdited: false,
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const update = (patch: Partial<typeof form>) => setForm((current) => ({ ...current, ...patch }));
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     try {
-      await register.mutateAsync(formData);
-      navigate('/dashboard');
+      await register.mutateAsync({
+        fullName: form.fullName,
+        email: form.email,
+        password: form.password,
+        tenantName: form.tenantName,
+        tenantSlug: form.tenantSlug,
+        shopName: form.tenantName,
+      });
+      navigate('/app', { replace: true });
     } catch {
-      // Error is handled by the mutation
+      // Shown below from register.error
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="fullName" className="block text-sm font-medium text-foreground">
-          Full Name
-        </label>
-        <input
-          id="fullName"
-          type="text"
-          required
-          value={formData.fullName}
-          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="John Doe"
-        />
-      </div>
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          required
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="you@example.com"
-        />
-      </div>
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-foreground">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          required
-          minLength={8}
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="•••••••• (min 8 characters)"
-        />
-      </div>
-      <div>
-        <label htmlFor="tenantName" className="block text-sm font-medium text-foreground">
-          Business Name
-        </label>
-        <input
-          id="tenantName"
-          type="text"
-          required
-          value={formData.tenantName}
-          onChange={(e) => setFormData({ ...formData, tenantName: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="My 3D Printing Business"
-        />
-      </div>
-      <div>
-        <label htmlFor="tenantSlug" className="block text-sm font-medium text-foreground">
-          Business Slug
-        </label>
-        <input
-          id="tenantSlug"
-          type="text"
-          required
-          pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-          value={formData.tenantSlug}
-          onChange={(e) => setFormData({ ...formData, tenantSlug: e.target.value.toLowerCase() })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="my-business (lowercase, hyphens only)"
-        />
-        <p className="mt-1 text-xs text-muted-foreground">
-          Lowercase letters, numbers, and hyphens only
-        </p>
-      </div>
-      <div>
-        <label htmlFor="shopName" className="block text-sm font-medium text-foreground">
-          Shop Name
-        </label>
-        <input
-          id="shopName"
-          type="text"
-          required
-          value={formData.shopName}
-          onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="Main Shop"
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={register.isPending}
-        className="flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-      >
-        {register.isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating account...
-          </>
-        ) : (
-          'Create Account'
+      <Field label="Your name">
+        {(props) => (
+          <Input
+            {...props}
+            required
+            autoComplete="name"
+            value={form.fullName}
+            onChange={(event) => update({ fullName: event.target.value })}
+          />
         )}
-      </button>
-      {register.error && <p className="text-sm text-destructive">{register.error.message}</p>}
+      </Field>
+      <Field label="Business name">
+        {(props) => (
+          <Input
+            {...props}
+            required
+            value={form.tenantName}
+            onChange={(event) =>
+              update({
+                tenantName: event.target.value,
+                ...(form.slugEdited ? {} : { tenantSlug: slugify(event.target.value) }),
+              })
+            }
+            placeholder="3D Print It Egypt"
+          />
+        )}
+      </Field>
+      <Field
+        label="Shop address"
+        hint="Used in your customer portal link. Lowercase letters, numbers and dashes."
+      >
+        {(props) => (
+          <Input
+            {...props}
+            required
+            pattern="[a-z0-9-]+"
+            value={form.tenantSlug}
+            onChange={(event) =>
+              update({ tenantSlug: slugify(event.target.value), slugEdited: true })
+            }
+            placeholder="print-it-egypt"
+          />
+        )}
+      </Field>
+      <Field label="Email">
+        {(props) => (
+          <Input
+            {...props}
+            type="email"
+            required
+            autoComplete="email"
+            value={form.email}
+            onChange={(event) => update({ email: event.target.value })}
+          />
+        )}
+      </Field>
+      <Field label="Password" hint="At least 8 characters.">
+        {(props) => (
+          <Input
+            {...props}
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            value={form.password}
+            onChange={(event) => update({ password: event.target.value })}
+          />
+        )}
+      </Field>
+      {register.error && <ErrorNotice message={getErrorMessage(register.error)} />}
+      <Button type="submit" variant="primary" className="w-full" loading={register.isPending}>
+        Create shop
+      </Button>
+    </form>
+  );
+}
+
+/** Customer account for this build's shop portal. */
+export function CustomerRegisterForm() {
+  const navigate = useNavigate();
+  const register = useRegisterCustomer();
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    phone: '',
+    companyName: '',
+  });
+
+  const update = (patch: Partial<typeof form>) => setForm((current) => ({ ...current, ...patch }));
+
+  if (!PORTAL_TENANT_SLUG) {
+    return (
+      <ErrorNotice message="Sign-up isn't set up for this portal yet. Ask the shop for an account." />
+    );
+  }
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    try {
+      await register.mutateAsync({
+        fullName: form.fullName,
+        email: form.email,
+        password: form.password,
+        tenantSlug: PORTAL_TENANT_SLUG,
+        ...(form.phone ? { phone: form.phone } : {}),
+        ...(form.companyName ? { companyName: form.companyName } : {}),
+      });
+      navigate('/portal/upload', { replace: true });
+    } catch {
+      // Shown below from register.error
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Field label="Full name">
+        {(props) => (
+          <Input
+            {...props}
+            required
+            autoComplete="name"
+            value={form.fullName}
+            onChange={(event) => update({ fullName: event.target.value })}
+          />
+        )}
+      </Field>
+      <Field label="Email">
+        {(props) => (
+          <Input
+            {...props}
+            type="email"
+            required
+            autoComplete="email"
+            value={form.email}
+            onChange={(event) => update({ email: event.target.value })}
+          />
+        )}
+      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Phone" hint="Optional">
+          {(props) => (
+            <Input
+              {...props}
+              type="tel"
+              autoComplete="tel"
+              value={form.phone}
+              onChange={(event) => update({ phone: event.target.value })}
+              placeholder="+20 100 000 0000"
+            />
+          )}
+        </Field>
+        <Field label="Company" hint="Optional">
+          {(props) => (
+            <Input
+              {...props}
+              autoComplete="organization"
+              value={form.companyName}
+              onChange={(event) => update({ companyName: event.target.value })}
+            />
+          )}
+        </Field>
+      </div>
+      <Field label="Password" hint="At least 8 characters.">
+        {(props) => (
+          <Input
+            {...props}
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            value={form.password}
+            onChange={(event) => update({ password: event.target.value })}
+          />
+        )}
+      </Field>
+      {register.error && <ErrorNotice message={getErrorMessage(register.error)} />}
+      <Button type="submit" variant="primary" className="w-full" loading={register.isPending}>
+        Create account
+      </Button>
     </form>
   );
 }

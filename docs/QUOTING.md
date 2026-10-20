@@ -81,6 +81,40 @@ printer's current time and filament factors, sample counts and median ratio, wit
 breakdown. A factor far from 1.0 usually means the printer's `max_acceleration_mm_s2` /
 `max_feedrate_mm_s` do not match its firmware — fixing those is better than relying on the factor.
 
+## Instant quotes in the customer portal
+
+Portal customers get the same slicer price as staff quotes, without waiting for the shop.
+
+- **Flow.** The customer uploads an STL, then picks material, color, quality and quantity.
+  `POST /api/v1/portal/quotes` creates an ordinary `quotes` row (`source = 'portal'`) on the
+  shop's portal printer and prices it with `QuoteService.analyzeQuote`. Each change calls
+  `POST /portal/quotes/:id/price`; a quantity-only change reprices from the stored slice
+  instead of slicing again. A priced quote is `pending` until `expires_at`
+  (`tenant_settings.quote_validity_hours`).
+- **Ordering.** `POST /portal/quotes/:id/accept` takes the total the customer saw. The quote
+  moves to `approved` only if it is still priced, unexpired and at that exact total (otherwise
+  409), and then `convertToOrder` creates the `orders` row staff work from.
+- **Quality.** Draft / Standard / Fine map to 0.28 / 0.20 / 0.12 mm layers, clamped to
+  25–75% of the printer's nozzle diameter. Infill and walls come from the printer profile.
+- **Printer.** `tenant_settings.portal_printer_id` (Settings → Customer portal, or
+  `PUT /portal-settings`); when unset, the oldest active FDM printer. Materials offered are the
+  active ones not marked incompatible with that printer. A material with no pricing rule gives
+  the customer a generic "can't price this material online" message.
+- **Portal account → CRM customer.** Quotes and orders reference `customers`. Each portal
+  account gets its own CRM row on its first quote, linked by `portal_customers.crm_customer_id`.
+  It is never matched to an existing customer by email (sign-up does not verify email). If the
+  email is already on another customer record (emails are globally unique), the new row is
+  saved without it and its notes ask staff to merge the two.
+- **What customers see.** Total (tax included), print time and grams per part, and
+  dimensions. Never cost lines, margin, pricing rules, slicer output or internal notes: the
+  portal repository selects only customer-safe columns (`apps/api/src/portal`).
+- **Access.** Customer tokens are refused on every route except those marked
+  `@CustomerAccess()` (portal, `auth/me`, model upload), so staff endpoints, which return
+  internal costs, are closed to customers whatever permissions they hold. Portal endpoints
+  also require a `portal_customers` row in the token's tenant.
+- **Legacy tables.** `customer_quotes` / `customer_orders` (010) are no longer used. Any
+  pending legacy requests have no material or price and need re-quoting by staff.
+
 ## Running locally
 
 The geometry service needs PrusaSlicer (the Docker image installs it). On Windows:

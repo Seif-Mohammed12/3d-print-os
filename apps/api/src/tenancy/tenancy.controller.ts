@@ -36,6 +36,7 @@ export class TenancyController {
           status: tenant.status,
           default_currency: tenant.defaultCurrency,
           timezone: tenant.timezone,
+          tax_rate_bps: tenant.taxRateBps,
         },
       };
     } catch (error) {
@@ -51,6 +52,7 @@ export class TenancyController {
         ...(body.name !== undefined ? { name: body.name } : {}),
         ...(body.timezone !== undefined ? { timezone: body.timezone } : {}),
         ...(body.defaultCurrency !== undefined ? { defaultCurrency: body.defaultCurrency } : {}),
+        ...(body.taxRateBps !== undefined ? { taxRateBps: body.taxRateBps } : {}),
       });
       return {
         data: {
@@ -60,6 +62,7 @@ export class TenancyController {
           status: tenant.status,
           default_currency: tenant.defaultCurrency,
           timezone: tenant.timezone,
+          tax_rate_bps: tenant.taxRateBps,
         },
       };
     } catch (error) {

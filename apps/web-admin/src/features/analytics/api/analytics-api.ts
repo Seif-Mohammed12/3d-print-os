@@ -1,32 +1,47 @@
-import { apiClient } from '../../../shared/api/api-client';
-import { handleApiError } from '../../../shared/api/api-error-handler';
-import type { AnalyticsStats, RevenueData, TopCustomer, AnalyticsParams } from '../model/analytics-types';
+import { http } from '../../../shared/api/http';
+
+/** Analytics come from SQL views; counts and sums can arrive as strings. */
+type N = number | string;
+
+export type DailySummary = {
+  date: string;
+  total_orders: N;
+  total_revenue_cents: N;
+  average_order_value_cents: N;
+  unique_customers: N;
+  completed_orders: N;
+  in_production_orders: N;
+};
+
+export type PrinterUtilization = {
+  printer_id: string;
+  printer_name: string;
+  total_orders: N;
+  active_orders: N;
+  completed_orders: N;
+  failed_orders: N;
+  total_revenue_cents: N;
+  success_rate_percentage: N;
+};
+
+export type MaterialUsage = {
+  material_name: string;
+  material_type: string;
+  order_count: N;
+  total_revenue_cents: N;
+};
+
+export type CustomerSpend = {
+  customer_id: string;
+  total_orders: N;
+  total_spent_cents: N;
+  last_order_date: string;
+};
 
 export const analyticsApi = {
-  async getStats(params?: AnalyticsParams): Promise<AnalyticsStats> {
-    try {
-      const response = await apiClient.instance.get<{ data: AnalyticsStats }>('/analytics/stats', { params });
-      return response.data.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
-  async getRevenue(params?: AnalyticsParams): Promise<RevenueData[]> {
-    try {
-      const response = await apiClient.instance.get<{ data: RevenueData[] }>('/analytics/revenue', { params });
-      return response.data.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
-  async getTopCustomers(params?: AnalyticsParams): Promise<TopCustomer[]> {
-    try {
-      const response = await apiClient.instance.get<{ data: TopCustomer[] }>('/analytics/top-customers', { params });
-      return response.data.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
+  daily: (startDate: string, endDate: string) =>
+    http.get<DailySummary[]>('/analytics/daily-summary', { startDate, endDate }),
+  printers: () => http.get<PrinterUtilization[]>('/analytics/printers'),
+  materials: () => http.get<MaterialUsage[]>('/analytics/materials'),
+  customers: (limit = 5) => http.get<CustomerSpend[]>('/analytics/customers', { limit }),
 };

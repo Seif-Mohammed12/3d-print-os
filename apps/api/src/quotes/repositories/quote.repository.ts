@@ -51,11 +51,26 @@ export type Quote = {
   slice_result: unknown | null;
   pricing_breakdown: unknown | null;
   analyzed_at: Date | null;
+  quantity: number;
+  source: QuoteSource;
+  print_quality: PrintQuality | null;
+  /** Present on findById/list results only. */
+  model_filename?: string | null;
+  customer_name?: string | null;
   created_by: string | null;
   updated_by: string | null;
   created_at: Date;
   updated_at: Date;
 };
+
+/** Quote row plus display names from the model file and customer (read queries only). */
+const QUOTE_SELECT = `SELECT q.*, mf.original_filename AS model_filename, c.name AS customer_name
+  FROM quotes q
+  LEFT JOIN model_files mf ON mf.id = q.model_id AND mf.tenant_id = q.tenant_id
+  LEFT JOIN customers c ON c.id = q.customer_id AND c.tenant_id = q.tenant_id`;
+
+export type QuoteSource = 'staff' | 'portal';
+export type PrintQuality = 'draft' | 'standard' | 'fine';
 
 export type CreateQuoteData = {
   tenantId: string;
@@ -71,6 +86,9 @@ export type CreateQuoteData = {
   orientation_mode?: OrientationMode;
   internal_notes?: string | null;
   customer_notes?: string | null;
+  quantity?: number;
+  source?: QuoteSource;
+  print_quality?: PrintQuality | null;
   created_by?: string | null;
 };
 
@@ -98,6 +116,7 @@ export type QuoteAnalysis = {
   total_cents: number;
   currency: string;
   estimate_source: 'slicer';
+  quantity: number;
   slice_result: unknown;
   pricing_breakdown: unknown;
   updated_by: string | null;
@@ -137,10 +156,11 @@ export class QuoteRepository {
           `INSERT INTO quotes (
             tenant_id, shop_id, customer_id, model_id, quote_number, status,
             material_id, printer_id, technology, layer_height_mm, infill_percentage,
-            supports_mode, orientation_mode, internal_notes, customer_notes, created_by, currency
+            supports_mode, orientation_mode, internal_notes, customer_notes, created_by, currency,
+            quantity, source, print_quality
           ) VALUES (
             $1, $2, $3, $4, $5, 'draft', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
-            (SELECT default_currency FROM tenants WHERE id = $1)
+            (SELECT default_currency FROM tenants WHERE id = $1), $16, $17, $18
           )
           RETURNING *`,
           [
@@ -159,6 +179,9 @@ export class QuoteRepository {
             data.internal_notes ?? null,
             data.customer_notes ?? null,
             data.created_by ?? null,
+            data.quantity ?? 1,
+            data.source ?? 'staff',
+            data.print_quality ?? null,
           ],
         );
 
@@ -204,7 +227,8 @@ export class QuoteRepository {
          slice_result = $24,
          pricing_breakdown = $25,
          analyzed_at = now(),
-         updated_by = $26
+         updated_by = $26,
+         quantity = $29
        WHERE id = $27 AND tenant_id = $28
        RETURNING *`,
       [
@@ -236,6 +260,7 @@ export class QuoteRepository {
         data.updated_by,
         id,
         tenantId,
+        data.quantity,
       ],
     );
 
@@ -261,7 +286,7 @@ export class QuoteRepository {
   async findById(id: string, tenantId: string): Promise<Quote | null> {
     const result = await query<Quote>(
       this.pool,
-      'SELECT * FROM quotes WHERE id = $1 AND tenant_id = $2',
+      `${QUOTE_SELECT} WHERE q.id = $1 AND q.tenant_id = $2`,
       [id, tenantId],
     );
 
@@ -278,20 +303,20 @@ export class QuoteRepository {
     const { customerId, shopId, status, page = 1, perPage = 10 } = params;
     const offset = (page - 1) * perPage;
 
-    const conditions: string[] = ['tenant_id = $1'];
+    const conditions: string[] = ['q.tenant_id = $1'];
     const queryParams: unknown[] = [tenantId];
     let paramIndex = 2;
 
     if (customerId) {
-      conditions.push(`customer_id = $${paramIndex++}`);
+      conditions.push(`q.customer_id = $${paramIndex++}`);
       queryParams.push(customerId);
     }
     if (shopId) {
-      conditions.push(`shop_id = $${paramIndex++}`);
+      conditions.push(`q.shop_id = $${paramIndex++}`);
       queryParams.push(shopId);
     }
     if (status) {
-      conditions.push(`status = $${paramIndex++}`);
+      conditions.push(`q.status = $${paramIndex++}`);
       queryParams.push(status);
     }
 
@@ -300,12 +325,12 @@ export class QuoteRepository {
     const [dataResult, countResult] = await Promise.all([
       query<Quote>(
         this.pool,
-        `SELECT * FROM quotes WHERE ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
+        `${QUOTE_SELECT} WHERE ${whereClause} ORDER BY q.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
         [...queryParams, perPage, offset],
       ),
       query<{ count: string }>(
         this.pool,
-        `SELECT COUNT(*) as count FROM quotes WHERE ${whereClause}`,
+        `SELECT COUNT(*) as count FROM quotes q WHERE ${whereClause}`,
         queryParams,
       ),
     ]);
@@ -363,6 +388,14 @@ export class QuoteRepository {
     if (data.rejection_reason !== undefined) {
       updates.push(`rejection_reason = $${paramIndex++}`);
       values.push(data.rejection_reason);
+    }
+    if (data.print_quality !== undefined) {
+      updates.push(`print_quality = $${paramIndex++}`);
+      values.push(data.print_quality);
+    }
+    if (data.expires_at !== undefined) {
+      updates.push(`expires_at = $${paramIndex++}`);
+      values.push(data.expires_at);
     }
     if (data.estimate_source !== undefined) {
       updates.push(`estimate_source = $${paramIndex++}`);

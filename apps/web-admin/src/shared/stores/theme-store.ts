@@ -21,6 +21,6 @@ export const useThemeStore = create<ThemeStore>()(
     }),
     {
       name: STORAGE_KEYS.THEME,
-    }
-  )
+    },
+  ),
 );

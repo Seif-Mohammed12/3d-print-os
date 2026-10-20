@@ -1,73 +1,64 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
+import { getErrorMessage } from '../../../shared/api/api-error-handler';
+import { homePathForRoles, PORTAL_TENANT_SLUG } from '../../../shared/lib/constants';
+import { Button, ErrorNotice, Field, Input } from '../../../shared/ui';
 import { useLogin } from '../hooks/use-auth';
-import type { LoginCredentials } from '../model/auth-types';
 
-export function LoginForm() {
+export function LoginForm({ audience }: { audience: 'staff' | 'customer' }) {
   const navigate = useNavigate();
   const login = useLogin();
-  const [formData, setFormData] = useState<LoginCredentials>({
-    email: '',
-    password: '',
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     try {
-      await login.mutateAsync(formData);
-      navigate('/dashboard');
+      const session = await login.mutateAsync({
+        email,
+        password,
+        ...(audience === 'customer' && PORTAL_TENANT_SLUG
+          ? { tenantSlug: PORTAL_TENANT_SLUG }
+          : {}),
+      });
+      navigate(homePathForRoles(session.roles), { replace: true });
     } catch {
-      // Error is handled by the mutation
+      // Shown below from login.error
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          required
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="you@example.com"
-        />
-      </div>
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-foreground">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          required
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          placeholder="••••••••"
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={login.isPending}
-        className="flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-      >
-        {login.isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Signing in...
-          </>
-        ) : (
-          'Sign In'
+      <Field label="Email">
+        {(props) => (
+          <Input
+            {...props}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@company.com"
+          />
         )}
-      </button>
-      {login.error && <p className="text-sm text-destructive">{login.error.message}</p>}
+      </Field>
+      <Field label="Password">
+        {(props) => (
+          <Input
+            {...props}
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        )}
+      </Field>
+      {login.error && <ErrorNotice message={getErrorMessage(login.error)} />}
+      <Button type="submit" variant="primary" className="w-full" loading={login.isPending}>
+        Sign in
+      </Button>
     </form>
   );
 }

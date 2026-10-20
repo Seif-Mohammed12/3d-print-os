@@ -36,3 +36,12 @@ export interface AuthResponse {
     token_type: string;
   };
 }
+
+export interface CustomerRegisterData {
+  email: string;
+  password: string;
+  fullName: string;
+  tenantSlug: string;
+  phone?: string;
+  companyName?: string;
+}

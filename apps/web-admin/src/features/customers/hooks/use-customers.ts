@@ -1,54 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { customersApi } from '../api/customers-api';
-import type { CreateCustomerInput, UpdateCustomerInput, CustomerListParams } from '../model/customer-types';
+import type { CustomerInput } from '../model/customer-types';
 
-export function useCustomers(params?: CustomerListParams) {
-  return useQuery({
-    queryKey: ['customers', params],
-    queryFn: () => customersApi.list(params),
-  });
+export function useCustomers(params: { search?: string; page?: number } = {}) {
+  return useQuery({ queryKey: ['customers', params], queryFn: () => customersApi.list(params) });
 }
 
-export function useCustomer(id: string) {
+export function useCustomer(id: string | undefined) {
   return useQuery({
-    queryKey: ['customers', id],
-    queryFn: () => customersApi.get(id),
+    queryKey: ['customers', 'detail', id],
+    queryFn: () => customersApi.get(id as string),
     enabled: !!id,
   });
 }
 
-export function useCreateCustomer() {
+export function useSaveCustomer(id?: string) {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (data: CreateCustomerInput) => customersApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-    },
-  });
-}
-
-export function useUpdateCustomer() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateCustomerInput }) =>
-      customersApi.update(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-      queryClient.invalidateQueries({ queryKey: ['customers', id] });
-    },
-  });
-}
-
-export function useDeleteCustomer() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => customersApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-    },
+    mutationFn: (input: CustomerInput) =>
+      id ? customersApi.update(id, input) : customersApi.create(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['customers'] }),
   });
 }

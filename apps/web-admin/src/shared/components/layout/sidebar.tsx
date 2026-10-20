@@ -1,120 +1,96 @@
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
-  Settings,
-  Users,
+  BarChart3,
+  Boxes,
+  FileText,
+  LayoutDashboard,
+  ListOrdered,
   Package,
   Printer,
-  DollarSign,
-  BarChart3,
-  Brain,
-  Factory,
-  Building2,
-  Cog,
+  Receipt,
+  Settings,
+  Users,
+  type LucideIcon,
 } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
+import { useAuthStore } from '../../stores/auth-store';
 
-interface NavItem {
-  label: string;
-  href: string;
-  icon: React.ElementType;
-}
+type NavItem = { label: string; to: string; icon: LucideIcon; end?: boolean };
 
-interface NavSection {
-  label: string;
-  icon: React.ElementType;
-  items: NavItem[];
-}
-
-const navSections: NavSection[] = [
+const sections: Array<{ label?: string; items: NavItem[] }> = [
   {
-    label: 'Intelligence Hub',
-    icon: Brain,
     items: [
-      { label: 'Model Analysis', href: '/app/intelligence/model-analysis', icon: Brain },
-      { label: 'Quote Generator', href: '/app/intelligence/quote-generator', icon: DollarSign },
+      { label: 'Dashboard', to: '/app', icon: LayoutDashboard, end: true },
+      { label: 'Quotes', to: '/app/quotes', icon: FileText },
+      { label: 'Orders', to: '/app/orders', icon: Receipt },
+      { label: 'Customers', to: '/app/customers', icon: Users },
     ],
   },
   {
     label: 'Production',
-    icon: Factory,
     items: [
-      { label: 'Print Queue', href: '/app/production/queue', icon: Package },
-      { label: 'Printer Fleet', href: '/app/production/fleet', icon: Printer },
-      { label: 'Material Inventory', href: '/app/production/materials', icon: Package },
-      { label: 'Job History', href: '/app/production/history', icon: BarChart3 },
+      { label: 'Queue', to: '/app/production/queue', icon: ListOrdered },
+      { label: 'Printers', to: '/app/printers', icon: Printer },
+      { label: 'Materials', to: '/app/materials', icon: Boxes },
     ],
   },
   {
     label: 'Business',
-    icon: Building2,
     items: [
-      { label: 'Quotes', href: '/app/business/quotes', icon: DollarSign },
-      { label: 'Orders', href: '/app/business/orders', icon: Package },
-      { label: 'Customers', href: '/app/business/customers', icon: Users },
-      { label: 'Revenue', href: '/app/business/revenue', icon: BarChart3 },
-    ],
-  },
-  {
-    label: 'Configuration',
-    icon: Cog,
-    items: [
-      { label: 'Printers', href: '/app/config/printers', icon: Printer },
-      { label: 'Materials', href: '/app/config/materials', icon: Package },
-      { label: 'Pricing Rules', href: '/app/config/pricing', icon: DollarSign },
-      { label: 'Settings', href: '/app/config/settings', icon: Settings },
+      { label: 'Reports', to: '/app/reports', icon: BarChart3 },
+      { label: 'Pricing', to: '/app/settings/pricing', icon: Package },
+      { label: 'Settings', to: '/app/settings/shop', icon: Settings },
     ],
   },
 ];
 
-export function Sidebar() {
-  const location = useLocation();
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const tenant = useAuthStore((state) => state.tenant);
 
   return (
-    <aside className="w-64 border-r border-border bg-card">
-      <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center border-b border-border px-6">
-          <h1 className="text-xl font-bold text-foreground">3D Print OS</h1>
+    <div className="flex h-full flex-col bg-sidebar">
+      <div className="flex h-14 items-center gap-2.5 px-5">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-semibold text-primary-foreground">
+          3D
         </div>
-        <nav className="flex-1 space-y-6 p-4 overflow-y-auto">
-          {navSections.map((section) => {
-            const SectionIcon = section.icon;
-
-            return (
-              <div key={section.label}>
-                <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  <SectionIcon className="h-4 w-4" />
-                  {section.label}
-                </div>
-                <div className="space-y-1">
-                  {section.items.map((item) => {
-                    const ItemIcon = item.icon;
-                    const isActive =
-                      location.pathname === item.href ||
-                      location.pathname.startsWith(`${item.href}/`);
-
-                    return (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        className={cn(
-                          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                          isActive
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-                        )}
-                      >
-                        <ItemIcon className="h-4 w-4" />
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </nav>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">Print OS</p>
+          {tenant?.name && <p className="truncate text-xs text-muted-foreground">{tenant.name}</p>}
+        </div>
       </div>
-    </aside>
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 pb-4 pt-2" aria-label="Main">
+        {sections.map((section, index) => (
+          <div key={section.label ?? index}>
+            {section.label && (
+              <p className="px-2.5 pb-1.5 text-xs font-medium text-muted-foreground">
+                {section.label}
+              </p>
+            )}
+            <div className="space-y-0.5">
+              {section.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={onNavigate}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors',
+                      isActive
+                        ? 'bg-accent text-accent-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                    )
+                  }
+                >
+                  <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+    </div>
   );
 }

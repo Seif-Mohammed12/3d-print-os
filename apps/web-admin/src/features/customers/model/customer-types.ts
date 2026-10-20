@@ -1,41 +1,31 @@
-export interface Customer {
+export type CustomerType = 'individual' | 'business';
+export type CustomerStatus = 'active' | 'inactive' | 'blocked';
+
+export type Customer = {
   id: string;
-  tenant_id: string;
-  email: string;
-  full_name: string;
-  phone?: string;
-  company?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    state?: string;
-    postal_code?: string;
-    country?: string;
-  };
-  notes?: string;
+  shop_id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  country: string | null;
+  customer_type: CustomerType;
+  business_name: string | null;
+  status: CustomerStatus;
+  notes: string | null;
   created_at: string;
-  updated_at: string;
-}
+};
 
-export interface CreateCustomerInput {
-  email: string;
-  full_name: string;
+/** The customers API takes snake_case input. */
+export type CustomerInput = {
+  shop_id?: string;
+  name?: string;
+  email?: string;
   phone?: string;
-  company?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    state?: string;
-    postal_code?: string;
-    country?: string;
-  };
+  city?: string;
+  country?: string;
+  customer_type?: CustomerType;
+  business_name?: string;
+  status?: CustomerStatus;
   notes?: string;
-}
-
-export type UpdateCustomerInput = Partial<CreateCustomerInput>;
-
-export interface CustomerListParams {
-  page?: number;
-  per_page?: number;
-  search?: string;
-}
+};

@@ -6,8 +6,9 @@ import {
   type ModelUploadService,
 } from '@3d-print-os/geometry';
 
-import { CurrentAuth, RequirePermissions } from '../identity/auth.decorators';
+import { CurrentAuth, CustomerAccess, RequirePermissions } from '../identity/auth.decorators';
 import type { RequestAuthContext } from '../identity/auth.types';
+import { isCustomerOnly } from '../identity/customer-boundary.guard';
 import { AppError } from '../shared/errors/app.error';
 import { CompleteModelUploadDto, StartModelUploadDto } from './dto/models.dto';
 import { MODEL_UPLOAD_SERVICE } from './geometry.tokens';
@@ -45,6 +46,7 @@ export class ModelsController {
 
   @Post('uploads')
   @RequirePermissions('models:write')
+  @CustomerAccess()
   async startUpload(@CurrentAuth() auth: RequestAuthContext, @Body() body: StartModelUploadDto) {
     try {
       const result = await this.uploads.startUpload({
@@ -75,12 +77,24 @@ export class ModelsController {
 
   @Post(':id/complete')
   @RequirePermissions('models:write')
+  @CustomerAccess()
   async complete(
     @CurrentAuth() auth: RequestAuthContext,
     @Param('id') modelId: string,
     @Body() body: CompleteModelUploadDto,
   ) {
     try {
+      // Customers share the shop's tenant, so they may only finish their own uploads.
+      if (isCustomerOnly(auth)) {
+        const existing = await this.uploads.getModel(auth.tenantId, modelId);
+        if (existing.uploadedByUserId !== auth.userId) {
+          throw new AppError({
+            code: 'model.not_found',
+            message: 'Model not found',
+            statusCode: 404,
+          });
+        }
+      }
       const model = await this.uploads.completeUpload(auth.tenantId, modelId, body.checksumSha256);
       return { data: serializeModel(model) };
     } catch (error) {

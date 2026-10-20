@@ -18,7 +18,7 @@ export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
   addToast: (message, type = 'info') =>
     set((state) => ({
-      toasts: [...state.toasts, { id: Date.now().toString(), message, type }],
+      toasts: [...state.toasts, { id: crypto.randomUUID(), message, type }],
     })),
   removeToast: (id) =>
     set((state) => ({
@@ -31,7 +31,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-50 space-y-2">
+      <div className="fixed bottom-4 end-4 z-[60] space-y-2">
         {toasts.map((toast) => (
           <Toast
             key={toast.id}

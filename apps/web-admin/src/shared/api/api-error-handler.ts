@@ -29,7 +29,9 @@ export function handleApiError(error: unknown): never {
 
     // Network error or no error response
     throw new ApiError(
-      error.message || 'Network error',
+      error.response
+        ? `The server responded with an error (${error.response.status}).`
+        : "Can't reach the server. Check your connection and try again.",
       'network_error',
       error.response?.status || 0,
     );

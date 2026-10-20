@@ -1,166 +1,131 @@
-import { useState, useEffect } from 'react';
-import { Package, Clock, CheckCircle, XCircle, RefreshCw, Eye } from 'lucide-react';
-import { apiClient } from '../../shared/api/api-client';
+import { Package } from 'lucide-react';
 
-interface Order {
-  id: string;
-  status: 'pending' | 'processing' | 'printing' | 'completed' | 'cancelled';
-  quoteId: string;
-  estimatedPrice?: number;
-  actualPrice?: number;
-  createdAt: string;
-  completedAt?: string;
-  fileName?: string;
-}
+import type { PortalOrder } from '../../features/portal/api/portal-api';
+import { usePortalOrders } from '../../features/portal/hooks/use-portal';
+import { getErrorMessage } from '../../shared/api/api-error-handler';
+import { formatDate, formatMoney } from '../../shared/lib/format';
+import { cn } from '../../shared/lib/utils';
+import { Badge, type BadgeTone, Card, EmptyState, ErrorNotice, Skeleton } from '../../shared/ui';
+
+const STATUS: Record<PortalOrder['status'], { label: string; tone: BadgeTone }> = {
+  received: { label: 'Received', tone: 'neutral' },
+  printing: { label: 'Printing', tone: 'accent' },
+  ready: { label: 'Ready', tone: 'success' },
+  shipped: { label: 'Shipped', tone: 'accent' },
+  delivered: { label: 'Delivered', tone: 'success' },
+  cancelled: { label: 'Cancelled', tone: 'danger' },
+};
+
+const STAGES: Array<PortalOrder['status']> = ['received', 'printing', 'ready', 'delivered'];
+
+/** Shipped sits between ready and delivered on the progress bar. */
+const stageIndex = (status: PortalOrder['status']) =>
+  status === 'shipped' ? STAGES.indexOf('ready') : STAGES.indexOf(status);
 
 export function PortalOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchOrders = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await apiClient.instance.get('/portal/orders');
-      setOrders(response.data);
-    } catch (err) {
-      console.error('Failed to fetch orders:', err);
-      setError('Failed to load orders. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'processing':
-        return <Clock className="h-4 w-4 text-blue-600" />;
-      case 'printing':
-        return <Package className="h-4 w-4 text-purple-600" />;
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'cancelled':
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return 'Invalid Date';
-      }
-      return date.toLocaleDateString();
-    } catch {
-      return 'Invalid Date';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'Pending';
-      case 'processing':
-        return 'Processing';
-      case 'printing':
-        return 'Printing';
-      case 'completed':
-        return 'Completed';
-      case 'cancelled':
-        return 'Cancelled';
-      default:
-        return status;
-    }
-  };
+  const orders = usePortalOrders();
+  const rows = orders.data ?? [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">My Orders</h1>
-          <p className="text-muted-foreground">View and track your print orders</p>
-        </div>
-        <button
-          onClick={fetchOrders}
-          disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-accent transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+    <>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Your orders</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Follow your parts from the printer to your door.
+        </p>
       </div>
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
+      {orders.error && (
+        <ErrorNotice
+          className="mb-4"
+          message={getErrorMessage(orders.error)}
+          onRetry={() => orders.refetch()}
+        />
       )}
 
-      {loading ? (
-        <div className="rounded-lg border border-border bg-card p-12 text-center">
-          <RefreshCw className="h-12 w-12 mx-auto text-muted-foreground mb-4 animate-spin" />
-          <p className="text-muted-foreground">Loading orders...</p>
-        </div>
-      ) : orders.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-12 text-center">
-          <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">No orders yet</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Accepted quotes will appear here as orders
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <div key={order.id} className="rounded-lg border border-border bg-card p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <Package className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Order #{order.id}</p>
-                    <p className="text-xs text-muted-foreground">Quote #{order.quoteId}</p>
-                    <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
-                    {order.fileName && (
-                      <p className="text-xs text-muted-foreground">{order.fileName}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {getStatusIcon(order.status)}
-                  <span className="text-sm font-medium text-foreground">
-                    {getStatusText(order.status)}
-                  </span>
-                </div>
-              </div>
-
-              {order.estimatedPrice && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground">Price</p>
-                  <p className="text-lg font-bold text-foreground">
-                    {order.actualPrice ? order.actualPrice : order.estimatedPrice} EGP
-                  </p>
-                </div>
-              )}
-
-              {order.completedAt && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground">Completed</p>
-                  <p className="text-sm text-foreground">{formatDate(order.completedAt)}</p>
-                </div>
-              )}
-            </div>
+      {orders.isLoading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 2 }, (_, i) => (
+            <Skeleton key={i} className="h-28 w-full" />
           ))}
         </div>
+      ) : orders.error ? null : rows.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={Package}
+            title="No orders yet"
+            description="Orders you place from a quote show up here while we print them."
+          />
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {rows.map((order) => {
+            const status = STATUS[order.status];
+            const stage = stageIndex(order.status);
+            return (
+              <Card key={order.id} className="p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate font-medium text-foreground">
+                        {order.model_filename ?? `Order ${order.order_number}`}
+                      </p>
+                      <Badge tone={status.tone}>{status.label}</Badge>
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      <span className="font-mono">{order.order_number}</span>
+                      {order.quantity
+                        ? ` · ${order.quantity} ${order.quantity === 1 ? 'part' : 'parts'}`
+                        : ''}
+                      {` · ordered ${formatDate(order.created_at)}`}
+                    </p>
+                    {order.tracking_number && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Tracking{' '}
+                        <span className="font-mono text-foreground">{order.tracking_number}</span>
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-end">
+                    <p className="tabular text-lg font-semibold text-foreground">
+                      {formatMoney(order.total_cents, order.currency)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {order.delivered_at
+                        ? `Delivered ${formatDate(order.delivered_at)}`
+                        : order.completed_at
+                          ? `Finished ${formatDate(order.completed_at)}`
+                          : ''}
+                    </p>
+                  </div>
+                </div>
+                {order.status !== 'cancelled' && (
+                  <ol className="mt-4 grid grid-cols-4 gap-2" aria-label="Progress">
+                    {STAGES.map((s, index) => (
+                      <li key={s}>
+                        <div
+                          className={cn(
+                            'h-1.5 rounded-full',
+                            index <= stage ? 'bg-primary' : 'bg-muted',
+                          )}
+                        />
+                        <p
+                          className={cn(
+                            'mt-1.5 text-xs',
+                            index <= stage ? 'text-foreground' : 'text-muted-foreground',
+                          )}
+                        >
+                          {STATUS[s].label}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </Card>
+            );
+          })}
+        </div>
       )}
-    </div>
+    </>
   );
 }

@@ -16,7 +16,7 @@ import { assessSliceRisk } from '../domain/slice-risk';
 import { buildSliceSettings, type SliceProfileInput } from '../domain/slice-settings';
 import type { CreateQuoteData, Quote, QuoteListParams } from '../repositories/quote.repository';
 import { QuoteRepository } from '../repositories/quote.repository';
-import { SlicerClientService } from './slicer-client.service';
+import { type SliceRequest, type SliceResult, SlicerClientService } from './slicer-client.service';
 
 const EDITABLE_STATUSES: ReadonlyArray<Quote['status']> = ['draft', 'pending'];
 const MODEL_URL_TTL_SECONDS = 15 * 60;
@@ -24,6 +24,26 @@ const DEFAULT_JOB_OVERHEAD_MINUTES = 10;
 
 function unprocessable(code: string, message: string): AppError {
   return new AppError({ code, message, statusCode: 422 });
+}
+
+export type AnalyzeQuoteOptions = {
+  /** Price this many copies (stored on the quote). Defaults to the quote's quantity. */
+  quantity?: number;
+  /**
+   * Reuse the stored slice instead of slicing again. Only honoured while the stored price is
+   * still valid (estimate_source = 'slicer'): changing any slicing input clears it.
+   */
+  reuseSlice?: boolean;
+};
+
+type StoredSlice = SliceResult & { settings: unknown };
+
+function storedSlice(quote: Quote): StoredSlice | null {
+  const stored = quote.slice_result as Partial<StoredSlice> | null;
+  if (quote.estimate_source !== 'slicer' || !stored?.estimate || !stored.orientation) {
+    return null;
+  }
+  return stored as StoredSlice;
 }
 
 function modelFileType(filename: string): 'stl' | 'obj' | '3mf' {
@@ -56,8 +76,14 @@ export class QuoteService {
    * Slice the model with the quote's printer and material, then price it from the shop's
    * pricing rule. Every number on the quote comes from the slicer's G-code statistics.
    */
-  async analyzeQuote(quoteId: string, tenantId: string, userId: string | null): Promise<Quote> {
+  async analyzeQuote(
+    quoteId: string,
+    tenantId: string,
+    userId: string | null,
+    options: AnalyzeQuoteOptions = {},
+  ): Promise<Quote> {
     const quote = await this.findById(quoteId, tenantId);
+    const quantity = options.quantity ?? quote.quantity ?? 1;
     if (!EDITABLE_STATUSES.includes(quote.status)) {
       throw new AppError({
         code: 'quote.not_editable',
@@ -119,23 +145,12 @@ export class QuoteService {
       throw unprocessable('quote.printer_not_configured', (error as Error).message);
     }
 
-    const model = await this.getUploadedModel(tenantId, quote.model_id);
-    const downloadUrl = await this.storage.createSignedDownloadUrl({
-      bucket: model.storageBucket,
-      key: model.storageKey,
-      expiresInSeconds: MODEL_URL_TTL_SECONDS,
-    });
-
     const costPerGram =
       Number(rule.material_cost_per_gram) || Number(material.price_per_gram_cents);
-    const slice = await this.slicer.slice({
-      tenantId,
-      modelFileId: model.id,
-      downloadUrl,
-      fileType: modelFileType(model.originalFilename),
-      settings: built.settings,
-      orientation: quote.orientation_mode,
-      selection: {
+    const reused = options.reuseSlice ? storedSlice(quote) : null;
+    const slice =
+      reused ??
+      (await this.sliceModel(tenantId, quote, built.settings, {
         cost_per_hour:
           Number(rule.machine_time_cost_per_minute) * 60 +
           Number(rule.electricity_cost_per_hour) +
@@ -143,8 +158,7 @@ export class QuoteService {
         cost_per_gram: costPerGram,
         // Support costs its filament plus removal labour and surface cleanup.
         support_penalty_per_gram: costPerGram,
-      },
-    });
+      }));
 
     const estimate = slice.estimate;
     // Correct the slicer's numbers by how this printer has really performed. slice_result
@@ -158,7 +172,7 @@ export class QuoteService {
       printTimeSeconds: calibrated.printTimeSeconds,
       filamentGrams: calibrated.filamentGrams,
       jobOverheadMinutes,
-      quantity: 1,
+      quantity,
       materialPricePerGram: material.price_per_gram_cents,
       rule,
       taxRateBps: pricingContext.tax_rate_bps,
@@ -197,7 +211,9 @@ export class QuoteService {
       total_cents: cost.total,
       currency: cost.currency,
       estimate_source: 'slicer',
-      slice_result: { ...slice, settings: built.settings },
+      quantity,
+      // A reused slice keeps the settings it was actually sliced with.
+      slice_result: reused ?? { ...slice, settings: built.settings },
       pricing_breakdown: {
         ...cost,
         pricing_rule_id: rule.id,
@@ -212,6 +228,29 @@ export class QuoteService {
       throw new NotFoundException(`Quote with ID ${quoteId} not found`);
     }
     return updated;
+  }
+
+  private async sliceModel(
+    tenantId: string,
+    quote: Quote,
+    settings: SliceRequest['settings'],
+    selection: SliceRequest['selection'],
+  ): Promise<SliceResult> {
+    const model = await this.getUploadedModel(tenantId, quote.model_id);
+    const downloadUrl = await this.storage.createSignedDownloadUrl({
+      bucket: model.storageBucket,
+      key: model.storageKey,
+      expiresInSeconds: MODEL_URL_TTL_SECONDS,
+    });
+    return this.slicer.slice({
+      tenantId,
+      modelFileId: model.id,
+      downloadUrl,
+      fileType: modelFileType(model.originalFilename),
+      settings,
+      orientation: quote.orientation_mode,
+      selection,
+    });
   }
 
   private async getUploadedModel(tenantId: string, modelId: string) {
@@ -391,7 +430,7 @@ export class QuoteService {
       shipped_at: null,
       delivered_at: null,
       internal_notes: null,
-      customer_notes: quote.internal_notes ?? null,
+      customer_notes: quote.customer_notes ?? null,
       cancellation_reason: null,
       created_by: userId,
       updated_by: userId,

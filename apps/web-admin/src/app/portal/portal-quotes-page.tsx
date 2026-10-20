@@ -1,162 +1,153 @@
-import { useState, useEffect } from 'react';
-import { FileText, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import { apiClient } from '../../shared/api/api-client';
+import { Link } from 'react-router-dom';
+import { FileText } from 'lucide-react';
 
-interface Quote {
-  id: string;
-  status: 'pending' | 'sent' | 'accepted' | 'rejected' | 'expired';
-  estimatedPriceMin?: number;
-  estimatedPriceMax?: number;
-  createdAt: string;
-  notes?: string;
-  fileName?: string;
+import type { PortalQuote } from '../../features/portal/api/portal-api';
+import { useAcceptQuote, usePortalQuotes } from '../../features/portal/hooks/use-portal';
+import { getErrorMessage } from '../../shared/api/api-error-handler';
+import {
+  formatDate,
+  formatDateTime,
+  formatDuration,
+  formatGrams,
+  formatMoney,
+} from '../../shared/lib/format';
+import {
+  Badge,
+  type BadgeTone,
+  Button,
+  Card,
+  EmptyState,
+  ErrorNotice,
+  Skeleton,
+} from '../../shared/ui';
+
+const STATUS: Record<PortalQuote['status'], { label: string; tone: BadgeTone }> = {
+  unpriced: { label: 'No price', tone: 'neutral' },
+  priced: { label: 'Price ready', tone: 'accent' },
+  expired: { label: 'Expired', tone: 'warning' },
+  ordered: { label: 'Ordered', tone: 'success' },
+  declined: { label: 'Declined', tone: 'danger' },
+};
+
+const QUALITY: Record<NonNullable<PortalQuote['quality']>, string> = {
+  draft: 'Draft',
+  standard: 'Standard',
+  fine: 'Fine',
+};
+
+function summary(quote: PortalQuote): string {
+  const parts = [
+    quote.material ? [quote.material.name, quote.material.color].filter(Boolean).join(' · ') : null,
+    quote.quality ? `${QUALITY[quote.quality]} quality` : null,
+    `${quote.quantity} ${quote.quantity === 1 ? 'part' : 'parts'}`,
+  ];
+  return parts.filter(Boolean).join(' · ');
 }
 
 export function PortalQuotesPage() {
-  const [quotes, setQuotes] = useState<Quote[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchQuotes = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await apiClient.instance.get('/portal/quotes');
-      setQuotes(response.data);
-    } catch (err) {
-      console.error('Failed to fetch quotes:', err);
-      setError('Failed to load quotes. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchQuotes();
-  }, []);
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'sent':
-        return <CheckCircle className="h-4 w-4 text-blue-600" />;
-      case 'accepted':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'rejected':
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return 'Invalid Date';
-      }
-      return date.toLocaleDateString();
-    } catch {
-      return 'Invalid Date';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'Pending Review';
-      case 'sent':
-        return 'Quote Sent';
-      case 'accepted':
-        return 'Accepted';
-      case 'rejected':
-        return 'Rejected';
-      case 'expired':
-        return 'Expired';
-      default:
-        return status;
-    }
-  };
+  const quotes = usePortalQuotes();
+  const accept = useAcceptQuote();
+  const rows = quotes.data ?? [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">My Quotes</h1>
-          <p className="text-muted-foreground">View and manage your quote requests</p>
-        </div>
-        <button
-          onClick={fetchQuotes}
-          disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-accent transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
-      </div>
-
-      {error && (
-        <div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="rounded-lg border border-border bg-card p-12 text-center">
-          <RefreshCw className="h-12 w-12 mx-auto text-muted-foreground mb-4 animate-spin" />
-          <p className="text-muted-foreground">Loading quotes...</p>
-        </div>
-      ) : quotes.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-12 text-center">
-          <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">No quotes yet</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Upload a model to request your first quote
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Your quotes</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Prices for the parts you've uploaded.
           </p>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {quotes.map((quote) => (
-            <div key={quote.id} className="rounded-lg border border-border bg-card p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Quote #{quote.id}</p>
-                    <p className="text-xs text-muted-foreground">{formatDate(quote.createdAt)}</p>
-                    {quote.fileName && (
-                      <p className="text-xs text-muted-foreground">{quote.fileName}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {getStatusIcon(quote.status)}
-                  <span className="text-sm font-medium text-foreground">
-                    {getStatusText(quote.status)}
-                  </span>
-                </div>
-              </div>
+        <Link to="/portal/upload">
+          <Button variant="primary">Get a quote</Button>
+        </Link>
+      </div>
 
-              {quote.estimatedPriceMin && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground">Estimated Price Range</p>
-                  <p className="text-lg font-bold text-foreground">
-                    {quote.estimatedPriceMin} - {quote.estimatedPriceMax} EGP
-                  </p>
-                </div>
-              )}
+      {quotes.error && (
+        <ErrorNotice
+          className="mb-4"
+          message={getErrorMessage(quotes.error)}
+          onRetry={() => quotes.refetch()}
+        />
+      )}
+      {accept.error && <ErrorNotice className="mb-4" message={getErrorMessage(accept.error)} />}
 
-              {quote.notes && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground">Notes</p>
-                  <p className="text-sm text-foreground">{quote.notes}</p>
-                </div>
-              )}
-            </div>
+      {quotes.isLoading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }, (_, i) => (
+            <Skeleton key={i} className="h-20 w-full" />
           ))}
         </div>
+      ) : quotes.error ? null : rows.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={FileText}
+            title="No quotes yet"
+            description="Upload a model to get an instant price."
+            action={
+              <Link to="/portal/upload">
+                <Button variant="primary">Get a quote</Button>
+              </Link>
+            }
+          />
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {rows.map((quote) => {
+            const status = STATUS[quote.status];
+            const accepting = accept.isPending && accept.variables?.id === quote.id;
+            return (
+              <Card
+                key={quote.id}
+                className="flex flex-wrap items-center justify-between gap-4 p-5"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate font-medium text-foreground">
+                      {quote.model_filename ?? quote.quote_number}
+                    </p>
+                    <Badge tone={status.tone}>{status.label}</Badge>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">{summary(quote)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {quote.status === 'ordered' && quote.order
+                      ? `Order ${quote.order.order_number}`
+                      : quote.status === 'priced' && quote.expires_at
+                        ? `Valid until ${formatDateTime(quote.expires_at)}`
+                        : `Quoted ${formatDate(quote.created_at)}`}
+                    {quote.print_time_minutes !== null &&
+                      ` · ${formatDuration(quote.print_time_minutes)} and ${formatGrams(quote.weight_grams)} per part`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <p className="tabular text-lg font-semibold text-foreground">
+                    {quote.total_cents !== null
+                      ? formatMoney(quote.total_cents, quote.currency)
+                      : '—'}
+                  </p>
+                  {quote.status === 'priced' && quote.total_cents !== null ? (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      loading={accepting}
+                      disabled={accept.isPending}
+                      onClick={() =>
+                        accept.mutate({ id: quote.id, expectedTotalCents: quote.total_cents ?? 0 })
+                      }
+                    >
+                      Place order
+                    </Button>
+                  ) : quote.status === 'ordered' ? (
+                    <Link to="/portal/orders">
+                      <Button size="sm">Track order</Button>
+                    </Link>
+                  ) : null}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
       )}
-    </div>
+    </>
   );
 }

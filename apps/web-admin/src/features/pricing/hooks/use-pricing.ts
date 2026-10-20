@@ -1,54 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { pricingApi } from '../api/pricing-api';
-import type { CreatePricingRuleInput, UpdatePricingRuleInput, PricingRuleListParams } from '../model/pricing-types';
+import type { PricingRuleInput } from '../model/pricing-types';
 
-export function usePricingRules(params?: PricingRuleListParams) {
-  return useQuery({
-    queryKey: ['pricing', 'rules', params],
-    queryFn: () => pricingApi.list(params),
-  });
+export function usePricingRules() {
+  return useQuery({ queryKey: ['pricing-rules'], queryFn: pricingApi.list });
 }
 
-export function usePricingRule(id: string) {
-  return useQuery({
-    queryKey: ['pricing', 'rules', id],
-    queryFn: () => pricingApi.get(id),
-    enabled: !!id,
-  });
-}
-
-export function useCreatePricingRule() {
+export function useSavePricingRule(id?: string) {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (data: CreatePricingRuleInput) => pricingApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pricing', 'rules'] });
-    },
-  });
-}
-
-export function useUpdatePricingRule() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdatePricingRuleInput }) =>
-      pricingApi.update(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['pricing', 'rules'] });
-      queryClient.invalidateQueries({ queryKey: ['pricing', 'rules', id] });
-    },
-  });
-}
-
-export function useDeletePricingRule() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => pricingApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pricing', 'rules'] });
-    },
+    mutationFn: (input: PricingRuleInput) =>
+      id ? pricingApi.update(id, input) : pricingApi.create(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['pricing-rules'] }),
   });
 }

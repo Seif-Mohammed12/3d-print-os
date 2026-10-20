@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 
 export enum CustomerType {
   INDIVIDUAL = 'individual',
@@ -12,6 +12,9 @@ export enum CustomerStatus {
 }
 
 export class CreateCustomerDto {
+  @IsUUID()
+  shop_id!: string;
+
   @IsString()
   @IsNotEmpty()
   name!: string;

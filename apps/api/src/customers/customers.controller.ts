@@ -14,7 +14,6 @@ export class CustomersController {
     const customer = await this.customerService.create({
       ...dto,
       tenantId: auth.tenantId,
-      shop_id: '', // TODO: Get from context or request
       created_by: auth.userId ?? null,
       updated_by: auth.userId ?? null,
     });

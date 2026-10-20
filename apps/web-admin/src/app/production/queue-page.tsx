@@ -1,132 +1,154 @@
-import { useState } from 'react';
-import { Package, Clock, Printer, Plus, MoreVertical } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ListOrdered } from 'lucide-react';
 
-interface PrintJob {
-  id: string;
-  name: string;
-  customer: string;
-  status: 'queued' | 'printing' | 'post-processing' | 'complete';
-  printer?: string;
-  estimatedTime: number;
-  progress?: number;
-}
+import { ProductionBadge } from '../../features/orders/components/order-badges';
+import { useOrders, useUpdateOrder } from '../../features/orders/hooks/use-orders';
+import type { Order, ProductionStatus } from '../../features/orders/model/order-types';
+import { usePrinters } from '../../features/printers/hooks/use-printers';
+import { getErrorMessage } from '../../shared/api/api-error-handler';
+import { useToast } from '../../shared/components/feedback/toast-provider';
+import { formatRelative } from '../../shared/lib/format';
+import { Button, Card, EmptyState, ErrorNotice, PageHeader, Skeleton } from '../../shared/ui';
 
-export function PrintQueuePage() {
-  const [jobs] = useState<PrintJob[]>([
-    { id: '1', name: 'Custom Bracket', customer: 'John Doe', status: 'queued', estimatedTime: 45 },
-    {
-      id: '2',
-      name: 'Phone Case',
-      customer: 'Jane Smith',
-      status: 'printing',
-      printer: 'Prusa i3 MK3',
-      estimatedTime: 30,
-      progress: 65,
-    },
-    {
-      id: '3',
-      name: 'Gear Assembly',
-      customer: 'Tech Corp',
-      status: 'post-processing',
-      printer: 'Ender 3 V2',
-      estimatedTime: 60,
-      progress: 100,
-    },
-    {
-      id: '4',
-      name: 'Prototype Part',
-      customer: 'Startup Inc',
-      status: 'complete',
-      printer: 'Bambu Lab X1',
-      estimatedTime: 90,
-      progress: 100,
-    },
-  ]);
+const COLUMNS: Array<{
+  title: string;
+  statuses: ProductionStatus[];
+  next?: { label: string; status: ProductionStatus };
+}> = [
+  { title: 'To schedule', statuses: ['not_started'], next: { label: 'Queue', status: 'queued' } },
+  { title: 'Queued', statuses: ['queued'], next: { label: 'Start print', status: 'in_progress' } },
+  {
+    title: 'Printing',
+    statuses: ['in_progress', 'paused'],
+    next: { label: 'Mark printed', status: 'completed' },
+  },
+  { title: 'Printed', statuses: ['completed', 'failed'] },
+];
 
-  const columns = [
-    { id: 'queued', title: 'Queued', icon: Package },
-    { id: 'printing', title: 'Printing', icon: Printer },
-    { id: 'post-processing', title: 'Post-Processing', icon: Clock },
-    { id: 'complete', title: 'Complete', icon: Package },
-  ] as const;
+const DONE = new Set(['delivered', 'cancelled']);
+
+export function QueuePage() {
+  const orders = useOrders({ per_page: 100 });
+  const printers = usePrinters();
+  const printerName = new Map((printers.data?.data ?? []).map((p) => [p.id, p.name]));
+  const active = (orders.data?.data ?? []).filter((order) => !DONE.has(order.status));
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Print Queue</h1>
-          <p className="text-muted-foreground">Manage your production queue and scheduling</p>
+    <>
+      <PageHeader
+        title="Production queue"
+        description="Every open order, from scheduling to the finished print."
+      />
+
+      {orders.error && (
+        <ErrorNotice
+          className="mb-4"
+          message={getErrorMessage(orders.error)}
+          onRetry={() => orders.refetch()}
+        />
+      )}
+
+      {orders.isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {COLUMNS.map((column) => (
+            <Skeleton key={column.title} className="h-64" />
+          ))}
         </div>
-        <button className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-4 w-4" />
-          Add Job
-        </button>
-      </div>
+      ) : orders.error ? null : active.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={ListOrdered}
+            title="Nothing in production"
+            description="Orders show up here as soon as a quote is converted."
+          />
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {COLUMNS.map((column) => {
+            const items = active.filter((order) =>
+              column.statuses.includes(order.production_status),
+            );
+            return (
+              <section key={column.title} className="rounded-xl bg-muted/50 p-3">
+                <h2 className="mb-3 flex items-center justify-between px-1 text-sm font-semibold text-foreground">
+                  {column.title}
+                  <span className="tabular rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                    {items.length}
+                  </span>
+                </h2>
+                <div className="space-y-2">
+                  {items.map((order) => (
+                    <QueueCard
+                      key={order.id}
+                      order={order}
+                      printer={order.printer_id ? printerName.get(order.printer_id) : undefined}
+                      next={column.next}
+                    />
+                  ))}
+                  {items.length === 0 && (
+                    <p className="px-1 py-4 text-center text-xs text-muted-foreground">Empty</p>
+                  )}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+}
 
-      <div className="grid gap-6 lg:grid-cols-4">
-        {columns.map((column) => {
-          const Icon = column.icon;
-          const columnJobs = jobs.filter((job) => job.status === column.id);
+function QueueCard({
+  order,
+  printer,
+  next,
+}: {
+  order: Order;
+  printer?: string;
+  next?: { label: string; status: ProductionStatus };
+}) {
+  const toast = useToast();
+  const update = useUpdateOrder(order.id);
 
-          return (
-            <div key={column.id} className="rounded-lg border border-border bg-card">
-              <div className="flex items-center gap-2 border-b border-border p-4">
-                <Icon className="h-5 w-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground">{column.title}</h3>
-                <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                  {columnJobs.length}
-                </span>
-              </div>
-              <div className="space-y-3 p-4">
-                {columnJobs.length === 0 ? (
-                  <p className="text-center text-sm text-muted-foreground py-8">No jobs</p>
-                ) : (
-                  columnJobs.map((job) => (
-                    <div
-                      key={job.id}
-                      className="rounded-lg border border-border bg-background p-4 hover:border-border/50 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-foreground text-sm">{job.name}</h4>
-                          <p className="text-xs text-muted-foreground">{job.customer}</p>
-                        </div>
-                        <button className="p-1 text-muted-foreground hover:text-foreground">
-                          <MoreVertical className="h-4 w-4" />
-                        </button>
-                      </div>
-                      {job.printer && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-                          <Printer className="h-3 w-3" />
-                          {job.printer}
-                        </div>
-                      )}
-                      {job.progress !== undefined && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-muted-foreground">Progress</span>
-                            <span className="font-medium text-foreground">{job.progress}%</span>
-                          </div>
-                          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                            <div
-                              className="h-full bg-primary transition-all"
-                              style={{ width: `${job.progress}%` }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
-                        <Clock className="h-3 w-3" />
-                        {job.estimatedTime} min
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          );
-        })}
+  const advance = async () => {
+    if (!next) {
+      return;
+    }
+    try {
+      await update.mutateAsync({
+        productionStatus: next.status,
+        ...(next.status === 'in_progress' ? { status: 'printing' as const } : {}),
+        ...(next.status === 'completed' ? { status: 'quality_check' as const } : {}),
+      });
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-3 shadow-card">
+      <div className="flex items-start justify-between gap-2">
+        <Link
+          to={`/app/orders/${order.id}`}
+          className="font-mono text-xs font-medium text-primary hover:underline"
+        >
+          {order.order_number}
+        </Link>
+        {(order.production_status === 'paused' || order.production_status === 'failed') && (
+          <ProductionBadge status={order.production_status} />
+        )}
       </div>
+      <p className="mt-1 truncate text-sm font-medium text-foreground">
+        {order.customer_name ?? 'Customer'}
+      </p>
+      <p className="mt-0.5 text-xs text-muted-foreground">
+        {printer ?? 'No printer yet'} · {formatRelative(order.created_at)}
+      </p>
+      {next && (
+        <Button size="sm" className="mt-3 w-full" onClick={advance} loading={update.isPending}>
+          {next.label}
+        </Button>
+      )}
     </div>
   );
 }

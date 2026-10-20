@@ -1,50 +1,45 @@
-import { X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { AlertCircle, AlertTriangle, CheckCircle2, Info, X } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
-export interface ToastProps {
-  message: string;
-  type?: 'success' | 'error' | 'warning' | 'info';
-  duration?: number;
-  onClose?: () => void;
-}
+type ToastType = 'success' | 'error' | 'warning' | 'info';
 
-const typeStyles: Record<string, string> = {
-  success: 'bg-green-500 text-white',
-  error: 'bg-red-500 text-white',
-  warning: 'bg-yellow-500 text-white',
-  info: 'bg-blue-500 text-white',
+const ICONS = { success: CheckCircle2, error: AlertCircle, warning: AlertTriangle, info: Info };
+const TONES: Record<ToastType, string> = {
+  success: 'text-success',
+  error: 'text-destructive',
+  warning: 'text-warning',
+  info: 'text-primary',
 };
 
-export function Toast({ message, type = 'info', duration = 5000, onClose }: ToastProps) {
-  const [isVisible, setIsVisible] = useState(true);
-
+export function Toast({
+  message,
+  type = 'info',
+  onClose,
+}: {
+  message: string;
+  type?: ToastType;
+  onClose: () => void;
+}) {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      onClose?.();
-    }, duration);
-
+    const timer = setTimeout(onClose, type === 'error' ? 8000 : 4000);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [onClose, type]);
 
-  if (!isVisible) return null;
-
+  const Icon = ICONS[type];
   return (
     <div
-      className={cn(
-        'fixed bottom-4 right-4 flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg transition-all',
-        typeStyles[type]
-      )}
+      role={type === 'error' ? 'alert' : 'status'}
+      className="flex w-[22rem] max-w-[calc(100vw-2rem)] items-start gap-3 rounded-lg border border-border bg-popover px-4 py-3 text-sm text-popover-foreground shadow-popover"
     >
-      <span className="text-sm font-medium">{message}</span>
+      <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', TONES[type])} aria-hidden="true" />
+      <p className="flex-1">{message}</p>
       <button
-        onClick={() => {
-          setIsVisible(false);
-          onClose?.();
-        }}
-        className="opacity-70 hover:opacity-100"
+        type="button"
+        onClick={onClose}
+        className="rounded-md p-0.5 text-muted-foreground hover:text-foreground"
+        aria-label="Dismiss"
       >
         <X className="h-4 w-4" />
       </button>

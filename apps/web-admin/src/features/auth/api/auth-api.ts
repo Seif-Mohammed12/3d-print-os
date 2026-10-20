@@ -1,11 +1,19 @@
 import { apiClient } from '../../../shared/api/api-client';
 import { handleApiError } from '../../../shared/api/api-error-handler';
-import type { AuthResponse, LoginCredentials, RegisterData } from '../model/auth-types';
+import type {
+  AuthResponse,
+  CustomerRegisterData,
+  LoginCredentials,
+  RegisterData,
+} from '../model/auth-types';
 
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await apiClient.instance.post<{ data: AuthResponse }>('/auth/login', credentials);
+      const response = await apiClient.instance.post<{ data: AuthResponse }>(
+        '/auth/login',
+        credentials,
+      );
       return response.data.data;
     } catch (error) {
       handleApiError(error);
@@ -14,7 +22,22 @@ export const authApi = {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await apiClient.instance.post<{ data: AuthResponse }>('/auth/register', data);
+      const response = await apiClient.instance.post<{ data: AuthResponse }>(
+        '/auth/register',
+        data,
+      );
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  async registerCustomer(data: CustomerRegisterData): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.instance.post<{ data: AuthResponse }>(
+        '/auth/register-customer',
+        data,
+      );
       return response.data.data;
     } catch (error) {
       handleApiError(error);
@@ -31,10 +54,9 @@ export const authApi = {
 
   async refresh(refreshToken: string): Promise<{ access_token: string; refresh_token: string }> {
     try {
-      const response = await apiClient.instance.post<{ data: { tokens: { access_token: string; refresh_token: string } } }>(
-        '/auth/refresh',
-        { refreshToken }
-      );
+      const response = await apiClient.instance.post<{
+        data: { tokens: { access_token: string; refresh_token: string } };
+      }>('/auth/refresh', { refreshToken });
       return response.data.data.tokens;
     } catch (error) {
       handleApiError(error);

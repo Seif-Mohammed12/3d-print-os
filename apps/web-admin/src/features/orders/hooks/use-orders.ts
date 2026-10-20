@@ -1,54 +1,55 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ordersApi } from '../api/orders-api';
-import type { CreateOrderInput, UpdateOrderInput, OrderListParams } from '../model/order-types';
+import type {
+  OrderListParams,
+  RecordPrintOutcomeInput,
+  UpdateOrderInput,
+} from '../model/order-types';
 
-export function useOrders(params?: OrderListParams) {
-  return useQuery({
-    queryKey: ['orders', params],
-    queryFn: () => ordersApi.list(params),
-  });
+export function useOrders(params: OrderListParams) {
+  return useQuery({ queryKey: ['orders', params], queryFn: () => ordersApi.list(params) });
 }
 
-export function useOrder(id: string) {
+export function useOrder(id: string | undefined) {
   return useQuery({
-    queryKey: ['orders', id],
-    queryFn: () => ordersApi.get(id),
+    queryKey: ['orders', 'detail', id],
+    queryFn: () => ordersApi.get(id as string),
     enabled: !!id,
   });
 }
 
-export function useCreateOrder() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CreateOrderInput) => ordersApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-    },
+export function useOrderHistory(id: string | undefined) {
+  return useQuery({
+    queryKey: ['orders', 'history', id],
+    queryFn: () => ordersApi.history(id as string),
+    enabled: !!id,
   });
 }
 
-export function useUpdateOrder() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateOrderInput }) =>
-      ordersApi.update(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-      queryClient.invalidateQueries({ queryKey: ['orders', id] });
-    },
+export function usePrintOutcome(id: string | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: ['orders', 'outcome', id],
+    queryFn: () => ordersApi.getOutcome(id as string),
+    enabled: !!id && enabled,
   });
 }
 
-export function useDeleteOrder() {
+export function useUpdateOrder(id: string) {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (id: string) => ordersApi.delete(id),
+    mutationFn: (input: UpdateOrderInput) => ordersApi.update(id, input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+  });
+}
+
+export function useRecordPrintOutcome(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: RecordPrintOutcomeInput) => ordersApi.recordOutcome(id, input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['orders', 'outcome', id] });
+      queryClient.invalidateQueries({ queryKey: ['calibration'] });
     },
   });
 }

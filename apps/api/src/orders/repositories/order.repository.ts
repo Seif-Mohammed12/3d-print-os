@@ -8,6 +8,8 @@ export interface Order {
   tenant_id: string;
   shop_id: string;
   customer_id: string;
+  /** Present on findById/list results only. */
+  customer_name?: string | null;
   quote_id: string;
   order_number: string;
   status: string;
@@ -165,7 +167,7 @@ export class OrderRepository {
   async findById(id: string, tenantId: string): Promise<Order | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<Order>(
-        'SELECT * FROM orders WHERE id = $1 AND tenant_id = $2',
+        `SELECT o.*, (SELECT c.name FROM customers c WHERE c.id = o.customer_id AND c.tenant_id = o.tenant_id) AS customer_name FROM orders o WHERE id = $1 AND tenant_id = $2`,
         [id, tenantId],
       );
       return queryResult.rows[0] ?? null;
@@ -250,7 +252,7 @@ export class OrderRepository {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const [dataResult, countResult] = await Promise.all([
         client.query<Order>(
-          `SELECT * FROM orders ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+          `SELECT o.*, (SELECT c.name FROM customers c WHERE c.id = o.customer_id AND c.tenant_id = o.tenant_id) AS customer_name FROM orders o ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
           [...values, perPage, offset],
         ),
         client.query<{ count: string }>(

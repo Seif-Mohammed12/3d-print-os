@@ -8,6 +8,7 @@ import { AuthService, IdentityRepository, MembersService } from '@3d-print-os/id
 import type { AppConfig } from '../config/configuration';
 import { APP_CONFIG, DATABASE_POOL } from '../config/tokens';
 import { AuthController } from './auth.controller';
+import { CustomerBoundaryGuard } from './customer-boundary.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtTokenIssuer } from './jwt-token.issuer';
 import { MembersController } from './members.controller';
@@ -39,6 +40,10 @@ import { AUTH_SERVICE, IDENTITY_REPOSITORY, MEMBERS_SERVICE } from './identity.t
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: CustomerBoundaryGuard,
     },
     {
       provide: APP_GUARD,

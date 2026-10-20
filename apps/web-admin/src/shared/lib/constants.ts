@@ -10,3 +10,14 @@ export const THEME = {
   LIGHT: 'light',
   DARK: 'dark',
 } as const;
+
+export const PORTAL_TENANT_SLUG = import.meta.env.VITE_PORTAL_TENANT_SLUG ?? '';
+
+export const STAFF_ROLES = ['owner', 'admin', 'employee'] as const;
+
+/** Where a signed-in user lands: staff go to the shop app, customers to the portal. */
+export function homePathForRoles(roles: readonly string[]): string {
+  return roles.some((role) => (STAFF_ROLES as readonly string[]).includes(role))
+    ? '/app'
+    : '/portal/upload';
+}
