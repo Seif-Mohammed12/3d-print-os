@@ -36,13 +36,22 @@ export class PricingService {
     return rule;
   }
 
+  async findApplicable(
+    tenantId: string,
+    scope: { shopId: string; materialId: string; printerId: string },
+  ): Promise<PricingRule | null> {
+    return this.repo.findApplicable(tenantId, scope);
+  }
+
   async list(params: PricingRuleListParams, tenantId: string) {
     return this.repo.list(params, tenantId);
   }
 
   async update(
     id: string,
-    data: Partial<Omit<PricingRule, 'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'deleted_at'>>,
+    data: Partial<
+      Omit<PricingRule, 'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'deleted_at'>
+    >,
     tenantId: string,
   ): Promise<PricingRule> {
     const updated = await this.repo.update(id, data, tenantId);

@@ -1,5 +1,7 @@
-import type { Pool, QueryResult } from 'pg';
+import type { Pool, PoolClient } from 'pg';
 import { withTenantSession } from '@3d-print-os/persistence';
+
+import { assertTenantReferences } from '../../shared/tenant-references';
 
 export interface Printer {
   id: string;
@@ -20,6 +22,11 @@ export interface Printer {
   max_speed_mm_per_min: number | null;
   typical_speed_mm_per_min: number | null;
   supported_materials: unknown[];
+  gcode_flavor: string;
+  max_acceleration_mm_s2: number | string | null;
+  max_feedrate_mm_s: number | string | null;
+  job_overhead_minutes: number;
+  slicer_overrides: Record<string, unknown>;
   status: string;
   location: string | null;
   notes: string | null;
@@ -52,6 +59,8 @@ export interface PrinterProfile {
   support_density_percentage: number | null;
   support_angle_degrees: number | null;
   post_process_steps: unknown[];
+  infill_pattern: string | null;
+  slicer_overrides: Record<string, unknown>;
   is_default: boolean;
   is_active: boolean;
   created_at: Date;
@@ -78,24 +87,85 @@ export interface PrinterListParams {
   perPage?: number;
 }
 
+const PROFILE_UPDATABLE_COLUMNS = [
+  'name',
+  'description',
+  'material_type',
+  'layer_height_mm',
+  'infill_percentage',
+  'wall_count',
+  'top_layers',
+  'bottom_layers',
+  'nozzle_temperature_celsius',
+  'bed_temperature_celsius',
+  'chamber_temperature_celsius',
+  'print_speed_mm_per_min',
+  'travel_speed_mm_per_min',
+  'retraction_distance_mm',
+  'retraction_speed_mm_per_min',
+  'support_enabled',
+  'support_type',
+  'support_density_percentage',
+  'support_angle_degrees',
+  'post_process_steps',
+  'infill_pattern',
+  'slicer_overrides',
+  'is_default',
+  'is_active',
+] as const satisfies ReadonlyArray<keyof PrinterProfile>;
+
+/**
+ * Profiles and capabilities have no tenant_id; they are scoped through their printer.
+ * `tenantParam` is the 1-based placeholder index holding the tenant id.
+ */
+function printerInTenant(tenantParam: number): string {
+  return `printer_id IN (SELECT id FROM printers WHERE tenant_id = $${tenantParam})`;
+}
+
+async function printerBelongsToTenant(
+  client: PoolClient,
+  printerId: string,
+  tenantId: string,
+): Promise<boolean> {
+  const result = await client.query('SELECT 1 FROM printers WHERE id = $1 AND tenant_id = $2', [
+    printerId,
+    tenantId,
+  ]);
+  return (result.rowCount ?? 0) > 0;
+}
+
+type SlicerMachineFields =
+  | 'gcode_flavor'
+  | 'max_acceleration_mm_s2'
+  | 'max_feedrate_mm_s'
+  | 'job_overhead_minutes'
+  | 'slicer_overrides';
+
 export class PrinterRepository {
   constructor(private pool: Pool) {}
 
   async create(
-    data: Omit<Printer, 'id' | 'created_at' | 'updated_at' | 'tenant_id'> & { tenantId: string },
+    data: Omit<Printer, 'id' | 'created_at' | 'updated_at' | 'tenant_id' | SlicerMachineFields> &
+      Partial<Pick<Printer, SlicerMachineFields>> & { tenantId: string },
   ): Promise<Printer> {
     const result = await withTenantSession(
       this.pool,
       { tenantId: data.tenantId },
       async (client) => {
+        await assertTenantReferences(client, data.tenantId, [
+          { table: 'shops', id: data.shop_id, field: 'shopId' },
+        ]);
         const insertResult = await client.query<Printer>(
           `INSERT INTO printers (
             tenant_id, shop_id, name, manufacturer, model, serial_number, technology,
             build_volume_x_mm, build_volume_y_mm, build_volume_z_mm,
             nozzle_diameter_mm, laser_wavelength_nm, layer_resolution_min_mm, layer_resolution_max_mm,
             max_speed_mm_per_min, typical_speed_mm_per_min, supported_materials,
-            status, location, notes, created_by, updated_by
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+            status, location, notes, created_by, updated_by,
+            gcode_flavor, max_acceleration_mm_s2, max_feedrate_mm_s, job_overhead_minutes,
+            slicer_overrides
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
+                    $19, $20, $21, $22, $23, $24, $25, $26, $27)
           RETURNING *`,
           [
             data.tenantId,
@@ -120,6 +190,11 @@ export class PrinterRepository {
             data.notes ?? null,
             data.created_by ?? null,
             data.updated_by ?? null,
+            data.gcode_flavor ?? 'klipper',
+            data.max_acceleration_mm_s2 ?? null,
+            data.max_feedrate_mm_s ?? null,
+            data.job_overhead_minutes ?? 10,
+            JSON.stringify(data.slicer_overrides ?? {}),
           ],
         );
 
@@ -136,7 +211,10 @@ export class PrinterRepository {
 
   async findById(id: string, tenantId: string): Promise<Printer | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const queryResult = await client.query<Printer>('SELECT * FROM printers WHERE id = $1', [id]);
+      const queryResult = await client.query<Printer>(
+        'SELECT * FROM printers WHERE id = $1 AND tenant_id = $2',
+        [id, tenantId],
+      );
       return queryResult.rows[0] ?? null;
     });
 
@@ -156,9 +234,9 @@ export class PrinterRepository {
     const perPage = params.perPage ?? 20;
     const offset = (page - 1) * perPage;
 
-    const conditions: string[] = [];
-    const values: unknown[] = [];
-    let paramIndex = 1;
+    const conditions: string[] = ['tenant_id = $1'];
+    const values: unknown[] = [tenantId];
+    let paramIndex = 2;
 
     if (params.shopId) {
       conditions.push(`shop_id = $${paramIndex}`);
@@ -186,7 +264,7 @@ export class PrinterRepository {
       paramIndex++;
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const [dataResult, countResult] = await Promise.all([
@@ -313,6 +391,31 @@ export class PrinterRepository {
         values.push(data.notes);
         paramIndex++;
       }
+      if (data.gcode_flavor !== undefined) {
+        updates.push(`gcode_flavor = $${paramIndex}`);
+        values.push(data.gcode_flavor);
+        paramIndex++;
+      }
+      if (data.max_acceleration_mm_s2 !== undefined) {
+        updates.push(`max_acceleration_mm_s2 = $${paramIndex}`);
+        values.push(data.max_acceleration_mm_s2);
+        paramIndex++;
+      }
+      if (data.max_feedrate_mm_s !== undefined) {
+        updates.push(`max_feedrate_mm_s = $${paramIndex}`);
+        values.push(data.max_feedrate_mm_s);
+        paramIndex++;
+      }
+      if (data.job_overhead_minutes !== undefined) {
+        updates.push(`job_overhead_minutes = $${paramIndex}`);
+        values.push(data.job_overhead_minutes);
+        paramIndex++;
+      }
+      if (data.slicer_overrides !== undefined) {
+        updates.push(`slicer_overrides = $${paramIndex}`);
+        values.push(JSON.stringify(data.slicer_overrides));
+        paramIndex++;
+      }
       if (data.updated_by !== undefined) {
         updates.push(`updated_by = $${paramIndex}`);
         values.push(data.updated_by);
@@ -326,8 +429,10 @@ export class PrinterRepository {
       updates.push(`updated_at = NOW()`);
 
       const updateResult = await client.query<Printer>(
-        `UPDATE printers SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE printers SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND tenant_id = $${paramIndex + 1}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -338,9 +443,10 @@ export class PrinterRepository {
 
   async delete(id: string, tenantId: string): Promise<boolean> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const deleteResult = await client.query('DELETE FROM printers WHERE id = $1 RETURNING id', [
-        id,
-      ]);
+      const deleteResult = await client.query(
+        'DELETE FROM printers WHERE id = $1 AND tenant_id = $2 RETURNING id',
+        [id, tenantId],
+      );
       return (deleteResult.rowCount ?? 0) > 0;
     });
 
@@ -350,18 +456,27 @@ export class PrinterRepository {
   // Profile methods
   async createProfile(
     printerId: string,
-    data: Omit<PrinterProfile, 'id' | 'printer_id' | 'created_at' | 'updated_at'>,
+    data: Omit<
+      PrinterProfile,
+      'id' | 'printer_id' | 'created_at' | 'updated_at' | 'infill_pattern' | 'slicer_overrides'
+    > &
+      Partial<Pick<PrinterProfile, 'infill_pattern' | 'slicer_overrides'>>,
     tenantId: string,
   ): Promise<PrinterProfile> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
+      if (!(await printerBelongsToTenant(client, printerId, tenantId))) {
+        return undefined;
+      }
       const insertResult = await client.query<PrinterProfile>(
         `INSERT INTO printer_profiles (
           printer_id, name, description, material_type, layer_height_mm, infill_percentage,
           wall_count, top_layers, bottom_layers, nozzle_temperature_celsius, bed_temperature_celsius,
           chamber_temperature_celsius, print_speed_mm_per_min, travel_speed_mm_per_min,
           retraction_distance_mm, retraction_speed_mm_per_min, support_enabled, support_type,
-          support_density_percentage, support_angle_degrees, post_process_steps, is_default, is_active
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+          support_density_percentage, support_angle_degrees, post_process_steps, is_default, is_active,
+          infill_pattern, slicer_overrides
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,
+                  $20, $21, $22, $23, $24, $25)
         RETURNING *`,
         [
           printerId,
@@ -387,6 +502,8 @@ export class PrinterRepository {
           JSON.stringify(data.post_process_steps ?? []),
           data.is_default ?? false,
           data.is_active ?? true,
+          data.infill_pattern ?? null,
+          JSON.stringify(data.slicer_overrides ?? {}),
         ],
       );
 
@@ -403,8 +520,10 @@ export class PrinterRepository {
   async getProfilesByPrinter(printerId: string, tenantId: string): Promise<PrinterProfile[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<PrinterProfile>(
-        'SELECT * FROM printer_profiles WHERE printer_id = $1 ORDER BY is_default DESC, name',
-        [printerId],
+        `SELECT * FROM printer_profiles
+         WHERE printer_id = $1 AND ${printerInTenant(2)}
+         ORDER BY is_default DESC, name`,
+        [printerId, tenantId],
       );
       return queryResult.rows;
     });
@@ -422,39 +541,17 @@ export class PrinterRepository {
       const values: unknown[] = [];
       let paramIndex = 1;
 
-      if (data.name !== undefined) {
-        updates.push(`name = $${paramIndex}`);
-        values.push(data.name);
-        paramIndex++;
-      }
-      if (data.description !== undefined) {
-        updates.push(`description = $${paramIndex}`);
-        values.push(data.description);
-        paramIndex++;
-      }
-      if (data.material_type !== undefined) {
-        updates.push(`material_type = $${paramIndex}`);
-        values.push(data.material_type);
-        paramIndex++;
-      }
-      if (data.layer_height_mm !== undefined) {
-        updates.push(`layer_height_mm = $${paramIndex}`);
-        values.push(data.layer_height_mm);
-        paramIndex++;
-      }
-      if (data.infill_percentage !== undefined) {
-        updates.push(`infill_percentage = $${paramIndex}`);
-        values.push(data.infill_percentage);
-        paramIndex++;
-      }
-      if (data.is_default !== undefined) {
-        updates.push(`is_default = $${paramIndex}`);
-        values.push(data.is_default);
-        paramIndex++;
-      }
-      if (data.is_active !== undefined) {
-        updates.push(`is_active = $${paramIndex}`);
-        values.push(data.is_active);
+      for (const column of PROFILE_UPDATABLE_COLUMNS) {
+        const value = data[column];
+        if (value === undefined) {
+          continue;
+        }
+        updates.push(`${column} = $${paramIndex}`);
+        values.push(
+          column === 'post_process_steps' || column === 'slicer_overrides'
+            ? JSON.stringify(value)
+            : value,
+        );
         paramIndex++;
       }
 
@@ -465,8 +562,10 @@ export class PrinterRepository {
       updates.push(`updated_at = NOW()`);
 
       const updateResult = await client.query<PrinterProfile>(
-        `UPDATE printer_profiles SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE printer_profiles SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND ${printerInTenant(paramIndex + 1)}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -478,8 +577,8 @@ export class PrinterRepository {
   async deleteProfile(id: string, tenantId: string): Promise<boolean> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const deleteResult = await client.query(
-        'DELETE FROM printer_profiles WHERE id = $1 RETURNING id',
-        [id],
+        `DELETE FROM printer_profiles WHERE id = $1 AND ${printerInTenant(2)} RETURNING id`,
+        [id, tenantId],
       );
       return Boolean(deleteResult.rowCount && deleteResult.rowCount > 0);
     });
@@ -494,6 +593,9 @@ export class PrinterRepository {
     tenantId: string,
   ): Promise<PrinterCapability> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
+      if (!(await printerBelongsToTenant(client, printerId, tenantId))) {
+        return undefined;
+      }
       const insertResult = await client.query<PrinterCapability>(
         `INSERT INTO printer_capabilities (printer_id, capability_type, capability_name, description, is_supported, specifications)
         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -523,8 +625,10 @@ export class PrinterRepository {
   ): Promise<PrinterCapability[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<PrinterCapability>(
-        'SELECT * FROM printer_capabilities WHERE printer_id = $1 ORDER BY capability_type',
-        [printerId],
+        `SELECT * FROM printer_capabilities
+         WHERE printer_id = $1 AND ${printerInTenant(2)}
+         ORDER BY capability_type`,
+        [printerId, tenantId],
       );
       return queryResult.rows;
     });
@@ -573,8 +677,10 @@ export class PrinterRepository {
       }
 
       const updateResult = await client.query<PrinterCapability>(
-        `UPDATE printer_capabilities SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE printer_capabilities SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND ${printerInTenant(paramIndex + 1)}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -586,8 +692,8 @@ export class PrinterRepository {
   async deleteCapability(id: string, tenantId: string): Promise<boolean> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const deleteResult = await client.query(
-        'DELETE FROM printer_capabilities WHERE id = $1 RETURNING id',
-        [id],
+        `DELETE FROM printer_capabilities WHERE id = $1 AND ${printerInTenant(2)} RETURNING id`,
+        [id, tenantId],
       );
       return Boolean(deleteResult.rowCount && deleteResult.rowCount > 0);
     });

@@ -37,5 +37,6 @@ import { ModelsController } from './models.controller';
         }),
     },
   ],
+  exports: [MODEL_UPLOAD_SERVICE, OBJECT_STORAGE],
 })
 export class GeometryModule {}

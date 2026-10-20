@@ -1,6 +1,8 @@
 import type { Pool } from 'pg';
 import { withTenantSession } from '@3d-print-os/persistence';
 
+import { assertTenantReferences } from '../../shared/tenant-references';
+
 export interface Customer {
   id: string;
   tenant_id: string;
@@ -59,6 +61,9 @@ export class CustomerRepository {
       this.pool,
       { tenantId: data.tenantId },
       async (client) => {
+        await assertTenantReferences(client, data.tenantId, [
+          { table: 'shops', id: data.shop_id, field: 'shop_id' },
+        ]);
         const insertResult = await client.query<Customer>(
           `INSERT INTO customers (
           tenant_id, shop_id, name, email, phone, address_line1, address_line2, city, state, postal_code, country,
@@ -112,9 +117,9 @@ export class CustomerRepository {
 
   async list(params: CustomerListParams, tenantId: string) {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (params.search) {
         conditions.push(`(name ILIKE $${paramIndex} OR email ILIKE $${paramIndex})`);
@@ -134,7 +139,7 @@ export class CustomerRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const page = params.page ?? 1;
       const perPage = params.per_page ?? 10;

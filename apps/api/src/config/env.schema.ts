@@ -39,6 +39,10 @@ export const envSchema = z.object({
   UPLOAD_BUCKET: z.string().min(1).default('model-files'),
   UPLOAD_MAX_BYTES: z.coerce.number().int().positive().default(52_428_800),
   UPLOAD_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(600),
+  /** Base URL of the geometry service including its API prefix. */
+  GEOMETRY_SERVICE_URL: z.string().url().default('http://localhost:8000/api/v1'),
+  /** Upper bound for one slicing request (all orientation candidates). */
+  SLICE_TIMEOUT_MS: z.coerce.number().int().positive().default(600_000),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

@@ -6,6 +6,7 @@ import structlog
 from app.config import settings
 from app.logging import configure_logging
 from app.api.routes import router
+from app.api.slicing_routes import router as slicing_router
 from app.exceptions import (
     GeometryAnalysisError,
     geometry_analysis_exception_handler,
@@ -54,6 +55,7 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(router, prefix=settings.api_prefix)
+app.include_router(slicing_router, prefix=settings.api_prefix)
 
 # Exception handlers
 app.add_exception_handler(GeometryAnalysisError, geometry_analysis_exception_handler)

@@ -15,8 +15,9 @@ export class MLService {
 
   async createFeatureVector(
     data: Omit<FeatureVector, 'id' | 'created_at'>,
+    tenantId: string,
   ): Promise<FeatureVector> {
-    return this.repo.createFeatureVector(data);
+    return this.repo.createFeatureVector(data, tenantId);
   }
 
   async createDatasetExport(

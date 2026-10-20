@@ -7,9 +7,7 @@ import { PrinterRepository } from '../repositories/printer.repository';
 export class PrinterService {
   constructor(private repo: PrinterRepository) {}
 
-  async create(
-    data: Omit<Printer, 'id' | 'created_at' | 'updated_at' | 'tenant_id'> & { tenantId: string },
-  ): Promise<Printer> {
+  async create(data: Parameters<PrinterRepository['create']>[0]): Promise<Printer> {
     return this.repo.create(data);
   }
 

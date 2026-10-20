@@ -1,132 +1,236 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import type { Quote, QuoteListParams } from '../repositories/quote.repository';
-import { QuoteRepository } from '../repositories/quote.repository';
-import { GeometryIntegrationService } from './geometry-integration.service';
-import { PrintEstimatorService } from './print-estimator.service';
-import { CostCalculatorService } from './cost-calculator.service';
-import { PricingEngineService } from './pricing-engine.service';
+import { GeometryDomainError, type ModelUploadService } from '@3d-print-os/geometry';
+import type { ObjectStoragePort } from '@3d-print-os/storage';
+
+import { CalibrationService } from '../../calibration/calibration.service';
+import { MODEL_UPLOAD_SERVICE, OBJECT_STORAGE } from '../../geometry/geometry.tokens';
+import { MaterialService } from '../../materials/services/material.service';
 import { OrderService } from '../../orders/services/order.service';
+import { PricingService } from '../../pricing/services/pricing.service';
+import { PrinterService } from '../../printers/services/printer.service';
+import { AppError } from '../../shared/errors/app.error';
+import { applyCalibration } from '../domain/calibration';
+import { calculateQuoteCost } from '../domain/quote-costing';
+import { assessSliceRisk } from '../domain/slice-risk';
+import { buildSliceSettings, type SliceProfileInput } from '../domain/slice-settings';
+import type { CreateQuoteData, Quote, QuoteListParams } from '../repositories/quote.repository';
+import { QuoteRepository } from '../repositories/quote.repository';
+import { SlicerClientService } from './slicer-client.service';
+
+const EDITABLE_STATUSES: ReadonlyArray<Quote['status']> = ['draft', 'pending'];
+const MODEL_URL_TTL_SECONDS = 15 * 60;
+const DEFAULT_JOB_OVERHEAD_MINUTES = 10;
+
+function unprocessable(code: string, message: string): AppError {
+  return new AppError({ code, message, statusCode: 422 });
+}
+
+function modelFileType(filename: string): 'stl' | 'obj' | '3mf' {
+  const extension = filename.split('.').pop()?.toLowerCase();
+  if (extension === 'stl' || extension === 'obj' || extension === '3mf') {
+    return extension;
+  }
+  throw unprocessable('quote.invalid_model', 'Only STL, OBJ and 3MF models can be quoted');
+}
 
 @Injectable()
 export class QuoteService {
   constructor(
     private repo: QuoteRepository,
-    private geometryService: GeometryIntegrationService,
-    private printEstimatorService: PrintEstimatorService,
-    private costCalculatorService: CostCalculatorService,
-    private pricingEngineService: PricingEngineService,
+    private slicer: SlicerClientService,
+    private printerService: PrinterService,
+    private materialService: MaterialService,
+    private pricingService: PricingService,
+    @Inject(MODEL_UPLOAD_SERVICE) private modelUploads: ModelUploadService,
+    @Inject(OBJECT_STORAGE) private storage: ObjectStoragePort,
     private orderService: OrderService,
+    private calibrationService: CalibrationService,
   ) {}
 
-  async create(data: {
-    tenantId: string;
-    shop_id: string;
-    customer_id: string;
-    model_id: string;
-  }): Promise<Quote> {
+  async create(data: CreateQuoteData): Promise<Quote> {
     return this.repo.create(data);
   }
 
-  async analyzeQuote(quoteId: string, tenantId: string): Promise<Quote> {
+  /**
+   * Slice the model with the quote's printer and material, then price it from the shop's
+   * pricing rule. Every number on the quote comes from the slicer's G-code statistics.
+   */
+  async analyzeQuote(quoteId: string, tenantId: string, userId: string | null): Promise<Quote> {
     const quote = await this.findById(quoteId, tenantId);
-
-    // Trigger geometry analysis
-    const analysisId = await this.geometryService.triggerAnalysis(
-      quote.model_id,
-      tenantId,
-      `models/${quote.model_id}/model.stl`,
-    );
-
-    // Poll for results (in production, use webhooks or events)
-    let analysis = await this.geometryService.getAnalysisResults(analysisId, tenantId);
-    let attempts = 0;
-    const maxAttempts = 30; // 30 seconds timeout
-
-    while (
-      analysis &&
-      analysis.status !== 'completed' &&
-      analysis.status !== 'failed' &&
-      attempts < maxAttempts
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      analysis = await this.geometryService.getAnalysisResults(analysisId, tenantId);
-      attempts++;
+    if (!EDITABLE_STATUSES.includes(quote.status)) {
+      throw new AppError({
+        code: 'quote.not_editable',
+        message: `A ${quote.status} quote cannot be re-priced`,
+        statusCode: 409,
+      });
+    }
+    if (!quote.printer_id) {
+      throw unprocessable('quote.printer_required', 'Choose a printer before pricing the quote');
+    }
+    if (!quote.material_id) {
+      throw unprocessable('quote.material_required', 'Choose a material before pricing the quote');
     }
 
-    if (!analysis || analysis.status === 'failed') {
-      throw new Error('Geometry analysis failed');
+    const [printer, material, pricingContext, calibration] = await Promise.all([
+      this.printerService.findById(quote.printer_id, tenantId),
+      this.materialService.findById(quote.material_id, tenantId),
+      this.repo.getPricingContext(tenantId),
+      this.calibrationService.getCalibration(tenantId, quote.printer_id, quote.material_id),
+    ]);
+    if (printer.technology !== 'FDM') {
+      throw unprocessable(
+        'quote.technology_unsupported',
+        `Slicer quoting supports FDM printers only (printer is ${printer.technology})`,
+      );
+    }
+    if (printer.status === 'retired') {
+      throw unprocessable('quote.printer_retired', 'The selected printer is retired');
     }
 
-    // Calculate quote data from analysis
-    const quoteData = this.geometryService.calculateQuoteFromAnalysis(analysis);
+    const rule = await this.pricingService.findApplicable(tenantId, {
+      shopId: quote.shop_id,
+      materialId: material.id,
+      printerId: printer.id,
+    });
+    if (!rule) {
+      throw unprocessable(
+        'quote.pricing_rule_missing',
+        'No active pricing rule applies to this shop, printer and material',
+      );
+    }
 
-    // Use new estimation pipeline
-    // Step 1: Print estimation
-    const printEstimation = this.printEstimatorService.estimatePrint(
-      {
-        volumeMm3: quoteData.estimated_volume_mm3,
-        surfaceAreaMm2: quoteData.surface_area_mm2,
-        boundingBox: {
-          x: quoteData.bounding_box_x_mm,
-          y: quoteData.bounding_box_y_mm,
-          z: quoteData.bounding_box_z_mm,
-        },
-        layerHeightMm: quote.layer_height_mm ?? 0.2,
-        infillPercentage: quote.infill_percentage ?? 20,
-        nozzleSizeMm: 0.4,
-        wallCount: 3,
-        printSpeedMmPerS: 60,
-        travelSpeedMmPerS: 120,
-        accelerationMmPerS2: 1000,
-      },
-      'PLA',
-    );
+    const profiles = await this.printerService.getProfilesByPrinter(printer.id, tenantId);
+    const profile =
+      profiles.find(
+        (p) =>
+          p.is_active && p.material_type.toLowerCase() === material.material_type.toLowerCase(),
+      ) ?? null;
 
-    // Step 2: Cost calculation
-    const costBreakdown = this.costCalculatorService.calculateCost(printEstimation);
+    let built;
+    try {
+      built = buildSliceSettings({
+        printer,
+        profile: profile as SliceProfileInput | null,
+        material,
+        quote,
+      });
+    } catch (error) {
+      throw unprocessable('quote.printer_not_configured', (error as Error).message);
+    }
 
-    // Step 3: Pricing engine
-    const customerPricing = this.pricingEngineService.calculateCustomerPrice(
-      costBreakdown,
-      printEstimation,
-      {
-        profitMarginPercentage: 20,
-        minimumPriceCents: 500,
-        complexityMultiplier: 1.0,
-        rushMultiplier: 1.5,
-        isRushOrder: false,
-      },
-    );
+    const model = await this.getUploadedModel(tenantId, quote.model_id);
+    const downloadUrl = await this.storage.createSignedDownloadUrl({
+      bucket: model.storageBucket,
+      key: model.storageKey,
+      expiresInSeconds: MODEL_URL_TTL_SECONDS,
+    });
 
-    // Update quote with analysis and pricing results
-    return this.update(
-      quoteId,
-      {
-        estimated_volume_mm3: quoteData.estimated_volume_mm3,
-        surface_area_mm2: quoteData.surface_area_mm2,
-        bounding_box_x_mm: quoteData.bounding_box_x_mm,
-        bounding_box_y_mm: quoteData.bounding_box_y_mm,
-        bounding_box_z_mm: quoteData.bounding_box_z_mm,
-        difficulty_score: printEstimation.difficultyScore,
-        risk_percentage: printEstimation.riskPercentage,
-        risk_factors: printEstimation.riskFactors,
-        estimated_time_minutes: printEstimation.time.totalTimeMinutes,
-        estimated_weight_grams: printEstimation.material.estimatedWeightGrams,
-        material_cost_cents: costBreakdown.materialCostCents,
-        machine_time_cost_cents: costBreakdown.machineTimeCostCents,
-        electricity_cost_cents: costBreakdown.electricityCostCents,
-        maintenance_cost_cents: costBreakdown.maintenanceCostCents,
-        post_processing_cost_cents: costBreakdown.postProcessingCostCents,
-        failure_risk_cost_cents: costBreakdown.failureRiskCostCents,
-        subtotal_cents: customerPricing.subtotalCents,
-        tax_cents: customerPricing.taxCents,
-        total_cents: customerPricing.totalPriceCents,
-        currency: customerPricing.currency,
-      },
+    const costPerGram =
+      Number(rule.material_cost_per_gram) || Number(material.price_per_gram_cents);
+    const slice = await this.slicer.slice({
       tenantId,
-      'system',
+      modelFileId: model.id,
+      downloadUrl,
+      fileType: modelFileType(model.originalFilename),
+      settings: built.settings,
+      orientation: quote.orientation_mode,
+      selection: {
+        cost_per_hour:
+          Number(rule.machine_time_cost_per_minute) * 60 +
+          Number(rule.electricity_cost_per_hour) +
+          Number(rule.maintenance_cost_per_hour),
+        cost_per_gram: costPerGram,
+        // Support costs its filament plus removal labour and surface cleanup.
+        support_penalty_per_gram: costPerGram,
+      },
+    });
+
+    const estimate = slice.estimate;
+    // Correct the slicer's numbers by how this printer has really performed. slice_result
+    // keeps the raw values; pricing_breakdown.calibration records raw, factor and samples.
+    const calibrated = applyCalibration(
+      { printTimeSeconds: estimate.print_time_s, filamentGrams: estimate.filament_g },
+      calibration,
     );
+    const jobOverheadMinutes = printer.job_overhead_minutes ?? DEFAULT_JOB_OVERHEAD_MINUTES;
+    const cost = calculateQuoteCost({
+      printTimeSeconds: calibrated.printTimeSeconds,
+      filamentGrams: calibrated.filamentGrams,
+      jobOverheadMinutes,
+      quantity: 1,
+      materialPricePerGram: material.price_per_gram_cents,
+      rule,
+      taxRateBps: pricingContext.tax_rate_bps,
+      currency: pricingContext.currency,
+    });
+    const risk = assessSliceRisk({
+      printTimeSeconds: calibrated.printTimeSeconds,
+      filamentGrams: calibrated.filamentGrams,
+      supportGrams: estimate.support_g,
+      meshIsWatertight: slice.mesh_is_watertight,
+      assumptions: built.assumptions,
+    });
+    const [sizeX = 0, sizeY = 0, sizeZ = 0] = slice.orientation.size_mm;
+
+    const updated = await this.repo.saveAnalysis(quoteId, tenantId, {
+      estimated_weight_grams: Math.round(calibrated.filamentGrams),
+      estimated_time_minutes: Math.round(calibrated.printTimeSeconds / 60),
+      estimated_volume_mm3: Math.round(slice.mesh_volume_mm3),
+      bounding_box_x_mm: sizeX,
+      bounding_box_y_mm: sizeY,
+      bounding_box_z_mm: sizeZ,
+      layer_height_mm: built.settings.process.layer_height_mm,
+      infill_percentage: Math.round(built.settings.process.infill_percent),
+      technology: 'FDM',
+      difficulty_score: risk.difficultyScore,
+      risk_percentage: risk.riskPercentage,
+      risk_factors: risk.riskFactors,
+      material_cost_cents: cost.materialCost,
+      machine_time_cost_cents: cost.machineTimeCost,
+      electricity_cost_cents: cost.electricityCost,
+      maintenance_cost_cents: cost.maintenanceCost,
+      post_processing_cost_cents: cost.postProcessingCost,
+      failure_risk_cost_cents: cost.failureRiskCost,
+      subtotal_cents: cost.subtotal,
+      tax_cents: cost.tax,
+      total_cents: cost.total,
+      currency: cost.currency,
+      estimate_source: 'slicer',
+      slice_result: { ...slice, settings: built.settings },
+      pricing_breakdown: {
+        ...cost,
+        pricing_rule_id: rule.id,
+        printer_profile_id: profile?.id ?? null,
+        job_overhead_minutes: jobOverheadMinutes,
+        calibration: calibrated.audit,
+        assumptions: built.assumptions,
+      },
+      updated_by: userId,
+    });
+    if (!updated) {
+      throw new NotFoundException(`Quote with ID ${quoteId} not found`);
+    }
+    return updated;
+  }
+
+  private async getUploadedModel(tenantId: string, modelId: string) {
+    try {
+      const model = await this.modelUploads.getModel(tenantId, modelId);
+      if (model.status !== 'uploaded') {
+        throw unprocessable('quote.model_not_uploaded', 'The model upload has not completed');
+      }
+      return model;
+    } catch (error) {
+      if (error instanceof GeometryDomainError) {
+        throw new AppError({
+          code: error.code,
+          message: error.message,
+          statusCode: error.statusCode,
+        });
+      }
+      throw error;
+    }
   }
 
   async findById(id: string, tenantId: string): Promise<Quote> {
@@ -149,6 +253,33 @@ export class QuoteService {
   ): Promise<Quote> {
     const existing = await this.findById(id, tenantId);
 
+    // A price only stays valid for the settings it was sliced with.
+    const pricingInputs = [
+      'material_id',
+      'printer_id',
+      'layer_height_mm',
+      'infill_percentage',
+    ] as const;
+    const pricingInputsChanged = pricingInputs.some((key) => {
+      const next = data[key];
+      const current = existing[key];
+      if (next === undefined) {
+        return false;
+      }
+      // pg returns NUMERIC as strings ("0.200"), so compare numbers by value.
+      return typeof next === 'number' ? Number(current) !== next : next !== current;
+    });
+    if (pricingInputsChanged) {
+      if (!EDITABLE_STATUSES.includes(existing.status)) {
+        throw new AppError({
+          code: 'quote.not_editable',
+          message: `A ${existing.status} quote cannot be changed`,
+          statusCode: 409,
+        });
+      }
+      data = { ...data, estimate_source: null };
+    }
+
     // Track status change in history
     if (data.status && data.status !== existing.status) {
       await this.repo.addHistory(id, existing.status, data.status, userId, null, tenantId);
@@ -166,6 +297,9 @@ export class QuoteService {
 
     if (quote.status !== 'draft' && quote.status !== 'pending') {
       throw new Error(`Quote must be in draft or pending status to approve`);
+    }
+    if (quote.estimate_source !== 'slicer') {
+      throw unprocessable('quote.not_priced', 'Price the quote before approving it');
     }
 
     return this.update(

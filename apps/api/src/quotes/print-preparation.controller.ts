@@ -131,8 +131,8 @@ export class PrintPreparationController {
 
       // Orient the largest dimension to be flat on the bed
       let rotationX = 0,
-        rotationY = 0,
-        rotationZ = 0;
+        rotationY = 0;
+      const rotationZ = 0;
       if (dims.x >= dims.y && dims.x >= dims.z) {
         rotationY = 90;
       } else if (dims.y >= dims.x && dims.y >= dims.z) {

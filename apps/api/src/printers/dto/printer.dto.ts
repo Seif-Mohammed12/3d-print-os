@@ -13,6 +13,26 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export enum InfillPattern {
+  GRID = 'grid',
+  GYROID = 'gyroid',
+  RECTILINEAR = 'rectilinear',
+  CUBIC = 'cubic',
+  ADAPTIVE_CUBIC = 'adaptivecubic',
+  SUPPORT_CUBIC = 'supportcubic',
+  HONEYCOMB = 'honeycomb',
+  TRIANGLES = 'triangles',
+  LIGHTNING = 'lightning',
+  LINE = 'line',
+}
+
+export enum GcodeFlavor {
+  KLIPPER = 'klipper',
+  MARLIN2 = 'marlin2',
+  MARLIN = 'marlin',
+  REPRAPFIRMWARE = 'reprapfirmware',
+}
+
 export enum PrinterTechnology {
   FDM = 'FDM',
   SLA = 'SLA',
@@ -96,6 +116,35 @@ export class CreatePrinterDto {
   @IsNumber()
   @Min(0)
   typicalSpeedMmPerMin?: number;
+
+  @IsOptional()
+  @IsEnum(GcodeFlavor)
+  gcodeFlavor?: GcodeFlavor;
+
+  /** Firmware max acceleration; drives slicer time estimates. */
+  @IsOptional()
+  @IsNumber()
+  @Min(100)
+  @Max(100000)
+  maxAccelerationMmS2?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(10)
+  @Max(2000)
+  maxFeedrateMmS?: number;
+
+  /** Heat-up, probing and part removal per print job. */
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(600)
+  jobOverheadMinutes?: number;
+
+  /** Allowlisted PrusaSlicer keys; validated by the geometry service when slicing. */
+  @IsOptional()
+  @IsObject()
+  slicerOverrides?: Record<string, number | boolean | string>;
 
   @IsOptional()
   @IsArray()
@@ -183,6 +232,35 @@ export class UpdatePrinterDto {
   @IsNumber()
   @Min(0)
   typicalSpeedMmPerMin?: number;
+
+  @IsOptional()
+  @IsEnum(GcodeFlavor)
+  gcodeFlavor?: GcodeFlavor;
+
+  /** Firmware max acceleration; drives slicer time estimates. */
+  @IsOptional()
+  @IsNumber()
+  @Min(100)
+  @Max(100000)
+  maxAccelerationMmS2?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(10)
+  @Max(2000)
+  maxFeedrateMmS?: number;
+
+  /** Heat-up, probing and part removal per print job. */
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(600)
+  jobOverheadMinutes?: number;
+
+  /** Allowlisted PrusaSlicer keys; validated by the geometry service when slicing. */
+  @IsOptional()
+  @IsObject()
+  slicerOverrides?: Record<string, number | boolean | string>;
 
   @IsOptional()
   @IsArray()
@@ -331,6 +409,15 @@ export class CreatePrinterProfileDto {
   postProcessSteps?: string[];
 
   @IsOptional()
+  @IsEnum(InfillPattern)
+  infillPattern?: InfillPattern;
+
+  /** Allowlisted PrusaSlicer keys; validated by the geometry service when slicing. */
+  @IsOptional()
+  @IsObject()
+  slicerOverrides?: Record<string, number | boolean | string>;
+
+  @IsOptional()
   @IsBoolean()
   isDefault?: boolean;
 
@@ -439,6 +526,15 @@ export class UpdatePrinterProfileDto {
   @IsArray()
   @IsString({ each: true })
   postProcessSteps?: string[];
+
+  @IsOptional()
+  @IsEnum(InfillPattern)
+  infillPattern?: InfillPattern;
+
+  /** Allowlisted PrusaSlicer keys; validated by the geometry service when slicing. */
+  @IsOptional()
+  @IsObject()
+  slicerOverrides?: Record<string, number | boolean | string>;
 
   @IsOptional()
   @IsBoolean()

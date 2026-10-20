@@ -1,6 +1,8 @@
 import type { Pool } from 'pg';
 import { withTenantSession } from '@3d-print-os/persistence';
 
+import { assertTenantReferences } from '../../shared/tenant-references';
+
 export interface TrainingSample {
   id: string;
   tenant_id: string;
@@ -113,6 +115,12 @@ export class MLRepository {
     data: Omit<TrainingSample, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<TrainingSample> {
     const result = await withTenantSession(this.pool, { tenantId: data.tenant_id }, async (client) => {
+      await assertTenantReferences(client, data.tenant_id, [
+        { table: 'shops', id: data.shop_id, field: 'shop_id' },
+        { table: 'quotes', id: data.quote_id, field: 'quote_id' },
+        { table: 'orders', id: data.order_id, field: 'order_id' },
+        { table: 'model_files', id: data.model_file_id, field: 'model_file_id' },
+      ]);
       const insertResult = await client.query<TrainingSample>(
         `INSERT INTO training_samples (
           tenant_id, shop_id, quote_id, order_id, model_file_id,
@@ -191,8 +199,17 @@ export class MLRepository {
 
   async createFeatureVector(
     data: Omit<FeatureVector, 'id' | 'created_at'>,
+    tenantId: string,
   ): Promise<FeatureVector> {
-    const result = await withTenantSession(this.pool, { tenantId: data.training_sample_id }, async (client) => {
+    const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
+      // feature_vectors has no tenant_id; it is scoped through its training sample.
+      const owned = await client.query(
+        'SELECT 1 FROM training_samples WHERE id = $1 AND tenant_id = $2',
+        [data.training_sample_id, tenantId],
+      );
+      if ((owned.rowCount ?? 0) === 0) {
+        return undefined;
+      }
       const insertResult = await client.query<FeatureVector>(
         `INSERT INTO feature_vectors (training_sample_id, geometry_features, print_settings_features, material_features, printer_features, combined_features, feature_version)
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -221,6 +238,9 @@ export class MLRepository {
     data: Omit<DatasetExport, 'id' | 'created_at' | 'completed_at'>,
   ): Promise<DatasetExport> {
     const result = await withTenantSession(this.pool, { tenantId: data.tenant_id }, async (client) => {
+      await assertTenantReferences(client, data.tenant_id, [
+        { table: 'shops', id: data.shop_id, field: 'shop_id' },
+      ]);
       const insertResult = await client.query<DatasetExport>(
         `INSERT INTO dataset_exports (tenant_id, shop_id, export_type, feature_version, date_range_start, date_range_end, sample_count, feature_count, file_path, file_format, file_size_bytes, status, error_message, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
@@ -308,8 +328,10 @@ export class MLRepository {
       }
 
       const updateResult = await client.query<DatasetExport>(
-        `UPDATE dataset_exports SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE dataset_exports SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND tenant_id = $${paramIndex + 1}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -326,9 +348,9 @@ export class MLRepository {
     exportType?: string,
   ): Promise<TrainingSample[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -360,7 +382,7 @@ export class MLRepository {
         conditions.push(`material_type IS NOT NULL AND actual_price_cents IS NOT NULL`);
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<TrainingSample>(
         `SELECT * FROM training_samples ${whereClause} ORDER BY created_at DESC`,
@@ -375,9 +397,9 @@ export class MLRepository {
 
   async getDatasetExports(tenantId: string, shopId?: string): Promise<DatasetExport[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -385,7 +407,7 @@ export class MLRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<DatasetExport>(
         `SELECT * FROM dataset_exports ${whereClause} ORDER BY created_at DESC`,
@@ -400,9 +422,9 @@ export class MLRepository {
 
   async getModelPerformances(tenantId: string, shopId?: string): Promise<ModelPerformance[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -410,7 +432,7 @@ export class MLRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<ModelPerformance>(
         `SELECT * FROM model_performance ${whereClause} ORDER BY trained_at DESC`,

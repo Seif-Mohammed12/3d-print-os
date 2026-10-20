@@ -42,6 +42,22 @@ export class SupabaseObjectStorage implements ObjectStoragePort {
     };
   }
 
+  async createSignedDownloadUrl(input: {
+    bucket: string;
+    key: string;
+    expiresInSeconds: number;
+  }): Promise<string> {
+    const { data, error } = await this.client.storage
+      .from(input.bucket)
+      .createSignedUrl(input.key, input.expiresInSeconds);
+
+    if (error || !data) {
+      throw new Error(error?.message ?? 'Failed to create signed download URL');
+    }
+
+    return data.signedUrl;
+  }
+
   async objectExists(input: { bucket: string; key: string }): Promise<boolean> {
     const slash = input.key.lastIndexOf('/');
     const folder = slash >= 0 ? input.key.slice(0, slash) : '';

@@ -19,6 +19,17 @@ export enum QuoteStatus {
   COMPLETED = 'completed',
 }
 
+export enum QuoteSupportsMode {
+  AUTO = 'auto',
+  BUILDPLATE_ONLY = 'buildplate_only',
+  OFF = 'off',
+}
+
+export enum QuoteOrientationMode {
+  AUTO = 'auto',
+  AS_IS = 'as_is',
+}
+
 export class CreateQuoteDto {
   @IsUUID()
   customerId!: string;
@@ -53,6 +64,16 @@ export class CreateQuoteDto {
   @Min(0)
   @Max(100)
   infillPercentage?: number;
+
+  /** `auto` lets the slicer add supports only where overhangs need them. */
+  @IsOptional()
+  @IsEnum(QuoteSupportsMode)
+  supportsMode?: QuoteSupportsMode;
+
+  /** `auto` slices several stable resting poses and prices the cheapest. */
+  @IsOptional()
+  @IsEnum(QuoteOrientationMode)
+  orientationMode?: QuoteOrientationMode;
 
   @IsOptional()
   @IsString()
@@ -91,7 +112,7 @@ export class UpdateQuoteDto {
   @IsInt()
   @Min(0)
   @Max(100)
-  infillPercentage?: string;
+  infillPercentage?: number;
 
   @IsOptional()
   @IsString()

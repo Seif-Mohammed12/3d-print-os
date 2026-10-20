@@ -131,7 +131,7 @@ export class SupportEstimatorService {
     overhangArea: number,
     height: number,
     layerHeight: number,
-    nozzleDiameter: number,
+    _nozzleDiameter: number,
   ): number {
     if (overhangArea === 0 || height === 0) return 0;
 
@@ -159,7 +159,7 @@ export class SupportEstimatorService {
   private determineSupportDifficulty(
     overhangPercentage: number,
     criticalOverhangs: number,
-    height: number,
+    _height: number,
   ): 'low' | 'medium' | 'high' | 'extreme' {
     if (overhangPercentage < 5 && criticalOverhangs === 0) {
       return 'low';

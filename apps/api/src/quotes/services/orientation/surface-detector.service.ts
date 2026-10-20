@@ -88,7 +88,7 @@ export class SurfaceDetectorService {
       const currentTriangle = triangles[i];
       if (visited.has(i) || !currentTriangle?.normal) continue;
 
-      const seedNormal = currentTriangle.normal;
+      const _seedNormal = currentTriangle.normal;
       const patchTriangles = [i];
       const queue = [i];
       visited.add(i);

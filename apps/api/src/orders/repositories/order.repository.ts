@@ -1,5 +1,7 @@
-import type { Pool } from 'pg';
+import type { Pool, PoolClient } from 'pg';
 import { withTenantSession } from '@3d-print-os/persistence';
+
+import { assertTenantReferences } from '../../shared/tenant-references';
 
 export interface Order {
   id: string;
@@ -74,6 +76,26 @@ export interface OrderListParams {
   perPage?: number;
 }
 
+/**
+ * Order history and items have no tenant_id; they are scoped through their order.
+ * `tenantParam` is the placeholder index holding the tenant id.
+ */
+function orderInTenant(tenantParam: number): string {
+  return `order_id IN (SELECT id FROM orders WHERE tenant_id = $${tenantParam})`;
+}
+
+async function orderBelongsToTenant(
+  client: PoolClient,
+  orderId: string,
+  tenantId: string,
+): Promise<boolean> {
+  const result = await client.query('SELECT 1 FROM orders WHERE id = $1 AND tenant_id = $2', [
+    orderId,
+    tenantId,
+  ]);
+  return (result.rowCount ?? 0) > 0;
+}
+
 export class OrderRepository {
   constructor(private pool: Pool) {}
 
@@ -86,6 +108,12 @@ export class OrderRepository {
       this.pool,
       { tenantId: data.tenantId },
       async (client) => {
+        await assertTenantReferences(client, data.tenantId, [
+          { table: 'shops', id: data.shop_id, field: 'shopId' },
+          { table: 'customers', id: data.customer_id, field: 'customerId' },
+          { table: 'quotes', id: data.quote_id, field: 'quoteId' },
+          { table: 'printers', id: data.printer_id, field: 'printerId' },
+        ]);
         // Generate order number
         const orderNumberResult = await client.query<{ order_number: string }>(
           'SELECT generate_order_number($1, $2) as order_number',
@@ -136,7 +164,10 @@ export class OrderRepository {
 
   async findById(id: string, tenantId: string): Promise<Order | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const queryResult = await client.query<Order>('SELECT * FROM orders WHERE id = $1', [id]);
+      const queryResult = await client.query<Order>(
+        'SELECT * FROM orders WHERE id = $1 AND tenant_id = $2',
+        [id, tenantId],
+      );
       return queryResult.rows[0] ?? null;
     });
 
@@ -145,9 +176,10 @@ export class OrderRepository {
 
   async findByQuoteId(quoteId: string, tenantId: string): Promise<Order | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const queryResult = await client.query<Order>('SELECT * FROM orders WHERE quote_id = $1', [
-        quoteId,
-      ]);
+      const queryResult = await client.query<Order>(
+        'SELECT * FROM orders WHERE quote_id = $1 AND tenant_id = $2',
+        [quoteId, tenantId],
+      );
       return queryResult.rows[0] ?? null;
     });
 
@@ -167,9 +199,9 @@ export class OrderRepository {
     const perPage = params.perPage ?? 20;
     const offset = (page - 1) * perPage;
 
-    const conditions: string[] = [];
-    const values: unknown[] = [];
-    let paramIndex = 1;
+    const conditions: string[] = ['tenant_id = $1'];
+    const values: unknown[] = [tenantId];
+    let paramIndex = 2;
 
     if (params.shopId) {
       conditions.push(`shop_id = $${paramIndex}`);
@@ -213,7 +245,7 @@ export class OrderRepository {
       paramIndex++;
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const [dataResult, countResult] = await Promise.all([
@@ -360,11 +392,17 @@ export class OrderRepository {
         return null;
       }
 
+      await assertTenantReferences(client, tenantId, [
+        { table: 'printers', id: data.printer_id, field: 'printerId' },
+      ]);
+
       updates.push(`updated_at = NOW()`);
 
       const updateResult = await client.query<Order>(
-        `UPDATE orders SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE orders SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND tenant_id = $${paramIndex + 1}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -380,6 +418,9 @@ export class OrderRepository {
     tenantId: string,
   ): Promise<OrderHistory> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
+      if (!(await orderBelongsToTenant(client, orderId, tenantId))) {
+        return undefined;
+      }
       const insertResult = await client.query<OrderHistory>(
         `INSERT INTO order_history (order_id, old_status, new_status, status_type, changed_by, notes)
         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -406,8 +447,10 @@ export class OrderRepository {
   async getHistoryByOrder(orderId: string, tenantId: string): Promise<OrderHistory[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<OrderHistory>(
-        'SELECT * FROM order_history WHERE order_id = $1 ORDER BY changed_at DESC',
-        [orderId],
+        `SELECT * FROM order_history
+         WHERE order_id = $1 AND ${orderInTenant(2)}
+         ORDER BY changed_at DESC`,
+        [orderId, tenantId],
       );
       return queryResult.rows;
     });
@@ -422,6 +465,12 @@ export class OrderRepository {
     tenantId: string,
   ): Promise<OrderItem> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
+      if (!(await orderBelongsToTenant(client, orderId, tenantId))) {
+        return undefined;
+      }
+      await assertTenantReferences(client, tenantId, [
+        { table: 'printers', id: data.printer_id, field: 'printerId' },
+      ]);
       const totalPriceCents = data.unit_price_cents * data.quantity;
       const insertResult = await client.query<OrderItem>(
         `INSERT INTO order_items (order_id, item_name, quantity, unit_price_cents, total_price_cents, production_status, printer_id)
@@ -450,8 +499,8 @@ export class OrderRepository {
   async getItemsByOrder(orderId: string, tenantId: string): Promise<OrderItem[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<OrderItem>(
-        'SELECT * FROM order_items WHERE order_id = $1 ORDER BY created_at',
-        [orderId],
+        `SELECT * FROM order_items WHERE order_id = $1 AND ${orderInTenant(2)} ORDER BY created_at`,
+        [orderId, tenantId],
       );
       return queryResult.rows;
     });
@@ -499,11 +548,15 @@ export class OrderRepository {
         return null;
       }
 
+      await assertTenantReferences(client, tenantId, [
+        { table: 'printers', id: data.printer_id, field: 'printerId' },
+      ]);
+
       // Recalculate total price if quantity or unit price changed
       if (data.quantity !== undefined || data.unit_price_cents !== undefined) {
         const itemResult = await client.query<OrderItem>(
-          'SELECT * FROM order_items WHERE id = $1',
-          [id],
+          `SELECT * FROM order_items WHERE id = $1 AND ${orderInTenant(2)}`,
+          [id, tenantId],
         );
         const item = itemResult.rows[0];
         if (item) {
@@ -516,8 +569,10 @@ export class OrderRepository {
       }
 
       const updateResult = await client.query<OrderItem>(
-        `UPDATE order_items SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE order_items SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND ${orderInTenant(paramIndex + 1)}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;

@@ -2,6 +2,9 @@ import type { Pool } from 'pg';
 
 import { query, withTenantSession } from '@3d-print-os/persistence';
 
+import { assertTenantReferences } from '../../shared/tenant-references';
+import type { OrientationMode, SupportsMode } from '../domain/slice-settings';
+
 export type Quote = {
   id: string;
   tenant_id: string;
@@ -42,10 +45,62 @@ export type Quote = {
   internal_notes: string | null;
   customer_notes: string | null;
   rejection_reason: string | null;
+  supports_mode: SupportsMode;
+  orientation_mode: OrientationMode;
+  estimate_source: 'slicer' | null;
+  slice_result: unknown | null;
+  pricing_breakdown: unknown | null;
+  analyzed_at: Date | null;
   created_by: string | null;
   updated_by: string | null;
   created_at: Date;
   updated_at: Date;
+};
+
+export type CreateQuoteData = {
+  tenantId: string;
+  shop_id: string;
+  customer_id: string;
+  model_id: string;
+  material_id?: string | null;
+  printer_id?: string | null;
+  technology?: string | null;
+  layer_height_mm?: number | null;
+  infill_percentage?: number | null;
+  supports_mode?: SupportsMode;
+  orientation_mode?: OrientationMode;
+  internal_notes?: string | null;
+  customer_notes?: string | null;
+  created_by?: string | null;
+};
+
+export type QuoteAnalysis = {
+  estimated_weight_grams: number;
+  estimated_time_minutes: number;
+  estimated_volume_mm3: number;
+  bounding_box_x_mm: number;
+  bounding_box_y_mm: number;
+  bounding_box_z_mm: number;
+  layer_height_mm: number;
+  infill_percentage: number;
+  technology: string;
+  difficulty_score: number;
+  risk_percentage: number;
+  risk_factors: Array<{ factor: string; severity: string; description: string }>;
+  material_cost_cents: number;
+  machine_time_cost_cents: number;
+  electricity_cost_cents: number;
+  maintenance_cost_cents: number;
+  post_processing_cost_cents: number;
+  failure_risk_cost_cents: number;
+  subtotal_cents: number;
+  tax_cents: number;
+  total_cents: number;
+  currency: string;
+  estimate_source: 'slicer';
+  slice_result: unknown;
+  pricing_breakdown: unknown;
+  updated_by: string | null;
 };
 
 export type QuoteListParams = {
@@ -59,35 +114,34 @@ export type QuoteListParams = {
 export class QuoteRepository {
   constructor(private pool: Pool) {}
 
-  async create(data: {
-    tenantId: string;
-    shop_id: string;
-    customer_id: string;
-    model_id: string;
-  }): Promise<Quote> {
+  async create(data: CreateQuoteData): Promise<Quote> {
     const result = await withTenantSession(
       this.pool,
       { tenantId: data.tenantId },
       async (client) => {
-        // Generate quote number
-        const quoteNumberResult = await client.query(
+        await assertTenantReferences(client, data.tenantId, [
+          { table: 'shops', id: data.shop_id, field: 'shopId' },
+          { table: 'customers', id: data.customer_id, field: 'customerId' },
+          { table: 'model_files', id: data.model_id, field: 'modelId' },
+          { table: 'materials', id: data.material_id, field: 'materialId' },
+          { table: 'printers', id: data.printer_id, field: 'printerId' },
+        ]);
+        const quoteNumberResult = await client.query<{ quote_number: string }>(
           'SELECT generate_quote_number($1, $2) as quote_number',
           [data.tenantId, data.shop_id],
         );
         const quoteNumber = quoteNumberResult.rows[0]?.quote_number;
 
+        // Money columns default to 0 until the quote is analyzed; currency comes from the tenant.
         const insertResult = await client.query<Quote>(
           `INSERT INTO quotes (
             tenant_id, shop_id, customer_id, model_id, quote_number, status,
-            estimated_weight_grams, estimated_time_minutes, estimated_volume_mm3, surface_area_mm2,
-            bounding_box_x_mm, bounding_box_y_mm, bounding_box_z_mm,
             material_id, printer_id, technology, layer_height_mm, infill_percentage,
-            difficulty_score, risk_percentage, risk_factors,
-            material_cost_cents, machine_time_cost_cents, electricity_cost_cents,
-            maintenance_cost_cents, post_processing_cost_cents, failure_risk_cost_cents,
-            subtotal_cents, tax_cents, total_cents, currency,
-            internal_notes, customer_notes, created_by
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)
+            supports_mode, orientation_mode, internal_notes, customer_notes, created_by, currency
+          ) VALUES (
+            $1, $2, $3, $4, $5, 'draft', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+            (SELECT default_currency FROM tenants WHERE id = $1)
+          )
           RETURNING *`,
           [
             data.tenantId,
@@ -95,35 +149,16 @@ export class QuoteRepository {
             data.customer_id,
             data.model_id,
             quoteNumber,
-            'draft',
-            0, // estimated_weight_grams
-            0, // estimated_time_minutes
-            0, // estimated_volume_mm3
-            0, // surface_area_mm2
-            null, // bounding_box_x_mm
-            null, // bounding_box_y_mm
-            null, // bounding_box_z_mm
-            null, // material_id
-            null, // printer_id
-            null, // technology
-            null, // layer_height_mm
-            null, // infill_percentage
-            null, // difficulty_score
-            null, // risk_percentage
-            null, // risk_factors
-            0, // material_cost_cents
-            0, // machine_time_cost_cents
-            0, // electricity_cost_cents
-            0, // maintenance_cost_cents
-            0, // post_processing_cost_cents
-            0, // failure_risk_cost_cents
-            0, // subtotal_cents
-            0, // tax_cents
-            0, // total_cents
-            'USD', // currency
-            null, // internal_notes
-            null, // customer_notes
-            null, // created_by
+            data.material_id ?? null,
+            data.printer_id ?? null,
+            data.technology ?? null,
+            data.layer_height_mm ?? null,
+            data.infill_percentage ?? null,
+            data.supports_mode ?? 'auto',
+            data.orientation_mode ?? 'auto',
+            data.internal_notes ?? null,
+            data.customer_notes ?? null,
+            data.created_by ?? null,
           ],
         );
 
@@ -136,6 +171,91 @@ export class QuoteRepository {
     }
 
     return result;
+  }
+
+  /** Persist the slicer estimate and the resulting price in one statement. */
+  async saveAnalysis(id: string, tenantId: string, data: QuoteAnalysis): Promise<Quote | null> {
+    const result = await query<Quote>(
+      this.pool,
+      `UPDATE quotes SET
+         estimated_weight_grams = $1,
+         estimated_time_minutes = $2,
+         estimated_volume_mm3 = $3,
+         bounding_box_x_mm = $4,
+         bounding_box_y_mm = $5,
+         bounding_box_z_mm = $6,
+         layer_height_mm = $7,
+         infill_percentage = $8,
+         technology = $9,
+         difficulty_score = $10,
+         risk_percentage = $11,
+         risk_factors = $12,
+         material_cost_cents = $13,
+         machine_time_cost_cents = $14,
+         electricity_cost_cents = $15,
+         maintenance_cost_cents = $16,
+         post_processing_cost_cents = $17,
+         failure_risk_cost_cents = $18,
+         subtotal_cents = $19,
+         tax_cents = $20,
+         total_cents = $21,
+         currency = $22,
+         estimate_source = $23,
+         slice_result = $24,
+         pricing_breakdown = $25,
+         analyzed_at = now(),
+         updated_by = $26
+       WHERE id = $27 AND tenant_id = $28
+       RETURNING *`,
+      [
+        data.estimated_weight_grams,
+        data.estimated_time_minutes,
+        data.estimated_volume_mm3,
+        data.bounding_box_x_mm,
+        data.bounding_box_y_mm,
+        data.bounding_box_z_mm,
+        data.layer_height_mm,
+        data.infill_percentage,
+        data.technology,
+        data.difficulty_score,
+        data.risk_percentage,
+        JSON.stringify(data.risk_factors),
+        data.material_cost_cents,
+        data.machine_time_cost_cents,
+        data.electricity_cost_cents,
+        data.maintenance_cost_cents,
+        data.post_processing_cost_cents,
+        data.failure_risk_cost_cents,
+        data.subtotal_cents,
+        data.tax_cents,
+        data.total_cents,
+        data.currency,
+        data.estimate_source,
+        JSON.stringify(data.slice_result),
+        JSON.stringify(data.pricing_breakdown),
+        data.updated_by,
+        id,
+        tenantId,
+      ],
+    );
+
+    return result.rows[0] || null;
+  }
+
+  async getPricingContext(tenantId: string): Promise<{ currency: string; tax_rate_bps: number }> {
+    const result = await query<{ currency: string; tax_rate_bps: number | null }>(
+      this.pool,
+      `SELECT t.default_currency AS currency, ts.tax_rate_bps
+       FROM tenants t
+       LEFT JOIN tenant_settings ts ON ts.tenant_id = t.id
+       WHERE t.id = $1`,
+      [tenantId],
+    );
+    const row = result.rows[0];
+    if (!row) {
+      throw new Error('Tenant not found');
+    }
+    return { currency: row.currency.trim(), tax_rate_bps: row.tax_rate_bps ?? 0 };
   }
 
   async findById(id: string, tenantId: string): Promise<Quote | null> {
@@ -244,6 +364,10 @@ export class QuoteRepository {
       updates.push(`rejection_reason = $${paramIndex++}`);
       values.push(data.rejection_reason);
     }
+    if (data.estimate_source !== undefined) {
+      updates.push(`estimate_source = $${paramIndex++}`);
+      values.push(data.estimate_source);
+    }
     if (data.updated_by !== undefined) {
       updates.push(`updated_by = $${paramIndex++}`);
       values.push(data.updated_by);
@@ -252,6 +376,11 @@ export class QuoteRepository {
     if (updates.length === 0) {
       return this.findById(id, tenantId);
     }
+
+    await assertTenantReferences(this.pool, tenantId, [
+      { table: 'materials', id: data.material_id, field: 'materialId' },
+      { table: 'printers', id: data.printer_id, field: 'printerId' },
+    ]);
 
     values.push(id, tenantId);
 
@@ -282,6 +411,14 @@ export class QuoteRepository {
     tenantId: string,
   ): Promise<void> {
     await withTenantSession(this.pool, { tenantId }, async (client) => {
+      // quote_history has no tenant_id; only write it for a quote this tenant owns.
+      const owned = await client.query('SELECT 1 FROM quotes WHERE id = $1 AND tenant_id = $2', [
+        quoteId,
+        tenantId,
+      ]);
+      if ((owned.rowCount ?? 0) === 0) {
+        return;
+      }
       await client.query(
         `INSERT INTO quote_history (quote_id, old_status, new_status, changed_by, notes)
            VALUES ($1, $2, $3, $4, $5)`,

@@ -110,9 +110,9 @@ export class AnalyticsRepository {
     endDate?: Date,
   ): Promise<RevenueAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -132,7 +132,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<RevenueAnalytics>(
         `SELECT * FROM analytics_revenue ${whereClause} ORDER BY day DESC`,
@@ -150,9 +150,9 @@ export class AnalyticsRepository {
     shopId?: string,
   ): Promise<MaterialUsageAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -160,7 +160,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<MaterialUsageAnalytics>(
         `SELECT * FROM analytics_material_usage ${whereClause} ORDER BY total_revenue_cents DESC`,
@@ -178,9 +178,9 @@ export class AnalyticsRepository {
     shopId?: string,
   ): Promise<PrinterUtilizationAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -188,7 +188,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<PrinterUtilizationAnalytics>(
         `SELECT * FROM analytics_printer_utilization ${whereClause} ORDER BY total_orders DESC`,
@@ -206,9 +206,9 @@ export class AnalyticsRepository {
     shopId?: string,
   ): Promise<OrderStatusAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -216,7 +216,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<OrderStatusAnalytics>(
         `SELECT * FROM analytics_order_status ${whereClause} ORDER BY order_count DESC`,
@@ -235,9 +235,9 @@ export class AnalyticsRepository {
     limit: number = 50,
   ): Promise<CustomerAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -245,7 +245,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<CustomerAnalytics>(
         `SELECT * FROM analytics_customers ${whereClause} ORDER BY total_spent_cents DESC LIMIT $${paramIndex}`,
@@ -263,9 +263,9 @@ export class AnalyticsRepository {
     shopId?: string,
   ): Promise<ProfitabilityAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -273,7 +273,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<ProfitabilityAnalytics>(
         `SELECT * FROM analytics_profitability ${whereClause} ORDER BY gross_profit_cents DESC`,
@@ -294,9 +294,9 @@ export class AnalyticsRepository {
     limit: number = 90,
   ): Promise<DailySummaryAnalytics[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = [];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (shopId) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -316,7 +316,7 @@ export class AnalyticsRepository {
         paramIndex++;
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
       const queryResult = await client.query<DailySummaryAnalytics>(
         `SELECT * FROM analytics_daily_summary ${whereClause} ORDER BY date DESC LIMIT $${paramIndex}`,

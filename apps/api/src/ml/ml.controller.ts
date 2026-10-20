@@ -2,39 +2,58 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 
 import { CurrentAuth } from '../identity/auth.decorators';
 import type { RequestAuthContext } from '../identity/auth.types';
+import type { DatasetExport, FeatureVector, TrainingSample } from './repositories/ml.repository';
 import { MLService } from './services/ml.service';
+
+type CreateTrainingSampleBody = Omit<
+  TrainingSample,
+  'id' | 'tenant_id' | 'created_at' | 'updated_at'
+>;
+type CreateFeatureVectorBody = Omit<FeatureVector, 'id' | 'created_at'>;
+type CreateDatasetExportBody = Omit<
+  DatasetExport,
+  'id' | 'tenant_id' | 'created_at' | 'completed_at'
+>;
+type ExportDatasetBody = {
+  shopId?: string;
+  exportType: string;
+  startDate?: string;
+  endDate?: string;
+};
 
 @Controller('ml')
 export class MLController {
   constructor(private mlService: MLService) {}
 
   @Post('training-samples')
-  async createTrainingSample(@Body() data: any, @CurrentAuth() auth?: RequestAuthContext) {
+  async createTrainingSample(
+    @Body() data: CreateTrainingSampleBody,
+    @CurrentAuth() auth?: RequestAuthContext,
+  ) {
     const sample = await this.mlService.createTrainingSample({
       ...data,
       tenant_id: auth?.tenantId ?? '',
-      created_at: new Date(),
-      updated_at: new Date(),
     });
     return { data: sample };
   }
 
   @Post('feature-vectors')
-  async createFeatureVector(@Body() data: any, @CurrentAuth() auth?: RequestAuthContext) {
-    const vector = await this.mlService.createFeatureVector({
-      ...data,
-      created_at: new Date(),
-    });
+  async createFeatureVector(
+    @Body() data: CreateFeatureVectorBody,
+    @CurrentAuth() auth?: RequestAuthContext,
+  ) {
+    const vector = await this.mlService.createFeatureVector(data, auth?.tenantId ?? '');
     return { data: vector };
   }
 
   @Post('dataset-exports')
-  async createDatasetExport(@Body() data: any, @CurrentAuth() auth?: RequestAuthContext) {
+  async createDatasetExport(
+    @Body() data: CreateDatasetExportBody,
+    @CurrentAuth() auth?: RequestAuthContext,
+  ) {
     const datasetExport = await this.mlService.createDatasetExport({
       ...data,
       tenant_id: auth?.tenantId ?? '',
-      created_at: new Date(),
-      completed_at: null,
     });
     return { data: datasetExport };
   }
@@ -42,7 +61,7 @@ export class MLController {
   @Post('dataset-exports/:id/export')
   async exportDataset(
     @Param('id') id: string,
-    @Body() data: any,
+    @Body() data: ExportDatasetBody,
     @CurrentAuth() auth?: RequestAuthContext,
   ) {
     const datasetExport = await this.mlService.exportDatasetToCSV(

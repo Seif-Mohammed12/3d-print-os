@@ -230,7 +230,7 @@ export class OrientationGeneratorService {
     normal: { x: number; y: number; z: number },
   ): { x: number; y: number; z: number } {
     // Calculate Euler angles to rotate the given normal to point in -Z direction
-    const targetNormal = { x: 0, y: 0, z: -1 };
+    const _targetNormal = { x: 0, y: 0, z: -1 };
 
     // Normalize input
     const length = Math.sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);

@@ -13,6 +13,11 @@ export type ObjectStoragePort = {
     contentType: string;
     expiresInSeconds?: number;
   }) => Promise<ObjectStorageSignedUpload>;
+  createSignedDownloadUrl: (input: {
+    bucket: string;
+    key: string;
+    expiresInSeconds: number;
+  }) => Promise<string>;
   objectExists: (input: { bucket: string; key: string }) => Promise<boolean>;
   removeObject: (input: { bucket: string; key: string }) => Promise<void>;
 };

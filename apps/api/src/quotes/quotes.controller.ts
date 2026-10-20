@@ -28,13 +28,23 @@ export class QuotesController {
       shop_id: dto.shopId,
       customer_id: dto.customerId,
       model_id: dto.modelId,
+      material_id: dto.materialId,
+      printer_id: dto.printerId,
+      technology: dto.technology,
+      layer_height_mm: dto.layerHeightMm,
+      infill_percentage: dto.infillPercentage,
+      supports_mode: dto.supportsMode,
+      orientation_mode: dto.orientationMode,
+      internal_notes: dto.internalNotes,
+      customer_notes: dto.customerNotes,
+      created_by: auth.userId,
     });
     return { data: quote };
   }
 
   @Post(':id/analyze')
   async analyze(@Param('id') id: string, @CurrentAuth() auth: RequestAuthContext) {
-    const quote = await this.quoteService.analyzeQuote(id, auth.tenantId);
+    const quote = await this.quoteService.analyzeQuote(id, auth.tenantId, auth.userId ?? null);
     return { data: quote };
   }
 
@@ -64,7 +74,22 @@ export class QuotesController {
     @Body() dto: UpdateQuoteDto,
     @CurrentAuth() auth: RequestAuthContext,
   ) {
-    const quote = await this.quoteService.update(id, dto, auth.tenantId, auth.userId);
+    const quote = await this.quoteService.update(
+      id,
+      {
+        status: dto.status,
+        material_id: dto.materialId,
+        printer_id: dto.printerId,
+        technology: dto.technology,
+        layer_height_mm: dto.layerHeightMm,
+        infill_percentage: dto.infillPercentage,
+        internal_notes: dto.internalNotes,
+        customer_notes: dto.customerNotes,
+        rejection_reason: dto.rejectionReason,
+      },
+      auth.tenantId,
+      auth.userId,
+    );
     return { data: quote };
   }
 

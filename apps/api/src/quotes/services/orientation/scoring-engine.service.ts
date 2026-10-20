@@ -206,8 +206,8 @@ export class ScoringEngineService {
     stabilityScore: number,
     surfaceQualityScore: number,
     riskScore: number,
-    supportEstimation: SupportEstimation,
-    evaluation: OrientationEvaluation,
+    _supportEstimation: SupportEstimation,
+    _evaluation: OrientationEvaluation,
   ): string {
     const reasons: string[] = [];
 

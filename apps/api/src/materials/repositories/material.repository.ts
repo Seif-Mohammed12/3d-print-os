@@ -1,4 +1,4 @@
-import type { Pool } from 'pg';
+import type { Pool, PoolClient } from 'pg';
 import { withTenantSession } from '@3d-print-os/persistence';
 
 export interface Material {
@@ -53,6 +53,28 @@ export interface MaterialListParams {
   search?: string;
   page?: number;
   perPage?: number;
+}
+
+/**
+ * Compatibility rows have no tenant_id; both the material and the printer they link
+ * must belong to the tenant. `tenantParam` is the placeholder index holding the tenant id.
+ */
+function compatibilityInTenant(tenantParam: number): string {
+  return `material_id IN (SELECT id FROM materials WHERE tenant_id = $${tenantParam})
+    AND printer_id IN (SELECT id FROM printers WHERE tenant_id = $${tenantParam})`;
+}
+
+async function belongsToTenant(
+  client: PoolClient,
+  table: 'materials' | 'printers',
+  id: string,
+  tenantId: string,
+): Promise<boolean> {
+  const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1 AND tenant_id = $2`, [
+    id,
+    tenantId,
+  ]);
+  return (result.rowCount ?? 0) > 0;
 }
 
 export class MaterialRepository {
@@ -115,8 +137,8 @@ export class MaterialRepository {
   async findById(id: string, tenantId: string): Promise<Material | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<Material>(
-        'SELECT * FROM materials WHERE id = $1',
-        [id],
+        'SELECT * FROM materials WHERE id = $1 AND tenant_id = $2',
+        [id, tenantId],
       );
       return queryResult.rows[0] ?? null;
     });
@@ -134,9 +156,9 @@ export class MaterialRepository {
     const perPage = params.perPage ?? 20;
     const offset = (page - 1) * perPage;
 
-    const conditions: string[] = [];
-    const values: unknown[] = [];
-    let paramIndex = 1;
+    const conditions: string[] = ['tenant_id = $1'];
+    const values: unknown[] = [tenantId];
+    let paramIndex = 2;
 
     if (params.materialType) {
       conditions.push(`material_type = $${paramIndex}`);
@@ -162,7 +184,7 @@ export class MaterialRepository {
       paramIndex++;
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const [dataResult, countResult] = await Promise.all([
@@ -252,8 +274,10 @@ export class MaterialRepository {
       updates.push(`updated_at = NOW()`);
 
       const updateResult = await client.query<Material>(
-        `UPDATE materials SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE materials SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND tenant_id = $${paramIndex + 1}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -265,8 +289,8 @@ export class MaterialRepository {
   async delete(id: string, tenantId: string): Promise<boolean> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const deleteResult = await client.query(
-        'DELETE FROM materials WHERE id = $1 RETURNING id',
-        [id],
+        'DELETE FROM materials WHERE id = $1 AND tenant_id = $2 RETURNING id',
+        [id, tenantId],
       );
       return Boolean(deleteResult.rowCount && deleteResult.rowCount > 0);
     });
@@ -281,6 +305,13 @@ export class MaterialRepository {
     tenantId: string,
   ): Promise<MaterialCompatibility> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
+      const [materialOwned, printerOwned] = await Promise.all([
+        belongsToTenant(client, 'materials', materialId, tenantId),
+        belongsToTenant(client, 'printers', data.printer_id, tenantId),
+      ]);
+      if (!materialOwned || !printerOwned) {
+        return undefined;
+      }
       const insertResult = await client.query<MaterialCompatibility>(
         `INSERT INTO material_printer_compatibility (material_id, printer_id, is_compatible, override_nozzle_temperature_celsius, override_bed_temperature_celsius, override_print_speed_mm_per_min, notes)
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -308,8 +339,10 @@ export class MaterialRepository {
   async getCompatibilitiesByMaterial(materialId: string, tenantId: string): Promise<MaterialCompatibility[]> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<MaterialCompatibility>(
-        'SELECT * FROM material_printer_compatibility WHERE material_id = $1 ORDER BY is_compatible DESC, printer_id',
-        [materialId],
+        `SELECT * FROM material_printer_compatibility
+         WHERE material_id = $1 AND ${compatibilityInTenant(2)}
+         ORDER BY is_compatible DESC, printer_id`,
+        [materialId, tenantId],
       );
       return queryResult.rows;
     });
@@ -358,8 +391,10 @@ export class MaterialRepository {
       }
 
       const updateResult = await client.query<MaterialCompatibility>(
-        `UPDATE material_printer_compatibility SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        [...values, id],
+        `UPDATE material_printer_compatibility SET ${updates.join(', ')}
+         WHERE id = $${paramIndex} AND ${compatibilityInTenant(paramIndex + 1)}
+         RETURNING *`,
+        [...values, id, tenantId],
       );
 
       return updateResult.rows[0] ?? null;
@@ -371,8 +406,10 @@ export class MaterialRepository {
   async deleteCompatibility(id: string, tenantId: string): Promise<boolean> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const deleteResult = await client.query(
-        'DELETE FROM material_printer_compatibility WHERE id = $1 RETURNING id',
-        [id],
+        `DELETE FROM material_printer_compatibility
+         WHERE id = $1 AND ${compatibilityInTenant(2)}
+         RETURNING id`,
+        [id, tenantId],
       );
       return Boolean(deleteResult.rowCount && deleteResult.rowCount > 0);
     });

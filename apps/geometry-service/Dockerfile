@@ -1,14 +1,18 @@
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+# prusa-slicer provides the CLI used for slicer-accurate quotes (/api/v1/slice)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libgomp1 \
+    prusa-slicer \
     && rm -rf /var/lib/apt/lists/*
+
+ENV SLICER_EXECUTABLE=prusa-slicer
 
 # Copy requirements
 COPY requirements.txt .

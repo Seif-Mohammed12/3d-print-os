@@ -1,6 +1,8 @@
 import type { Pool } from 'pg';
 import { withTenantSession } from '@3d-print-os/persistence';
 
+import { assertTenantReferences } from '../../shared/tenant-references';
+
 export interface PricingRule {
   id: string;
   tenant_id: string;
@@ -59,6 +61,11 @@ export class PricingRepository {
       this.pool,
       { tenantId: data.tenantId },
       async (client) => {
+        await assertTenantReferences(client, data.tenantId, [
+          { table: 'shops', id: data.shop_id, field: 'shop_id' },
+          { table: 'materials', id: data.material_id, field: 'material_id' },
+          { table: 'printers', id: data.printer_id, field: 'printer_id' },
+        ]);
         const insertResult = await client.query<PricingRule>(
           `INSERT INTO pricing_rules (
           tenant_id, shop_id, material_id, printer_id, priority, material_cost_per_gram, material_cost_per_mm3, 
@@ -97,6 +104,34 @@ export class PricingRepository {
     return result;
   }
 
+  /**
+   * Most specific active rule for a job: a rule matches when each of its shop/material/printer
+   * scopes is either unset (wildcard) or equal to the job's. More matched scopes win, then priority.
+   */
+  async findApplicable(
+    tenantId: string,
+    scope: { shopId: string; materialId: string; printerId: string },
+  ): Promise<PricingRule | null> {
+    return withTenantSession(this.pool, { tenantId }, async (client) => {
+      const queryResult = await client.query<PricingRule>(
+        `SELECT * FROM pricing_rules
+         WHERE tenant_id = $1
+           AND is_active = true
+           AND deleted_at IS NULL
+           AND (shop_id IS NULL OR shop_id = $2)
+           AND (material_id IS NULL OR material_id = $3)
+           AND (printer_id IS NULL OR printer_id = $4)
+         ORDER BY ((shop_id IS NOT NULL)::int + (material_id IS NOT NULL)::int
+                   + (printer_id IS NOT NULL)::int) DESC,
+                  priority DESC,
+                  created_at DESC
+         LIMIT 1`,
+        [tenantId, scope.shopId, scope.materialId, scope.printerId],
+      );
+      return queryResult.rows[0] ?? null;
+    });
+  }
+
   async findById(id: string, tenantId: string): Promise<PricingRule | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
       const queryResult = await client.query<PricingRule>(
@@ -112,9 +147,9 @@ export class PricingRepository {
 
   async list(params: PricingRuleListParams, tenantId: string) {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
-      const conditions: string[] = ['deleted_at IS NULL'];
-      const values: unknown[] = [];
-      let paramIndex = 1;
+      const conditions: string[] = ['tenant_id = $1', 'deleted_at IS NULL'];
+      const values: unknown[] = [tenantId];
+      let paramIndex = 2;
 
       if (params.shop_id) {
         conditions.push(`shop_id = $${paramIndex}`);
@@ -171,7 +206,9 @@ export class PricingRepository {
 
   async update(
     id: string,
-    data: Partial<Omit<PricingRule, 'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'deleted_at'>>,
+    data: Partial<
+      Omit<PricingRule, 'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'deleted_at'>
+    >,
     tenantId: string,
   ): Promise<PricingRule | null> {
     const result = await withTenantSession(this.pool, { tenantId }, async (client) => {
@@ -259,6 +296,12 @@ export class PricingRepository {
         return null;
       }
 
+      await assertTenantReferences(client, tenantId, [
+        { table: 'shops', id: data.shop_id, field: 'shop_id' },
+        { table: 'materials', id: data.material_id, field: 'material_id' },
+        { table: 'printers', id: data.printer_id, field: 'printer_id' },
+      ]);
+
       const updateResult = await client.query<PricingRule>(
         `UPDATE pricing_rules SET ${updates.join(', ')} WHERE id = $${paramIndex} AND tenant_id = $${paramIndex + 1} AND deleted_at IS NULL RETURNING *`,
         [...values, id, tenantId],
@@ -272,7 +315,10 @@ export class PricingRepository {
 
   async delete(id: string, tenantId: string): Promise<void> {
     await withTenantSession(this.pool, { tenantId }, async (client) => {
-      await client.query('UPDATE pricing_rules SET deleted_at = NOW() WHERE id = $1 AND tenant_id = $2', [id, tenantId]);
+      await client.query(
+        'UPDATE pricing_rules SET deleted_at = NOW() WHERE id = $1 AND tenant_id = $2',
+        [id, tenantId],
+      );
     });
   }
 }

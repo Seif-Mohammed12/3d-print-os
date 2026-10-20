@@ -62,6 +62,8 @@ async def geometry_analysis_exception_handler(request: Request, exc: GeometryAna
         status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     elif exc.code == "limit_exceeded":
         status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+    elif exc.code in ("slicer_unavailable", "slicing_timeout"):
+        status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     
     return JSONResponse(
         status_code=status_code,
@@ -94,3 +96,24 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
             }
         }
     )
+
+
+class SlicerUnavailableError(GeometryAnalysisError):
+    """Raised when the slicer executable cannot be run."""
+
+    def __init__(self, message: str, details: Any = None):
+        super().__init__(message, "slicer_unavailable", details)
+
+
+class SlicingTimeoutError(GeometryAnalysisError):
+    """Raised when slicing exceeds the configured time budget."""
+
+    def __init__(self, message: str, details: Any = None):
+        super().__init__(message, "slicing_timeout", details)
+
+
+class SlicingFailedError(GeometryAnalysisError):
+    """Raised when the slicer rejects the model or settings."""
+
+    def __init__(self, message: str, code: str = "slicing_failed", details: Any = None):
+        super().__init__(message, code, details)

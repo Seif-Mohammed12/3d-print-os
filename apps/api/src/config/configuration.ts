@@ -20,6 +20,8 @@ export type AppConfig = {
   uploadBucket: string;
   uploadMaxBytes: number;
   uploadSignedUrlTtlSeconds: number;
+  geometryServiceUrl: string;
+  sliceTimeoutMs: number;
 };
 
 export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
@@ -44,6 +46,8 @@ export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     uploadBucket: parsed.UPLOAD_BUCKET,
     uploadMaxBytes: parsed.UPLOAD_MAX_BYTES,
     uploadSignedUrlTtlSeconds: parsed.UPLOAD_SIGNED_URL_TTL_SECONDS,
+    geometryServiceUrl: parsed.GEOMETRY_SERVICE_URL.replace(/\/+$/, ''),
+    sliceTimeoutMs: parsed.SLICE_TIMEOUT_MS,
   };
 }
 

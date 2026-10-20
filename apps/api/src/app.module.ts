@@ -12,6 +12,7 @@ import { MaterialsModule } from './materials/materials.module';
 import { OrdersModule } from './orders/orders.module';
 import { PrintersModule } from './printers/printers.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { CalibrationModule } from './calibration/calibration.module';
 import { MLModule } from './ml/ml.module';
 import { CustomersModule } from './customers/customers.module';
 import { PricingModule } from './pricing/pricing.module';
@@ -42,6 +43,7 @@ import { PortalModule } from './portal/portal.module';
     TenancyModule,
     GeometryModule,
     QuotesModule,
+    CalibrationModule,
     PrintersModule,
     MaterialsModule,
     OrdersModule,

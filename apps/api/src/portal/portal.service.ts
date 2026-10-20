@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { withTenantSession } from '@3d-print-os/persistence';
 import type { Pool } from 'pg';
 
+import { assertTenantReferences } from '../shared/tenant-references';
+
 @Injectable()
 export class PortalService {
   constructor(private readonly pool: Pool) {}
@@ -35,6 +37,10 @@ export class PortalService {
       if (!customerId) {
         throw new Error('Customer not found');
       }
+
+      await assertTenantReferences(client, tenantId, [
+        { table: 'model_files', id: data.modelFileId || null, field: 'modelFileId' },
+      ]);
 
       // Create quote request
       const result = await client.query(

@@ -7,6 +7,7 @@ import structlog
 from app.models import (
     GeometryAnalysisRequest,
     GeometryAnalysisResponse,
+    AnalysisCreate,
     AnalysisStatus,
     AnalysisUpdate,
     HealthResponse

@@ -1,4 +1,5 @@
 import httpx
+from urllib.parse import urlparse
 from typing import Optional
 import structlog
 
@@ -66,3 +67,36 @@ class StorageClient:
             except Exception as e:
                 self.logger.error("Failed to fetch STL from storage", error=str(e))
                 raise ValueError(f"Storage fetch failed: {str(e)}")
+
+    async def fetch_url_bytes(self, url: str) -> bytes:
+        """Fetch a model from a pre-signed URL, enforcing the host allowlist and size limit."""
+        host = (urlparse(url).hostname or "").lower()
+        allowed = {
+            h.strip().lower()
+            for h in settings.slicer_allowed_download_hosts.split(",")
+            if h.strip()
+        }
+        if allowed and host not in allowed:
+            raise ValueError(f"Download host '{host}' is not allowed")
+
+        async with httpx.AsyncClient(timeout=60.0, follow_redirects=False) as client:
+            try:
+                async with client.stream("GET", url) as response:
+                    response.raise_for_status()
+                    chunks: list[bytes] = []
+                    received = 0
+                    async for chunk in response.aiter_bytes():
+                        received += len(chunk)
+                        if received > settings.max_file_size_bytes:
+                            raise ValueError(
+                                f"File too large: more than {settings.max_file_size_bytes} bytes"
+                            )
+                        chunks.append(chunk)
+                    return b"".join(chunks)
+            except httpx.HTTPStatusError as e:
+                # Never log the signed URL itself; it is a bearer credential.
+                self.logger.error("Model download failed", status=e.response.status_code, host=host)
+                raise ValueError(f"Model download failed: {e.response.status_code}")
+            except httpx.HTTPError as e:
+                self.logger.error("Model download failed", error=type(e).__name__, host=host)
+                raise ValueError("Model download failed")

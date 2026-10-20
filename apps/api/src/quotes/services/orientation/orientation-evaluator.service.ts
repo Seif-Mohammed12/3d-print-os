@@ -54,7 +54,7 @@ export class OrientationEvaluatorService {
     orientation: Orientation,
     config: Partial<OrientationEvaluatorConfig> = {},
   ): OrientationEvaluation {
-    const cfg = { ...this.defaultConfig, ...config };
+    const _cfg = { ...this.defaultConfig, ...config };
 
     const rotatedTriangles = this.rotateTriangles(triangles, orientation);
     const boundingBox = this.calculateBoundingBox(rotatedTriangles);

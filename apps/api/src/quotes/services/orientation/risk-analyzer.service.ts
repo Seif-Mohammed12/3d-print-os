@@ -227,7 +227,7 @@ export class RiskAnalyzerService {
     evaluation: OrientationEvaluation,
     triangles: Triangle[],
   ): number {
-    const { footprintArea, height } = evaluation;
+    const { footprintArea: _footprintArea, height: _height } = evaluation;
 
     const maxDimension = Math.max(
       evaluation.boundingBox.dimensions.x,
