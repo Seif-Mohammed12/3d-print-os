@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     # project host). Empty allows any host; set it in every shared environment.
     slicer_allowed_download_hosts: str = ""
 
+    # Shared secret callers must send as X-Service-Key. Empty disables the check (local dev
+    # only); set it whenever the service is reachable from the internet.
+    service_api_key: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = False

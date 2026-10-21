@@ -1,0 +1,52 @@
+name: Deploy geometry service to Hugging Face
+
+# Mirrors apps/geometry-service into a Docker Space. Needs the repository secret
+# HF_TOKEN (a Hugging Face write token) and the repository variable HF_SPACE
+# (e.g. "your-hf-username/print-os-slicer"). Skips quietly until both exist.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/geometry-service/**'
+      - '.github/workflows/deploy-geometry-space.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-geometry-space
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ vars.HF_SPACE != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Push to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HF_TOKEN}" ]; then
+            echo "::error::Add the HF_TOKEN repository secret (a Hugging Face write token)."
+            exit 1
+          fi
+          git clone "https://hf-user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" space
+          rsync -a --delete \
+            --exclude '.git' --exclude '.venv' --exclude '__pycache__' --exclude '.env' \
+            --exclude '.pytest_cache' --exclude 'hf-space-README.md' \
+            apps/geometry-service/ space/
+          cp apps/geometry-service/hf-space-README.md space/README.md
+          cd space
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Space already up to date."
+          else
+            git commit -m "Deploy ${GITHUB_SHA::7} from GitHub"
+            git push
+          fi

@@ -98,7 +98,12 @@ export class SlicerClientService {
             orientation: { mode: request.orientation },
             selection: request.selection,
           },
-          { timeout: this.config.sliceTimeoutMs },
+          {
+            timeout: this.config.sliceTimeoutMs,
+            ...(this.config.geometryServiceKey
+              ? { headers: { 'X-Service-Key': this.config.geometryServiceKey } }
+              : {}),
+          },
         ),
       );
       return response.data;

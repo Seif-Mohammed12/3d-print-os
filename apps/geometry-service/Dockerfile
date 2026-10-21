@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     prusa-slicer \
     && rm -rf /var/lib/apt/lists/*
 
-ENV SLICER_EXECUTABLE=prusa-slicer
+ENV SLICER_EXECUTABLE=prusa-slicer \
+    SLICER_MAX_PARALLEL=2
 
 # Copy requirements
 COPY requirements.txt .

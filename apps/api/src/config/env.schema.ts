@@ -41,6 +41,11 @@ export const envSchema = z.object({
   UPLOAD_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(600),
   /** Base URL of the geometry service including its API prefix. */
   GEOMETRY_SERVICE_URL: z.string().url().default('http://localhost:8000/api/v1'),
+  /** Shared secret sent as X-Service-Key; must match the geometry service's SERVICE_API_KEY. */
+  GEOMETRY_SERVICE_KEY: z.preprocess(
+    (value) => (value === '' || value === undefined || value === null ? undefined : value),
+    z.string().min(16, 'GEOMETRY_SERVICE_KEY must be at least 16 characters').optional(),
+  ),
   /** Upper bound for one slicing request (all orientation candidates). */
   SLICE_TIMEOUT_MS: z.coerce.number().int().positive().default(600_000),
 });

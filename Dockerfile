@@ -1,4 +1,6 @@
 # syntax=docker/dockerfile:1
+# API and worker images. The web apps are deployed separately (Vercel) and excluded via
+# .dockerignore; the geometry service has its own Dockerfile in apps/geometry-service.
 
 FROM node:22-bookworm-slim AS base
 WORKDIR /app
@@ -6,32 +8,24 @@ ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
-FROM base AS deps
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
-COPY apps/api/package.json apps/api/
-COPY apps/worker/package.json apps/worker/
-COPY apps/web-admin/package.json apps/web-admin/
-COPY apps/web-portal/package.json apps/web-portal/
-COPY packages ./packages
-COPY modules ./modules
-RUN pnpm install --frozen-lockfile
-
-FROM deps AS build
+FROM base AS build
 COPY . .
-RUN pnpm --filter @3d-print-os/shared-kernel --filter @3d-print-os/contracts --filter @3d-print-os/observability run build \
-  && pnpm --filter @3d-print-os/api --filter @3d-print-os/worker run build
-
-FROM node:22-bookworm-slim AS api
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app /app
-WORKDIR /app/apps/api
-EXPOSE 3000
-CMD ["node", "dist/main.js"]
+# `...` selects the app plus every workspace package it depends on, built in order.
+RUN pnpm install --frozen-lockfile --filter "@3d-print-os/api..." --filter "@3d-print-os/worker..." \
+  && pnpm --filter "@3d-print-os/api..." --filter "@3d-print-os/worker..." run build
 
 FROM node:22-bookworm-slim AS worker
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app /app
 WORKDIR /app/apps/worker
+CMD ["node", "dist/main.js"]
+
+# Keep the API last: hosts that build without a --target (Render) use the final stage.
+FROM node:22-bookworm-slim AS api
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app /app
+WORKDIR /app/apps/api
+EXPOSE 3000
 CMD ["node", "dist/main.js"]
