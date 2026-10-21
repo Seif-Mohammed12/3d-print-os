@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @3d-print-os/web-admin run build",
+  "outputDirectory": "apps/web-admin/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
