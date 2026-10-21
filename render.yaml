@@ -1,5 +1,5 @@
 # Render blueprint for the API — for later, when a card is available (Render requires one even
-# on the free plan). Today the API runs on a PC with Tailscale Funnel; see docs/DEPLOYMENT.md.
+# on the free plan). Today the API runs on a PC behind a Cloudflare tunnel; see docs/DEPLOYMENT.md.
 services:
   - type: web
     name: print-os-api

@@ -1,11 +1,11 @@
 # Deployment (free, no card)
 
-| Part                                  | Where                                    | Config in repo                         |
-| ------------------------------------- | ---------------------------------------- | -------------------------------------- |
-| Web app (staff app + customer portal) | Vercel — https://3d-print-os.vercel.app  | `apps/web-admin/vercel.json`           |
-| API (NestJS)                          | This PC, published with Tailscale Funnel | `tools/start-server.ps1`, root `.env`  |
-| Slicer / geometry service             | This PC, private (only the API calls it) | `apps/geometry-service/.env`           |
-| Database + file storage               | Supabase                                 | `infra/migrations` (`pnpm db:migrate`) |
+| Part                                  | Where                                             | Config in repo                         |
+| ------------------------------------- | ------------------------------------------------- | -------------------------------------- |
+| Web app (staff app + customer portal) | Vercel — https://3d-print-os.vercel.app           | `apps/web-admin/vercel.json`           |
+| API (NestJS)                          | This PC, published with a Cloudflare quick tunnel | `tools/start-server.ps1`, root `.env`  |
+| Slicer / geometry service             | This PC, private (only the API calls it)          | `apps/geometry-service/.env`           |
+| Database + file storage               | Supabase                                          | `infra/migrations` (`pnpm db:migrate`) |
 
 Render, Koyeb, Oracle and Hugging Face Docker Spaces all need a payment card now, so the
 backend runs on a PC. **The whole app (sign-in included) only works while that PC is on and
@@ -15,9 +15,8 @@ or paid host later; only `VITE_API_BASE_URL` on Vercel changes.
 ## One-time setup on the PC
 
 1. Install Node 22, pnpm 9, Python 3.10+ and PrusaSlicer.
-2. Tailscale: install, sign in, and allow Funnel for this machine (the first
-   `tailscale funnel` prints a link if it isn't allowed yet). The public address is
-   `https://<machine>.<tailnet>.ts.net` and never changes.
+2. cloudflared: `winget install --id Cloudflare.cloudflared`. The script does not use or change
+   Tailscale or any other app on the machine.
 3. Root `.env`: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `JWT_ACCESS_SECRET`,
    `JWT_REFRESH_SECRET` (see `.env.example`).
 4. `apps/geometry-service/.env` (not committed):
@@ -39,14 +38,16 @@ From the repo root, in a terminal you keep open:
 powershell -ExecutionPolicy Bypass -File tools\start-server.ps1
 ```
 
-It starts the slicer (127.0.0.1:8000, private), the API (127.0.0.1:3000) and Tailscale
-Funnel, and prints the public API address. Ctrl+C stops everything and turns Funnel off.
+It starts the slicer (127.0.0.1:8000, private), the API (127.0.0.1:3000) and a Cloudflare quick
+tunnel, and prints the public API address (`https://<random>.trycloudflare.com/api/v1`).
+**The address changes on every start:** set it as `VITE_API_BASE_URL` on Vercel and redeploy.
+Ctrl+C stops everything.
 
 ## Vercel
 
 Project root `apps/web-admin`, environment variables:
 
-- `VITE_API_BASE_URL` = `https://<machine>.<tailnet>.ts.net/api/v1`
+- `VITE_API_BASE_URL` = the address `tools/start-server.ps1` prints
 - `VITE_PORTAL_TENANT_SLUG` = your shop's address (e.g. `3d-print-it`)
 
 Redeploy after changing them (they are baked in at build time). The API allows
