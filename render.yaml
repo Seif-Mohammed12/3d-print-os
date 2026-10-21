@@ -1,5 +1,5 @@
 # Render blueprint for the API (free plan). The web app runs on Vercel and the slicer
-# (geometry service) on a Hugging Face Space; see docs/DEPLOYMENT.md.
+# (geometry service) on a PC behind a Cloudflare tunnel; see docs/DEPLOYMENT.md.
 services:
   - type: web
     name: print-os-api
