@@ -82,7 +82,7 @@ export const useAuthStore = create<AuthStore>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: STORAGE_KEYS.AUTH_SESSION,
       partialize: (state) => ({
         user: state.user,
         tenant: state.tenant,

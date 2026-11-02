@@ -4,6 +4,8 @@ export const STORAGE_KEYS = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
   THEME: 'theme',
+  /** zustand persist key for the signed-in user, tenant and roles. */
+  AUTH_SESSION: 'auth-storage',
 } as const;
 
 export const THEME = {
