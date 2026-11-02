@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>3D Print OS — Next-up signage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ground:#F1F2F4;--surf:#FFF;--ink:#111317;--char:#2B2F36;--char2:#3A3F48;--mute:#6B7079;--line:#E2E4E8;--yel:#FFCC1A;--red:#D83A34;--green:#1F8A4C;--blue:#2F6FD1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:var(--ground);color:var(--ink);font:400 14px/1.45 "Public Sans",system-ui,sans-serif;font-variant-numeric:tabular-nums;display:flex;-webkit-font-smoothing:antialiased}
+.rail{width:232px;flex:none;background:var(--char);color:#C9CDD3;display:flex;flex-direction:column;padding:18px 12px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px}
+.mark{width:28px;height:28px;border-radius:6px;background:#fff;color:var(--char);font:800 12px/28px "Public Sans";text-align:center}
+.brand b{color:#fff;font-size:14px;font-weight:700;display:block}.brand span{font-size:12px;color:#9AA0A8}
+.grp{font-size:11px;font-weight:600;color:#8A9098;padding:16px 10px 6px}
+.nav{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:7px;color:#D3D6DB;font-size:13.5px}
+.nav i{width:16px;height:16px;border:1.5px solid #8A9098;border-radius:4px;flex:none}
+.nav.on{background:var(--char2);color:#fff;font-weight:600}.nav.on i{border-color:#fff}
+.nav em{margin-left:auto;font-style:normal;font-size:12px;color:#9AA0A8}.nav em.r{background:var(--red);color:#fff;border-radius:9px;padding:0 6px;font-weight:600;line-height:18px}
+.user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid #3A3F48}
+.av{width:28px;height:28px;border-radius:50%;background:#4A505A;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.user b{color:#fff;font-size:13px;font-weight:600;display:block}.user span{font-size:11.5px;color:#9AA0A8}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:56px;background:var(--surf);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 28px;flex:none}
+.search{width:380px;height:34px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--mute);font-size:13.5px}
+.search kbd{margin-left:auto;font:500 11px "Public Sans";border:1px solid var(--line);border-radius:4px;padding:0 5px}
+.sp{flex:1}.btn{height:34px;border-radius:8px;padding:0 14px;font:600 13.5px "Public Sans";display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.btn.ink{background:var(--ink);border-color:var(--ink);color:#fff}
+.page{padding:24px 28px 0}
+.hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+h1{font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1.15}.sub{color:var(--mute);margin-top:4px}.sub b{color:var(--ink);font-weight:600}
+.gates{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.gate{background:var(--surf);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;height:212px}
+.gtop{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.num{font-size:64px;font-weight:800;line-height:.9;letter-spacing:-.03em}.num.dim{color:#B9BDC4}
+.pic{width:22px;height:22px;border-radius:4px;background:var(--char);display:grid;place-items:center}.pic i{width:10px;height:10px;border:2px solid #fff;border-radius:2px}
+.gname{padding:8px 14px 0;font-weight:600;font-size:13.5px}
+.st{padding:2px 14px 0;font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.d{width:7px;height:7px;border-radius:50%;background:var(--mute)}.d.p{background:var(--blue)}.d.g{background:var(--green)}.d.r{background:var(--red)}
+.job{padding:8px 14px 0;font-size:12.5px;line-height:1.5;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.job b{font-weight:600}.job span{color:var(--mute)}
+.band{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:var(--yel);color:#111;font-weight:700;font-size:14px}
+.band.red{background:var(--red);color:#fff}.band.off{background:#E9EBEE;color:var(--mute);font-weight:600}
+.next{font-size:12px;color:var(--mute);padding:7px 4px 0;height:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.next b{color:var(--ink);font-weight:600}
+.cols{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:14px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:10px}
+.figs{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr}
+.fig{padding:14px 18px;border-left:1px solid var(--line)}.fig:first-child{border-left:0;display:flex;gap:18px;align-items:flex-end}
+.fl{font-size:12.5px;color:var(--mute)}.fv{font-size:22px;font-weight:700;margin-top:2px;letter-spacing:-.01em;white-space:nowrap}.fv small{font-size:13px;color:var(--mute);font-weight:500}
+.bars{display:flex;gap:3px;align-items:flex-end;height:44px;margin-left:auto}.bars i{width:6px;background:#C3C7CE;border-radius:2px}.bars i:last-child{background:var(--ink)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px}.ch h2{font-size:15px;font-weight:700}.ch a{font-size:13px;color:var(--mute);text-decoration:none}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;font-weight:600;color:var(--mute);padding:8px 18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#FAFAFB}
+td{padding:11px 18px;border-bottom:1px solid var(--line);font-size:13.5px}td.n,th.n{text-align:right}td.m{font-weight:600}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px}
+.ow{padding:0 18px}.ow div{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid var(--line);font-size:13.5px}
+.ow b{font-weight:600}.ow span{color:var(--mute);font-size:12.5px;display:block}.ow em{font-style:normal;font-weight:600}
+</style></head><body>
+<aside class="rail">
+<div class="brand"><div class="mark">3D</div><div><b>3D Print OS</b><span>3D Print It</span></div></div>
+<div class="grp">Sales</div>
+<div class="nav on"><i></i>Dashboard</div><div class="nav"><i></i>Quotes<em>8</em></div><div class="nav"><i></i>Orders<em>7</em></div><div class="nav"><i></i>Customers</div>
+<div class="grp">Production</div>
+<div class="nav"><i></i>Queue<em class="r">1</em></div><div class="nav"><i></i>Printers</div><div class="nav"><i></i>Materials</div>
+<div class="grp">Business</div>
+<div class="nav"><i></i>Reports</div><div class="nav"><i></i>Pricing</div><div class="nav"><i></i>Settings</div>
+<div class="user"><div class="av">SM</div><div><b>Seif Mohammed</b><span>Owner</span></div></div>
+</aside>
+<div class="main">
+<header class="top"><div class="search">Search orders, quotes, customers<kbd>Ctrl K</kbd></div><div class="sp"></div><button class="btn">Tue, 3 Nov</button><button class="btn ink">+ New quote</button></header>
+<div class="page">
+<div class="hd"><div><h1>Today on the floor</h1><p class="sub"><b>2</b> prints running · <b>8</b> draft quotes waiting · <b>1</b> failed print</p></div><button class="btn">Open queue</button></div>
+<div class="gates">
+<div><div class="gate"><div class="gtop"><div class="num">01</div><div class="pic"><i></i></div></div><div class="gname">Bambu X1C · 1</div><div class="st"><span class="d p"></span>Printing</div><div class="job"><b>ORD-1040</b> Mariam Hassan<br><span>EGP 1,600 · started 3h ago</span></div><div class="band">Mark printed<span>→</span></div></div><div class="next">Up next: <b>ORD-1044</b> Salma Rashad</div></div>
+<div><div class="gate"><div class="gtop"><div class="num">02</div><div class="pic"><i></i></div></div><div class="gname">Bambu X1C · 2</div><div class="st"><span class="d p"></span>Printing</div><div class="job"><b>ORD-1041</b> Nour Studio<br><span>EGP 2,850 · started 1h ago</span></div><div class="band">Mark printed<span>→</span></div></div><div class="next">Up next: <b>ORD-1042</b> Nour Studio</div></div>
+<div><div class="gate"><div class="gtop"><div class="num">03</div><div class="pic"><i></i></div></div><div class="gname">Prusa MK4</div><div class="st"><span class="d g"></span>Ready</div><div class="job"><b>ORD-1038</b> Youssef Adel<br><span>Printed · awaiting QC</span></div><div class="band">Pass QC<span>→</span></div></div><div class="next">Up next: <b>ORD-1044</b> Salma Rashad</div></div>
+<div><div class="gate"><div class="gtop"><div class="num">04</div><div class="pic"><i></i></div></div><div class="gname">Ender 3 S1</div><div class="st"><span class="d r"></span>Failed</div><div class="job"><b>ORD-1036</b> Mariam Hassan<br><span>EGP 520 · layer shift</span></div><div class="band red">Reprint<span>→</span></div></div><div class="next"></div></div>
+<div><div class="gate"><div class="gtop"><div class="num">05</div><div class="pic"><i></i></div></div><div class="gname">Prusa Mini</div><div class="st"><span class="d"></span>Maintenance</div><div class="job"><span>No job</span></div><div class="band off">Back in service</div></div><div class="next"></div></div>
+<div><div class="gate"><div class="gtop"><div class="num dim">—</div><div class="pic"><i></i></div></div><div class="gname">No printer yet</div><div class="st"><span class="d"></span>Unassigned</div><div class="job"><b>ORD-1037</b> Omar Khaled<br><span>EGP 380</span></div><div class="band">Assign printer<span>→</span></div></div><div class="next"></div></div>
+</div>
+<div class="cols">
+<div>
+<div class="card figs">
+<div class="fig"><div><div class="fl">Revenue, 14 days</div><div class="fv">EGP 45,700 <small>51 orders</small></div></div><div class="bars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:35%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:30%"></i><i style="height:70%"></i><i style="height:58%"></i><i style="height:44%"></i><i style="height:80%"></i><i style="height:52%"></i><i style="height:66%"></i><i style="height:74%"></i><i style="height:90%"></i></div></div>
+<div class="fig"><div class="fl">Open orders</div><div class="fv">7</div></div>
+<div class="fig"><div class="fl">Draft quotes</div><div class="fv">8</div></div>
+<div class="fig"><div class="fl">Printers ready</div><div class="fv">4 <small>/ 5</small></div></div>
+</div>
+<div class="card" style="margin-top:16px"><div class="ch"><h2>Recent quotes</h2><a href="#">View all quotes</a></div>
+<table><tr><th>Quote</th><th>Customer</th><th class="n">Print time</th><th class="n">Filament</th><th class="n">Price</th><th>Status</th></tr>
+<tr><td class="m">Q-2213</td><td>Karim Fathy</td><td class="n">3h 40m</td><td class="n">112 g</td><td class="n">EGP 640</td><td><span class="tag"><span class="d"></span>Draft</span></td></tr>
+<tr><td class="m">Q-2212</td><td>Laila Mostafa</td><td class="n">1h 15m</td><td class="n">38 g</td><td class="n">EGP 210</td><td><span class="tag"><span class="d p"></span>Sent</span></td></tr>
+<tr><td class="m">Q-2211</td><td>Ahmed Samir</td><td class="n">9h 05m</td><td class="n">286 g</td><td class="n">EGP 1,480</td><td><span class="tag"><span class="d g"></span>Approved</span></td></tr>
+<tr><td class="m">Q-2210</td><td>Hana Zaki</td><td class="n">2h 10m</td><td class="n">64 g</td><td class="n">EGP 330</td><td><span class="tag"><span class="d g"></span>Approved</span></td></tr>
+</table></div>
+</div>
+<div class="card"><div class="ch"><h2>Orders waiting</h2><a href="#">All orders</a></div>
+<div class="ow">
+<div><p><b>ORD-1042</b><span>Nour Studio · queued for 02</span></p><em>EGP 1,120</em></div>
+<div><p><b>ORD-1044</b><span>Salma Rashad · queued for 01</span></p><em>EGP 760</em></div>
+<div><p><b>ORD-1037</b><span>Omar Khaled · no printer</span></p><em>EGP 380</em></div>
+<div><p><b>ORD-1043</b><span>Tarek Nabil · awaiting payment</span></p><em>EGP 940</em></div>
+<div><p><b>ORD-1039</b><span>Dina Farouk · ready for pickup</span></p><em>EGP 450</em></div>
+</div></div>
+</div>
+</div>
+</div>
+</body></html>

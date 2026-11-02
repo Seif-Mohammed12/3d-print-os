@@ -96,10 +96,10 @@ export function PortalUploadPage() {
     return (
       <Card className="mx-auto max-w-lg">
         <CardContent className="flex flex-col items-center py-12 text-center">
-          <span className="flex h-[22px] items-center border border-stock-edge bg-stock-approved px-3 text-[11px] font-bold tracking-[0.02em] text-stock-ink">
-            <CheckCircle2 className="me-1.5 h-3.5 w-3.5" aria-hidden="true" />
-            ORDER PLACED
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-stock-done-soft text-stock-done-ink">
+            <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
           </span>
+          <span className="mt-3 text-sm font-semibold text-stock-done-ink">Order placed</span>
           <h1 className="mt-4 text-xl font-bold text-foreground">Thanks, it's in the queue</h1>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             {ordered.order ? (
@@ -129,7 +129,7 @@ export function PortalUploadPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+        <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
           Get a quote
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -178,7 +178,7 @@ export function PortalUploadPage() {
                   <button
                     type="button"
                     onClick={reset}
-                    className="-m-1 rounded-sm p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    className="-m-1 rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
                     aria-label="Remove model"
                   >
                     <X className="h-4 w-4" />
@@ -229,7 +229,7 @@ export function PortalUploadPage() {
                 onQuantity={setQuantity}
               />
 
-              <div className="border-t-2 border-rule pt-4" aria-live="polite">
+              <div className="border-t border-border pt-4" aria-live="polite">
                 {!upload.isSuccess ? (
                   <p className="text-sm text-muted-foreground">
                     {file ? 'Uploading your model…' : 'Upload a model to see your price.'}

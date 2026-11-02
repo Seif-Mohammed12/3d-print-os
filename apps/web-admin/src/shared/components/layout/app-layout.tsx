@@ -12,21 +12,21 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen bg-background">
-      <aside className="hidden w-56 shrink-0 lg:block">
+      <aside className="hidden w-60 shrink-0 lg:block">
         <Sidebar />
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-[hsl(205_34%_10%/0.55)]"
+            className="absolute inset-0 bg-[hsl(218_30%_8%/0.45)]"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute inset-y-0 start-0 w-64 shadow-popover">
+          <aside className="absolute inset-y-0 start-0 w-72 shadow-popover">
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="absolute end-2 top-2.5 z-10 rounded-sm p-2 text-sidebar-muted hover:bg-sidebar-raised hover:text-sidebar-foreground"
+              className="absolute end-2 top-2.5 z-10 rounded-lg p-2 text-sidebar-muted hover:bg-sidebar-raised hover:text-sidebar-foreground"
               aria-label="Close menu"
             >
               <X className="h-4 w-4" />
@@ -37,11 +37,11 @@ export function AppLayout() {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background px-4 sm:px-6">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/95 px-4 sm:px-8">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="-ms-2 rounded-sm p-2.5 text-foreground hover:bg-muted lg:hidden"
+            className="-ms-2 rounded-lg p-2.5 text-foreground hover:bg-muted lg:hidden"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
@@ -63,7 +63,7 @@ export function AppLayout() {
           <UserMenu signOutTo="/login" />
         </header>
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1400px] px-4 py-5 sm:px-6 lg:py-6">
+          <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-8 lg:py-8">
             <Outlet />
           </div>
         </main>

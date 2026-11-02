@@ -10,18 +10,18 @@ import {
 import { cn } from '../lib/utils';
 
 const control =
-  'block w-full rounded-sm border border-input bg-card px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground hover:border-foreground/60 focus-visible:border-foreground focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive-soft/40';
+  'block w-full rounded-[10px] border border-input bg-card px-3 text-sm text-foreground shadow-card transition-colors placeholder:text-muted-foreground hover:border-foreground/30 focus-visible:border-brand focus-visible:ring-brand/25 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive-soft/40 dark:shadow-none';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...props }, ref) {
-    return <input ref={ref} className={cn(control, 'h-9', className)} {...props} />;
+    return <input ref={ref} className={cn(control, 'h-10', className)} {...props} />;
   },
 );
 
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
   function Select({ className, children, ...props }, ref) {
     return (
-      <select ref={ref} className={cn(control, 'h-9 pe-8', className)} {...props}>
+      <select ref={ref} className={cn(control, 'h-10 pe-8', className)} {...props}>
         {children}
       </select>
     );
@@ -61,7 +61,7 @@ export function Field({
   const message = error ?? hint;
   return (
     <div className={cn('space-y-1.5', className)}>
-      <label htmlFor={id} className="block text-[13px] font-semibold text-foreground">
+      <label htmlFor={id} className="block text-[13px] font-medium text-foreground">
         {label}
       </label>
       {children({

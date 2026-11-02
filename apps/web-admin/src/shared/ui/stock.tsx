@@ -3,24 +3,36 @@ import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
 
 /**
- * Card stock: the one colour vocabulary for status. A job keeps the same stock in the rack, in
- * tables and on detail pages, so a colour always means exactly one thing.
+ * Status colours: the one vocabulary for where a job stands. Each status has a solid dot, a
+ * soft chip ground and a chip ink, and keeps them on every screen, so a colour always means
+ * exactly one thing.
  */
 export type Stock =
   'draft' | 'quoted' | 'approved' | 'printing' | 'qc' | 'failed' | 'void' | 'done';
 
-export const STOCK_FILL: Record<Stock, string> = {
-  draft: 'bg-stock-draft text-stock-ink',
-  quoted: 'bg-stock-quoted text-stock-ink',
-  approved: 'bg-stock-approved text-stock-ink',
-  printing: 'bg-stock-printing text-stock-ink',
-  qc: 'bg-stock-qc text-stock-ink',
-  failed: 'bg-stock-failed text-white',
-  void: 'bg-stock-void text-stock-ink',
-  done: 'bg-stock-done text-stock-done-ink',
+export const STOCK_DOT: Record<Stock, string> = {
+  draft: 'bg-stock-draft',
+  quoted: 'bg-stock-quoted',
+  approved: 'bg-stock-approved',
+  printing: 'bg-stock-printing',
+  qc: 'bg-stock-qc',
+  failed: 'bg-stock-failed',
+  void: 'bg-stock-void',
+  done: 'bg-stock-done',
 };
 
-/** A status tag drawn as a T-card's coloured head. */
+export const STOCK_CHIP: Record<Stock, string> = {
+  draft: 'bg-stock-draft-soft text-stock-draft-ink',
+  quoted: 'bg-stock-quoted-soft text-stock-quoted-ink',
+  approved: 'bg-stock-approved-soft text-stock-approved-ink',
+  printing: 'bg-stock-printing-soft text-stock-printing-ink',
+  qc: 'bg-stock-qc-soft text-stock-qc-ink',
+  failed: 'bg-stock-failed-soft text-stock-failed-ink',
+  void: 'bg-stock-void-soft text-stock-void-ink',
+  done: 'bg-stock-done-soft text-stock-done-ink',
+};
+
+/** A status chip: soft pill, a dot in the status colour, and the status word. */
 export function StockTag({
   stock,
   children,
@@ -33,34 +45,31 @@ export function StockTag({
   return (
     <span
       className={cn(
-        'inline-flex h-[22px] items-center whitespace-nowrap rounded-sm border border-stock-edge px-2 text-xs font-semibold',
-        STOCK_FILL[stock],
+        'inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-xs font-semibold',
+        STOCK_CHIP[stock],
         stock === 'void' && 'line-through decoration-1',
         className,
       )}
     >
+      <span aria-hidden="true" className={cn('h-1.5 w-1.5 rounded-full', STOCK_DOT[stock])} />
       {children}
     </span>
   );
 }
 
-/** The small square of stock that leads a table row or list item. */
+/** The status dot that leads a table row or list item. */
 export function StockSwatch({ stock, className }: { stock: Stock; className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        'inline-block h-3 w-3 shrink-0 rounded-sm border border-stock-edge',
-        STOCK_FILL[stock],
-        className,
-      )}
+      className={cn('inline-block h-2 w-2 shrink-0 rounded-full', STOCK_DOT[stock], className)}
     />
   );
 }
 
 /**
- * A T-card: coloured head over an inset paper body, the way cards hang in a planning rack.
- * `head` is the status line; `aside` sits at the head's far end (time left, order number).
+ * A job card: status chip and an aside (order number, time) over the card's content.
+ * `emphasis` marks a card that needs a hand (a failed print).
  */
 export function TCard({
   stock,
@@ -78,35 +87,35 @@ export function TCard({
   emphasis?: boolean;
 }) {
   return (
-    <div className={cn('relative', className)}>
-      <div
-        className={cn(
-          'relative z-[1] flex h-[22px] items-center justify-between gap-2 border border-stock-edge px-2 text-[11px] font-bold tracking-[0.02em]',
-          STOCK_FILL[stock],
+    <div
+      className={cn(
+        'rounded-xl border bg-card p-3 text-card-foreground shadow-card dark:shadow-none',
+        emphasis ? 'border-stock-failed/60 ring-1 ring-stock-failed/30' : 'border-border',
+        className,
+      )}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        {/* The status word never truncates; the aside gives way. */}
+        <StockTag stock={stock} className="shrink-0">
+          {head}
+        </StockTag>
+        {aside && (
+          <span className="min-w-0 truncate font-mono text-[11px] text-muted-foreground">
+            {aside}
+          </span>
         )}
-      >
-        {/* The status word is the card's content: it never truncates, the aside gives way. */}
-        <span className="shrink-0 whitespace-nowrap">{head}</span>
-        {aside && <span className="min-w-0 truncate font-semibold">{aside}</span>}
       </div>
-      <div
-        className={cn(
-          'mx-1.5 -mt-px border border-t-0 border-stock-edge bg-card px-2 pb-2 pt-1.5 text-card-foreground',
-          emphasis && 'border-x-2 border-b-2 border-stock-failed',
-        )}
-      >
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
 
-/** Status lamp for machines: a lit dot plus its word, never colour alone. */
+/** Status lamp for machines: a dot plus its word, never colour alone. */
 export type LampTone = 'running' | 'ready' | 'waiting' | 'fault' | 'off';
 
 const LAMP: Record<LampTone, string> = {
   running: 'bg-stock-printing',
-  ready: 'bg-stock-approved',
+  ready: 'bg-stock-done',
   waiting: 'bg-stock-quoted',
   fault: 'bg-stock-failed',
   off: 'bg-stock-void',
@@ -124,15 +133,12 @@ export function Lamp({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold',
-        tone === 'fault' ? 'text-destructive' : 'text-foreground',
+        'inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-medium',
+        tone === 'fault' ? 'text-destructive' : 'text-muted-foreground',
         className,
       )}
     >
-      <span
-        aria-hidden="true"
-        className={cn('h-2 w-2 rounded-full ring-1 ring-stock-edge', LAMP[tone])}
-      />
+      <span aria-hidden="true" className={cn('h-2 w-2 rounded-full', LAMP[tone])} />
       {children}
     </span>
   );

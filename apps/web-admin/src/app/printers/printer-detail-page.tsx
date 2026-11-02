@@ -82,7 +82,7 @@ export function PrinterDetailPage() {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+            <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
               {p.name}
             </h1>
             <PrinterStatusBadge status={p.status} />

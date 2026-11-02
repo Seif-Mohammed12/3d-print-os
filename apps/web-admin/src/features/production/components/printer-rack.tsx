@@ -61,7 +61,7 @@ export function useCardAction(order: Order) {
   return { action, run, pending: update.isPending };
 }
 
-function lampFor(printer: Printer, jobs: Order[]): { tone: LampTone; label: string } {
+export function lampFor(printer: Printer, jobs: Order[]): { tone: LampTone; label: string } {
   if (jobs.some((job) => job.production_status === 'failed')) {
     return { tone: 'fault', label: 'Failed print' };
   }
@@ -86,16 +86,13 @@ function RackCard({ order }: { order: Order }) {
         stock={productionStock(order.production_status)}
         head={PRODUCTION_STATUS_LABEL[order.production_status].toUpperCase()}
         aside={
-          <Link
-            to={`/app/orders/${order.id}`}
-            className="underline underline-offset-2 hover:no-underline"
-          >
+          <Link to={`/app/orders/${order.id}`} className="hover:text-foreground hover:underline">
             {order.order_number}
           </Link>
         }
         emphasis={order.production_status === 'failed'}
       >
-        <p className="truncate text-[13px] font-semibold">{order.customer_name ?? 'Customer'}</p>
+        <p className="truncate text-sm font-semibold">{order.customer_name ?? 'Customer'}</p>
         <p className="mt-0.5 flex justify-between gap-2 text-xs text-muted-foreground">
           <span className="tabular shrink-0 whitespace-nowrap">
             {formatMoney(order.total_cents, order.currency)}
@@ -108,7 +105,7 @@ function RackCard({ order }: { order: Order }) {
           <Button
             size="sm"
             variant={order.production_status === 'failed' ? 'primary' : 'secondary'}
-            className="mt-2 h-11 w-full sm:h-7"
+            className="mt-3 h-11 w-full sm:h-8"
             onClick={run}
             loading={pending}
           >
@@ -133,8 +130,8 @@ function RackColumn({
 }) {
   return (
     <section className="flex min-w-0 flex-col sm:min-w-[9.5rem] sm:flex-1" aria-label={title}>
-      <header className="border-b-2 border-rule px-0.5 pb-1.5">
-        <h3 className="truncate text-[13px] font-bold text-foreground">{title}</h3>
+      <header className="px-1 pb-2">
+        <h3 className="truncate text-sm font-semibold text-foreground">{title}</h3>
         <div className="mt-0.5 flex items-center justify-between gap-2">
           {lamp ? <Lamp tone={lamp.tone}>{lamp.label}</Lamp> : <span />}
           <span className="tabular text-xs text-muted-foreground">
@@ -142,21 +139,15 @@ function RackColumn({
           </span>
         </div>
       </header>
-      {/* Slot rails with a lit top edge; each card hangs from one. */}
-      <div className="flex-1 bg-[repeating-linear-gradient(to_bottom,hsl(var(--slot))_0_2px,hsl(var(--slot-hi))_2px_3px,transparent_3px_100%)] bg-[length:100%_112px] bg-[position:0_10px] pb-3 pt-3">
-        <div className="space-y-4">
+      <div className="flex-1 rounded-2xl bg-muted/50 p-2.5">
+        <div className="space-y-3">
           {jobs.map((job) => (
             <RackCard key={job.id} order={job} />
           ))}
           {jobs.length === 0 && (
-            <div aria-label="Empty slot">
-              <div className="flex h-[22px] items-center border border-dashed border-input px-2 text-[11px] font-bold tracking-[0.02em] text-muted-foreground">
-                EMPTY SLOT
-              </div>
-              <p className="mx-1.5 border border-t-0 border-dashed border-input px-2 py-2 text-xs text-muted-foreground">
-                {emptyText}
-              </p>
-            </div>
+            <p className="rounded-xl border border-dashed border-input px-3 py-4 text-center text-xs text-muted-foreground">
+              {emptyText}
+            </p>
           )}
         </div>
       </div>
@@ -165,7 +156,7 @@ function RackColumn({
 }
 
 /**
- * The planning rack: one slot column per printer with its open jobs hanging in it, plus a
+ * The printer board: one slot column per printer with its open jobs hanging in it, plus a
  * column for open orders that have no printer yet (first when it holds any, since those need
  * a hand).
  */
@@ -202,12 +193,7 @@ export function PrinterRack({
   );
 
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-5 rounded-sm border border-slot bg-rack p-3 sm:flex-row sm:gap-3 sm:overflow-x-auto',
-        className,
-      )}
-    >
+    <div className={cn('flex flex-col gap-5 sm:flex-row sm:gap-4 sm:overflow-x-auto', className)}>
       {unassigned.length > 0 && unassignedColumn}
       {fleet.map((printer) => {
         const jobs = byPrinter.get(printer.id) ?? [];

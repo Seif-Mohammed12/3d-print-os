@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Archivo', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
@@ -14,10 +14,11 @@ export default {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        chart: 'hsl(var(--chart))',
-        rack: 'hsl(var(--rack))',
-        slot: 'hsl(var(--slot))',
-        'slot-hi': 'hsl(var(--slot-hi))',
+        brand: 'hsl(var(--brand))',
+        chart: {
+          DEFAULT: 'hsl(var(--chart))',
+          muted: 'hsl(var(--chart-muted))',
+        },
         rule: 'hsl(var(--rule))',
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar))',
@@ -29,15 +30,29 @@ export default {
         },
         stock: {
           draft: 'hsl(var(--stock-draft))',
+          'draft-soft': 'hsl(var(--stock-draft-soft))',
+          'draft-ink': 'hsl(var(--stock-draft-ink))',
           quoted: 'hsl(var(--stock-quoted))',
+          'quoted-soft': 'hsl(var(--stock-quoted-soft))',
+          'quoted-ink': 'hsl(var(--stock-quoted-ink))',
           approved: 'hsl(var(--stock-approved))',
+          'approved-soft': 'hsl(var(--stock-approved-soft))',
+          'approved-ink': 'hsl(var(--stock-approved-ink))',
           printing: 'hsl(var(--stock-printing))',
+          'printing-soft': 'hsl(var(--stock-printing-soft))',
+          'printing-ink': 'hsl(var(--stock-printing-ink))',
           qc: 'hsl(var(--stock-qc))',
+          'qc-soft': 'hsl(var(--stock-qc-soft))',
+          'qc-ink': 'hsl(var(--stock-qc-ink))',
           failed: 'hsl(var(--stock-failed))',
+          'failed-soft': 'hsl(var(--stock-failed-soft))',
+          'failed-ink': 'hsl(var(--stock-failed-ink))',
           void: 'hsl(var(--stock-void))',
+          'void-soft': 'hsl(var(--stock-void-soft))',
+          'void-ink': 'hsl(var(--stock-void-ink))',
           done: 'hsl(var(--stock-done))',
+          'done-soft': 'hsl(var(--stock-done-soft))',
           'done-ink': 'hsl(var(--stock-done-ink))',
-          ink: 'hsl(var(--stock-ink))',
           edge: 'hsl(var(--stock-edge))',
         },
         primary: {
@@ -79,17 +94,17 @@ export default {
         },
       },
       borderRadius: {
-        // The board has square-cut card stock: nothing rounds past 2px except status lamps.
-        xl: 'var(--radius)',
+        sm: '6px',
+        DEFAULT: '8px',
+        md: '8px',
         lg: 'var(--radius)',
-        md: 'var(--radius)',
-        sm: 'var(--radius)',
-        DEFAULT: 'var(--radius)',
+        xl: '14px',
+        '2xl': '18px',
       },
       boxShadow: {
-        // Cards sit flat in the rack; only overlays lift off the board.
-        card: 'none',
-        popover: '0 12px 28px -8px rgb(12 22 30 / 0.35), 0 2px 6px -2px rgb(12 22 30 / 0.2)',
+        // Resting cards get a hairline and the faintest contact shadow; dark mode drops it.
+        card: '0 1px 2px rgb(16 24 40 / 0.04)',
+        popover: '0 16px 32px -12px rgb(16 24 40 / 0.22), 0 4px 8px -4px rgb(16 24 40 / 0.1)',
       },
     },
   },

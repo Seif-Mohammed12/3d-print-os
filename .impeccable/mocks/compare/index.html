@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>3D Print OS · direction compare</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{font:14px/1.4 system-ui,sans-serif;background:#202326;color:#eee;padding:16px}
+h1{font-size:16px;font-weight:600;margin-bottom:4px}p.s{color:#aaa;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+figure{background:#111}
+figcaption{display:flex;justify-content:space-between;padding:8px 10px;font-weight:600}
+figcaption a{color:#9cc4ff;font-weight:400}
+.frame{position:relative;width:100%;aspect-ratio:1440/900;overflow:hidden}
+.frame iframe{position:absolute;left:0;top:0;width:1440px;height:900px;border:0;transform-origin:0 0}
+</style></head><body>
+<h1>Same screen, four directions</h1>
+<p class="s">Dashboard with the same data in each. Click “Full size” to open one at 1440×900.</p>
+<div class="grid">
+ <figure><figcaption>1 · T-Card Planning Board (the roll)<a href="1-tcard.html" target="_blank">Full size</a></figcaption><div class="frame"><iframe src="1-tcard.html" scrolling="no"></iframe></div></figure>
+ <figure><figcaption>2 · Job Traveler (Impeccable's pick)<a href="2-traveler.html" target="_blank">Full size</a></figcaption><div class="frame"><iframe src="2-traveler.html" scrolling="no"></iframe></div></figure>
+ <figure><figcaption>3 · Split-Flap Concourse<a href="3-splitflap.html" target="_blank">Full size</a></figcaption><div class="frame"><iframe src="3-splitflap.html" scrolling="no"></iframe></div></figure>
+ <figure><figcaption>4 · Category standard<a href="4-canon.html" target="_blank">Full size</a></figcaption><div class="frame"><iframe src="4-canon.html" scrolling="no"></iframe></div></figure>
+</div>
+<script>
+function fit(){document.querySelectorAll('.frame').forEach(f=>{f.firstElementChild.style.transform='scale('+(f.clientWidth/1440)+')'})}
+addEventListener('resize',fit);fit();
+</script>
+</body></html>

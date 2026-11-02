@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>3 · Split-Flap Concourse</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ground:#121417;--frame:#2A2E33;--flap:#1C1F23;--ink:#F4F4F0;--ink-2:#9A9EA2;--amber:#F5A623;--red:#E0533F;--green:#6FCF8E;--blue:#79A9E8}
+body{width:1440px;height:900px;overflow:hidden;font:14px/1.4 Barlow,system-ui,sans-serif;background:var(--ground);color:var(--ink);display:flex;font-variant-numeric:tabular-nums}
+nav{width:216px;flex:none;background:var(--frame);padding:18px 12px;display:flex;flex-direction:column}
+nav b{font:700 19px 'Barlow Condensed';letter-spacing:.04em;margin:0 8px 6px}nav .shop{color:var(--ink-2);font-size:13px;margin:0 8px 18px}
+nav a{display:block;height:34px;line-height:34px;padding:0 10px;color:#C2C5C8}nav a.on{background:var(--amber);color:#121417;font-weight:600}
+nav h6{font-size:12px;color:#7D8287;margin:16px 10px 4px;font-weight:500}
+main{flex:1;min-width:0;padding:20px 26px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-end}
+h1{font:700 30px 'Barlow Condensed';letter-spacing:.02em}.sub{color:var(--ink-2)}.sub b{color:var(--red)}
+.btn{display:inline-flex;align-items:center;height:40px;padding:0 16px;font-weight:600;background:var(--amber);color:#121417}
+.btn.o{background:none;color:var(--ink);border:1px solid #4A4F55;margin-right:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:#1A1D21;border:1px solid #2E3237;padding:10px 14px}
+.kpi span{font-size:13px;color:var(--ink-2)}.kpi strong{display:block;font:600 30px 'Barlow Condensed';letter-spacing:.03em}.kpi small{font-size:12px;color:var(--ink-2)}
+.cols{flex:1;display:grid;grid-template-columns:1fr 330px;gap:18px;min-height:0}
+h2{font:600 18px 'Barlow Condensed';letter-spacing:.04em;margin-bottom:8px;display:flex;justify-content:space-between}h2 a{font:500 13px Barlow;color:var(--ink-2);text-decoration:underline;letter-spacing:0}
+.board{border:6px solid #3A3F45;background:#0B0C0E}
+.row{display:grid;grid-template-columns:96px 1fr 120px 76px 76px 170px;border-bottom:1px solid #22252A;align-items:center;height:56px}
+.row.h{height:32px;color:#7D8287;font-size:12px}.row.h div{padding:0 10px}
+.cell{padding:0 10px;font:600 21px 'Barlow Condensed';letter-spacing:.05em;white-space:nowrap;overflow:hidden}
+.flap{display:inline-block;width:19px;text-align:center;background:var(--flap);border-top:1px solid #33373C;margin-right:2px;position:relative;line-height:30px}
+.flap:after{content:'';position:absolute;left:0;right:0;top:50%;border-top:1px solid #000}
+.st{font-size:18px}.amber .st{color:var(--amber)}.red .cell{color:var(--red)}.blue .st{color:var(--blue)}.green .st{color:var(--green)}
+.list{background:#1A1D21;border:1px solid #2E3237}
+.q{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #2A2E33}.q small{display:block;color:var(--ink-2);font-size:12px}.q em{font-style:normal;font-weight:600}
+</style></head><body>
+<nav><b>3D PRINT OS</b><span class="shop">3D Print It</span><a class="on">Dashboard</a><a>Quotes</a><a>Orders</a><a>Customers</a><h6>Production</h6><a>Queue</a><a>Printers</a><a>Materials</a><h6>Business</h6><a>Reports</a><a>Pricing</a><a>Settings</a></nav>
+<main>
+ <div class="top"><div><h1>TODAY ON THE FLOOR</h1><p class="sub">Thursday 22 Oct · next start 15:40 · <b>1 failed print</b></p></div><div><span class="btn o">Upload model</span><span class="btn">New quote</span></div></div>
+ <div class="kpis">
+  <div class="kpi"><span>Revenue, 14 days</span><strong>EGP 48,620</strong><small>+12% vs previous 14</small></div>
+  <div class="kpi"><span>Open orders</span><strong>7</strong><small>2 printing now</small></div>
+  <div class="kpi"><span>Draft quotes</span><strong>5</strong><small>waiting to be sent</small></div>
+  <div class="kpi"><span>Hours booked today</span><strong>31.5 H</strong><small>of 120 h capacity</small></div>
+ </div>
+ <div class="cols">
+  <section><h2>DEPARTURES <a>Open queue</a></h2>
+  <div class="board">
+   <div class="row h"><div>JOB</div><div>PART</div><div>PRINTER</div><div>START</div><div>ETA</div><div>STATUS</div></div>
+   <div class="row blue"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">0</span></div><div class="cell">CONTROLLER STAND ×4</div><div class="cell">X1C·1</div><div class="cell">11:05</div><div class="cell">18:50</div><div class="cell st">PRINTING 62%</div></div>
+   <div class="row blue"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">1</span></div><div class="cell">WALL PANEL SET</div><div class="cell">X1C·2</div><div class="cell">13:30</div><div class="cell">23:10</div><div class="cell st">PRINTING 18%</div></div>
+   <div class="row amber"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">3</span><span class="flap">8</span></div><div class="cell">BRACKET · CUSTOMER STL</div><div class="cell">MK4</div><div class="cell">12:30</div><div class="cell">14:20</div><div class="cell st">QC WAITING</div></div>
+   <div class="row red"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">3</span><span class="flap">6</span></div><div class="cell">PHONE DOCK ×2</div><div class="cell">ENDER 3</div><div class="cell">09:00</div><div class="cell">—</div><div class="cell st">FAILED · REPRINT</div></div>
+   <div class="row green"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">2</span></div><div class="cell">HEADSET HOOK</div><div class="cell">X1C·1</div><div class="cell">18:55</div><div class="cell">21:00</div><div class="cell st">NEXT</div></div>
+   <div class="row green"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">4</span></div><div class="cell">VASE · SPIRAL</div><div class="cell">MK4</div><div class="cell">15:40</div><div class="cell">20:10</div><div class="cell st">NEXT</div></div>
+   <div class="row"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">5</span></div><div class="cell">CABLE CLIPS ×20</div><div class="cell">—</div><div class="cell">—</div><div class="cell">—</div><div class="cell st">NO PRINTER</div></div>
+   <div class="row"><div class="cell" style="color:#555">—</div><div class="cell" style="color:#555">PRUSA MINI IDLE</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+  </div></section>
+  <section><h2>RECENT QUOTES <a>All</a></h2><div class="list">
+   <div class="q"><div>Drone frame arms<small>Q-2031 · Karim Labs · sent</small></div><em>EGP 1,240</em></div>
+   <div class="q"><div>Cosplay helmet<small>Q-2030 · slicing…</small></div><em>—</em></div>
+   <div class="q"><div>Cable clips ×20<small>Q-2029 · sent yesterday</small></div><em>EGP 380</em></div>
+   <div class="q"><div>Headset hook<small>Q-2028 · approved</small></div><em>EGP 420</em></div>
+   <div class="q"><div>Bracket, customer STL<small>Q-2027 · approved</small></div><em>EGP 310</em></div>
+   <div class="q"><div>Phone dock<small>Q-2026 · expired</small></div><em>EGP 260</em></div>
+   <div class="q"><div>Wall panel set<small>Q-2025 · approved</small></div><em>EGP 2,850</em></div></div></section>
+ </div>
+</main></body></html>

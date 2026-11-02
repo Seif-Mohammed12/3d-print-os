@@ -32,7 +32,7 @@ export function Toast({
   return (
     <div
       role={type === 'error' ? 'alert' : 'status'}
-      className="w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-sm border border-stock-edge bg-popover text-sm text-popover-foreground shadow-popover"
+      className="w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-border bg-popover text-sm text-popover-foreground shadow-popover"
     >
       <div aria-hidden="true" className={cn('h-1.5', HEADS[type])} />
       <div className="flex items-start gap-3 px-4 py-3">
@@ -41,7 +41,7 @@ export function Toast({
         <button
           type="button"
           onClick={onClose}
-          className="-m-1.5 rounded-sm p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="-m-1.5 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
           aria-label="Dismiss"
         >
           <X className="h-4 w-4" />

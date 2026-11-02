@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Calculator, CheckCircle2, Package, XCircle } from 'lucide-react';
+import { ArrowLeft, Calculator, CheckCircle2, Loader2, Package, XCircle } from 'lucide-react';
 
 import { useMaterials } from '../../features/materials/hooks/use-materials';
 import { usePrinters } from '../../features/printers/hooks/use-printers';
@@ -113,7 +113,7 @@ function QuoteDetail({ quote }: { quote: Quote }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="truncate text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+            <h1 className="truncate text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
               {title}
             </h1>
             <QuoteStatusBadge quote={quote} />
@@ -162,13 +162,14 @@ function QuoteDetail({ quote }: { quote: Quote }) {
 
       {analyze.isPending && (
         <div
-          className="mb-6 flex items-stretch overflow-hidden rounded-sm border border-stock-edge bg-card text-sm"
+          className="mb-6 flex items-center gap-3 rounded-xl border border-stock-printing/30 bg-stock-printing-soft px-4 py-3 text-sm"
           role="status"
         >
-          <span className="flex items-center bg-stock-printing px-2.5 text-[11px] font-bold tracking-[0.02em] text-stock-ink">
-            SLICING
-          </span>
-          <span className="px-3 py-2.5">
+          <Loader2
+            className="h-4 w-4 shrink-0 animate-spin text-stock-printing-ink"
+            aria-hidden="true"
+          />
+          <span className="text-foreground">
             Slicing the model in a few orientations. This can take a minute for big parts.
           </span>
         </div>

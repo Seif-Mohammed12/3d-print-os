@@ -1,0 +1,131 @@
+{
+  "title": "Choose the visual world for 3D Print OS",
+  "question": "The roll assigned the T-Card Planning Board. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "T-Card Planning Board",
+      "kicker": "THE ROLL",
+      "lineage": "Steel T-card racks on workshop walls: one coloured card per job, slotted by machine and moved as work progresses",
+      "thesis": "Every job is a coloured card in a rack; its colour is its status, its slot is its printer.",
+      "palette": ["#2F4A5C", "#E7E5DF", "#FBFAF6", "#F2D04B", "#8CC79A", "#8FB6E0", "#EE9A8A", "#1D2125"],
+      "materials": ["enamelled steel rail", "flat card-stock fills", "hairline slot rules"],
+      "viewport": "Steel-blue rail with Sales / Production / Business; dashboard leads with the live rack: one slot column per printer, each job a card with a coloured tab head, grams, hours and price in tabular figures; quotes and orders tables carry the same card-tab colour on every row.",
+      "risk": "Five card colours plus state colours can turn into confetti unless each colour means exactly one status.",
+      "raised": [
+        {"from": "rw-manual-acetate-tab-board", "raise": "One type size carries every table; rank comes from position and card colour, never from size jumps."},
+        {"from": "aww2-zoo-gardens-guide-map", "raise": "Card stocks are flat, unmodulated fills: no gradients, no grain, no shadow under a card."},
+        {"from": "pop-culture-shelf-character-goods-catalog", "raise": "The printer fleet is a fixed, finite roster: every printer keeps its slot even when idle."}
+      ],
+      "html": ".impeccable/mocks/decision/assigned.html"
+    },
+    {
+      "id": "model-pick",
+      "label": "Job Traveler",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Machine-shop routing sheets that travel with a part from quote to shipping, stamped at each operation",
+      "thesis": "Every order is a traveler: a sheet of operations stamped off one by one.",
+      "palette": ["#22313A", "#F4F1EA", "#D9C68F", "#C2462E", "#3D7A55", "#1B1E21"],
+      "materials": ["manila card", "rubber-stamp ink", "ruled operation rows"],
+      "viewport": "Dark slate top bar; orders list where each row shows its routing as a strip of operation boxes (Slice · Print · QC · Pack) stamped as done.",
+      "risk": "Manila card stock drifts toward the warm-cream default; must stay cool and strict to avoid nostalgia.",
+      "html": ".impeccable/mocks/decision/model-pick.html"
+    },
+    {
+      "id": "challenger-split-flap",
+      "label": "Split-Flap Concourse",
+      "verdict": "competitive",
+      "lineage": "Rail station departure boards",
+      "thesis": "The production queue as a departures board: jobs are departures, printers are platforms.",
+      "palette": ["#121417", "#2A2E33", "#F4F4F0", "#F5A623", "#D0453A"],
+      "materials": ["matte black flaps", "brushed steel frame", "amber row lamps"],
+      "viewport": "Black ground; queue table in fixed character columns (Job · Printer · Start · ETA · Status), delayed jobs lit amber, failed in red.",
+      "case": "Fuses cleanly on the queue and printers; reads less natural on pricing and settings forms. Holds clarity, loses identification.",
+      "risk": "Becomes a costume of a board on screens that are forms, not schedules.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-split-flap-concourse-hero.webp",
+      "html": ".impeccable/mocks/decision/challenger-split-flap.html"
+    },
+    {
+      "id": "challenger-dev-console",
+      "label": "Graphite Console",
+      "verdict": "competitive",
+      "lineage": "Dark-first developer consoles",
+      "thesis": "A graphite workbench of persistent panels split by one-pixel seams.",
+      "palette": ["#16181B", "#1F2226", "#2C3036", "#E6E8EA", "#7CC4A4", "#E5B567", "#E06C75"],
+      "materials": ["graphite panels", "hairline seams", "monospaced figures"],
+      "viewport": "Persistent three-panel layout: nav, queue list, selected job detail with slice breakdown.",
+      "case": "Very clear, but any SaaS could ship it; print shops don't see themselves in it.",
+      "risk": "Generic dark dashboard; dark-only hurts the shop-floor phone in daylight.",
+      "hero": "https://impeccable.style/worlds/cards/digital-design-canon-dark-first-developer-console-hero.webp",
+      "html": ".impeccable/mocks/decision/challenger-dev-console.html"
+    },
+    {
+      "id": "challenger-acetate",
+      "label": "Acetate Tab Manual",
+      "verdict": "declined",
+      "lineage": "Boxed-software manuals with tab dividers",
+      "thesis": "Sections as coloured divider boards under clear acetate leaves.",
+      "palette": ["#D9632B", "#E8C13A", "#4E9A5B", "#2C6FB7"],
+      "materials": ["acetate", "divider board"],
+      "viewport": "Stepped tab rail per section.",
+      "case": "A reading world; staff are operating, not reading.",
+      "risk": "Serif body at 17px is wrong for dense tables.",
+      "kept": "One size does the work: hierarchy by position, not size.",
+      "hero": "https://impeccable.style/worlds/cards/rw-manual-acetate-tab-board-hero.webp"
+    },
+    {
+      "id": "challenger-zoo-map",
+      "label": "Guide Map Lobes",
+      "verdict": "declined",
+      "lineage": "Zoo and garden guide maps",
+      "thesis": "Areas as swelling lobes of flat colour.",
+      "palette": ["#8ED462", "#F5F1E4", "#2C2E2A", "#FF705D"],
+      "materials": ["flat colour", "SVG coastlines"],
+      "viewport": "One lobe per screen.",
+      "case": "Lobes fight tables; no fit for an operations tool.",
+      "risk": "Playful to the point of distrust on prices.",
+      "kept": "Flat, unmodulated fills.",
+      "hero": "https://impeccable.style/worlds/cards/aww2-zoo-gardens-guide-map-hero.webp"
+    },
+    {
+      "id": "challenger-star-atlas",
+      "label": "Star Atlas",
+      "verdict": "declined",
+      "lineage": "Celestial charts",
+      "thesis": "Magnitude as dot size on a navy chart.",
+      "palette": ["#0E1B33", "#F2F1EC", "#E0613A"],
+      "materials": ["navy chart", "chalk dots"],
+      "viewport": "Fleet as a star field.",
+      "case": "No link to print shops; data isn't spatial.",
+      "risk": "Decorative.",
+      "kept": "A fixed ramp for importance.",
+      "hero": "https://impeccable.style/worlds/cards/notation-diagram-systems-star-atlas-hero.webp"
+    },
+    {
+      "id": "challenger-character-goods",
+      "label": "Character Goods Catalog",
+      "verdict": "declined",
+      "lineage": "Mascot merchandise catalogues",
+      "thesis": "A ranked roster of characters.",
+      "palette": ["#FCE4EC", "#FFF3C4", "#C7E8F3", "#333333"],
+      "materials": ["pastel grid", "keylines"],
+      "viewport": "Printers as mascots.",
+      "case": "Cute undermines trust in prices.",
+      "risk": "Toy-like.",
+      "kept": "A finite roster where every member keeps its place.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-character-goods-catalog-hero.webp"
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A clean white SaaS console with one indigo accent, executed impeccably.",
+    "palette": ["#FFFFFF", "#F6F7F9", "#111827", "#4F46E5"],
+    "materials": ["white cards", "soft borders", "stat tiles"],
+    "viewport": "Sidebar, greeting, four stat tiles, revenue chart and recent quotes.",
+    "risk": "Indistinguishable from every other admin panel by design; it is close to what ships today.",
+    "html": ".impeccable/mocks/decision/canon.html"
+  },
+  "steer": true
+}

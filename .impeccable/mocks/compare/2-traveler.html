@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>2 · Job Traveler</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bar:#22313A;--ground:#EEF0EE;--sheet:#FBFBF8;--manila:#E3D3A0;--manila-edge:#B8A469;--ink:#1B1E21;--ink-2:#5E6468;--rule:#CBD0CC;--stamp:#2F6E4C;--red:#B83A26}
+body{width:1440px;height:900px;overflow:hidden;font:14px/1.4 'Public Sans',system-ui,sans-serif;background:var(--ground);color:var(--ink);font-variant-numeric:tabular-nums}
+header{height:56px;background:var(--bar);color:#E9EEF0;display:flex;align-items:center;padding:0 26px;gap:26px}
+header b{font-size:15px;margin-right:14px;display:flex;gap:9px;align-items:center}header b i{width:14px;height:18px;background:var(--manila);display:block}
+header a{color:#AFC0C8;height:56px;display:flex;align-items:center}header a.on{color:#fff;box-shadow:inset 0 -3px var(--manila)}
+header .sp{flex:1}header .shop{color:#E9EEF0;font-size:13px}
+main{padding:20px 26px;display:grid;grid-template-columns:1fr 340px;gap:20px;height:844px}
+.top{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end}
+h1{font-size:23px;font-weight:700}.sub{color:var(--ink-2)}.sub b{color:var(--red)}
+.btn{display:inline-flex;align-items:center;height:40px;padding:0 16px;font-weight:600;background:var(--ink);color:#fff}
+.btn.o{background:none;color:var(--ink);border:1px solid var(--ink);margin-right:8px}
+.kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--sheet);border:1px solid var(--rule)}
+.kpi{padding:12px 16px}.kpi+.kpi{border-left:1px solid var(--rule)}
+.kpi span{font-size:13px;color:var(--ink-2)}.kpi strong{display:block;font-size:25px;font-weight:600}.kpi small{color:var(--ink-2);font-size:12px}
+.sheet{background:var(--sheet);border:1px solid var(--rule)}
+.sheet h2{font-size:15px;font-weight:700;padding:12px 14px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between}
+.sheet h2 a{font-size:13px;font-weight:500;color:var(--ink-2);text-decoration:underline}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;font-weight:600;color:var(--ink-2);padding:8px 14px;border-bottom:1px solid var(--rule)}
+td{padding:11px 14px;border-bottom:1px solid #E3E6E2;vertical-align:middle}
+td .n{font-weight:700}td small{display:block;color:var(--ink-2);font-size:12px}.r{text-align:right}
+.route{display:flex}
+.op{width:78px;height:38px;border:1px solid var(--rule);margin-left:-1px;font-size:11px;padding:4px 6px;position:relative;color:var(--ink-2);background:#fff}
+.op b{display:block;font-size:12px;color:var(--ink)}
+.op.done{background:var(--manila);border-color:var(--manila-edge);color:#4A3F1E}
+.op.done:after{content:'OK';position:absolute;right:5px;top:9px;font-size:11px;font-weight:700;color:var(--stamp);border:1.5px solid var(--stamp);padding:0 3px;transform:rotate(-9deg);border-radius:2px}
+.op.now{outline:2px solid var(--ink);outline-offset:-2px;z-index:1}
+.op.bad{background:#F7E3DE;border-color:var(--red);color:var(--red);z-index:1}
+.op.bad:after{content:'FAIL';position:absolute;right:4px;top:9px;font-size:10px;font-weight:700;color:var(--red);border:1.5px solid var(--red);padding:0 3px;transform:rotate(-9deg)}
+.fleet{margin-top:16px}
+.pr{display:grid;grid-template-columns:1fr auto;padding:10px 14px;border-bottom:1px solid #E3E6E2}
+.pr small{color:var(--ink-2);font-size:12px}.pr em{font-style:normal;font-size:12px;font-weight:600}
+.dot{display:inline-block;width:8px;height:8px;margin-right:6px}
+</style></head><body>
+<header><b><i></i>3D Print OS</b><a class="on">Dashboard</a><a>Quotes</a><a>Orders</a><a>Queue</a><a>Printers</a><a>Materials</a><a>Customers</a><a>Reports</a><a>Pricing</a><span class="sp"></span><span class="shop">3D Print It · Seif M.</span></header>
+<main>
+ <div class="top"><div><h1>Today on the floor</h1><p class="sub">Thursday 22 Oct · 7 orders in progress · <b>1 failed operation</b></p></div><div><span class="btn o">Upload model</span><span class="btn">New quote</span></div></div>
+ <div class="kpis">
+  <div class="kpi"><span>Revenue, 14 days</span><strong>EGP 48,620</strong><small>+12% vs previous 14</small></div>
+  <div class="kpi"><span>Open orders</span><strong>7</strong><small>2 printing now</small></div>
+  <div class="kpi"><span>Draft quotes</span><strong>5</strong><small>waiting to be sent</small></div>
+  <div class="kpi"><span>Hours booked today</span><strong>31.5 h</strong><small>of 120 h capacity</small></div>
+ </div>
+ <section class="sheet"><h2>Travelers in progress <a>All orders</a></h2>
+  <table><tr><th>Order</th><th>Route</th><th class="r">Grams</th><th class="r">Hours</th><th class="r">Total</th></tr>
+  <tr><td><span class="n">#1040 Controller stand ×4</span><small>Mariam H. · X1C · 1</small></td><td><div class="route"><span class="op done"><b>Slice</b>09:10</span><span class="op now"><b>Print</b>62%</span><span class="op"><b>QC</b></span><span class="op"><b>Pack</b></span></div></td><td class="r">188</td><td class="r">6.2</td><td class="r">EGP 1,600</td></tr>
+  <tr><td><span class="n">#1041 Wall panel set</span><small>Nour Studio · X1C · 2</small></td><td><div class="route"><span class="op done"><b>Slice</b>12:40</span><span class="op now"><b>Print</b>18%</span><span class="op"><b>QC</b></span><span class="op"><b>Pack</b></span></div></td><td class="r">412</td><td class="r">11.6</td><td class="r">EGP 2,850</td></tr>
+  <tr><td><span class="n">#1038 Bracket, customer STL</span><small>Youssef A. · MK4</small></td><td><div class="route"><span class="op done"><b>Slice</b>Wed</span><span class="op done"><b>Print</b>14:20</span><span class="op now"><b>QC</b>waiting</span><span class="op"><b>Pack</b></span></div></td><td class="r">56</td><td class="r">1.8</td><td class="r">EGP 310</td></tr>
+  <tr><td><span class="n">#1036 Phone dock ×2</span><small>Mariam H. · Ender 3 S1</small></td><td><div class="route"><span class="op done"><b>Slice</b>08:30</span><span class="op bad"><b>Print</b>41%</span><span class="op"><b>QC</b></span><span class="op"><b>Pack</b></span></div></td><td class="r">120</td><td class="r">3.9</td><td class="r">EGP 520</td></tr>
+  <tr><td><span class="n">#1033 Drone mount</span><small>Karim Labs · X1C · 1</small></td><td><div class="route"><span class="op done"><b>Slice</b>Tue</span><span class="op done"><b>Print</b>Wed</span><span class="op done"><b>QC</b>Wed</span><span class="op now"><b>Pack</b>today</span></div></td><td class="r">230</td><td class="r">7.4</td><td class="r">EGP 1,240</td></tr>
+  <tr><td><span class="n">#1042 Headset hook</span><small>Nour Studio · next on X1C · 1</small></td><td><div class="route"><span class="op now"><b>Slice</b>queued</span><span class="op"><b>Print</b></span><span class="op"><b>QC</b></span><span class="op"><b>Pack</b></span></div></td><td class="r">74</td><td class="r">2.1</td><td class="r">EGP 420</td></tr>
+  </table></section>
+ <aside>
+  <section class="sheet"><h2>Recent quotes <a>All</a></h2>
+   <div class="pr"><div>Drone frame arms<br><small>Q-2031 · Karim Labs · sent</small></div><em>EGP 1,240</em></div>
+   <div class="pr"><div>Cosplay helmet<br><small>Q-2030 · slicing…</small></div><em>—</em></div>
+   <div class="pr"><div>Cable clips ×20<br><small>Q-2029 · sent yesterday</small></div><em>EGP 380</em></div>
+   <div class="pr"><div>Phone dock<br><small>Q-2026 · expired</small></div><em>EGP 260</em></div></section>
+  <section class="sheet fleet"><h2>Printers</h2>
+   <div class="pr"><div><span class="dot" style="background:#3B6FB0"></span>X1C · 1<br><small>printing · 3 h 10 left</small></div><em>62%</em></div>
+   <div class="pr"><div><span class="dot" style="background:#3B6FB0"></span>X1C · 2<br><small>printing · 9 h 40 left</small></div><em>18%</em></div>
+   <div class="pr"><div><span class="dot" style="background:#C79A2B"></span>Prusa MK4<br><small>waiting for QC</small></div><em>—</em></div>
+   <div class="pr"><div><span class="dot" style="background:var(--red)"></span>Ender 3 S1<br><small>fault · stopped 11:52</small></div><em style="color:var(--red)">fault</em></div>
+   <div class="pr"><div><span class="dot" style="background:#9AA1A6"></span>Prusa Mini<br><small>idle</small></div><em>—</em></div></section>
+ </aside>
+</main></body></html>

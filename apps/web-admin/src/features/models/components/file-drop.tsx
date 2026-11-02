@@ -53,7 +53,7 @@ export function FileDrop({
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         className={cn(
-          'flex w-full flex-col items-center justify-center rounded-sm border-2 border-dashed px-6 py-12 text-center transition-colors duration-150',
+          'flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-12 text-center transition-colors duration-150',
           dragging
             ? 'border-foreground bg-stock-quoted/25'
             : 'border-input bg-card hover:border-foreground hover:bg-muted/50',

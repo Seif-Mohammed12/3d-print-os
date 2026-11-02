@@ -6,11 +6,11 @@ export type BadgeTone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
 
 // Flags and attributes (Business, Active, Default). Statuses use StockTag instead.
 const tones: Record<BadgeTone, string> = {
-  neutral: 'border-input text-muted-foreground',
-  accent: 'border-foreground text-foreground',
-  success: 'border-success/60 text-success',
-  warning: 'border-warning/60 text-warning',
-  danger: 'border-destructive/60 text-destructive',
+  neutral: 'border-border bg-muted/60 text-muted-foreground',
+  accent: 'border-brand/30 bg-transparent text-primary dark:text-brand',
+  success: 'border-success/25 bg-success-soft text-success',
+  warning: 'border-warning/25 bg-warning-soft text-warning',
+  danger: 'border-destructive/25 bg-destructive-soft text-destructive',
 };
 
 export function Badge({
@@ -25,7 +25,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex h-[22px] items-center whitespace-nowrap rounded-sm border px-1.5 text-xs font-medium',
+        'inline-flex h-6 items-center whitespace-nowrap rounded-md border px-2 text-xs font-medium',
         tones[tone],
         className,
       )}

@@ -65,7 +65,7 @@ export function PrintersPage() {
               <Link
                 key={printer.id}
                 to={`/app/printers/${printer.id}`}
-                className="group rounded-sm border border-border bg-card p-4 transition-colors duration-150 hover:border-foreground"
+                className="group rounded-xl border border-border bg-card p-4 shadow-card transition-colors duration-150 hover:border-foreground/25 dark:shadow-none"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">

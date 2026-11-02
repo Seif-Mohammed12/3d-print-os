@@ -74,7 +74,7 @@ export function QuotesPage() {
             className={cn(
               '-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm transition-colors duration-150',
               status === filter.value
-                ? 'border-rule font-semibold text-foreground'
+                ? 'border-brand font-semibold text-foreground'
                 : 'border-transparent font-medium text-muted-foreground hover:text-foreground',
             )}
           >

@@ -3,121 +3,146 @@
 @tailwind utilities;
 
 /*
- * Design tokens: the T-card planning board. A steel-blue enamel rail, a warm grey board, and
- * flat card stock whose colour is a job's status. Dark is the same rack at night: enamel-blue
- * ground, slate card bodies, the stock colours deepened, never black and never glowing.
- * Values are HSL triplets so Tailwind can apply opacity modifiers.
+ * Design tokens: the parcel tracker. A cool off-white ground, white surfaces, one teal for
+ * progress, and soft status chips. Dark is the workshop after hours: blue-graphite surfaces
+ * lifted by tone and hairlines, never black, never glowing.
+ * Values are HSL triplets so Tailwind can apply opacity modifiers. Each status has a solid
+ * dot colour, a soft chip ground and a chip ink.
  */
 @layer base {
   :root {
-    --background: 45 12% 90%;
-    --foreground: 210 13% 13%;
-    --card: 45 43% 98%;
-    --card-foreground: 210 13% 13%;
-    --popover: 45 43% 98%;
-    --popover-foreground: 210 13% 13%;
+    --background: 220 20% 97%;
+    --foreground: 215 22% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 22% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 22% 11%;
 
-    /* The rail */
-    --sidebar: 205 34% 25%;
-    --sidebar-foreground: 203 26% 89%;
-    --sidebar-muted: 205 20% 66%;
-    --sidebar-raised: 203 31% 31%;
-    --sidebar-active: 45 43% 98%;
-    --sidebar-active-foreground: 210 13% 13%;
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 215 18% 22%;
+    --sidebar-muted: 216 9% 46%;
+    --sidebar-raised: 220 16% 95%;
+    --sidebar-active: 168 52% 93%;
+    --sidebar-active-foreground: 173 84% 22%;
 
-    --primary: 210 13% 13%;
-    --primary-foreground: 45 43% 98%;
-    --secondary: 44 13% 85%;
-    --secondary-foreground: 210 13% 13%;
-    --muted: 44 13% 85%;
-    --muted-foreground: 210 8% 31%;
-    --accent: 44 13% 85%;
-    --accent-foreground: 210 13% 13%;
+    --brand: 172 83% 34%;
+    --primary: 173 84% 27%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 16% 95%;
+    --secondary-foreground: 215 22% 11%;
+    --muted: 220 16% 95%;
+    --muted-foreground: 216 9% 40%;
+    --accent: 220 16% 95%;
+    --accent-foreground: 215 22% 11%;
 
-    --destructive: 4 64% 47%;
-    --destructive-foreground: 45 43% 98%;
-    --destructive-soft: 9 60% 91%;
-    --success: 141 40% 30%;
-    --success-soft: 134 30% 88%;
-    --warning: 36 100% 26%;
-    --warning-soft: 48 82% 86%;
+    --destructive: 358 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-soft: 0 86% 96%;
+    --success: 155 64% 27%;
+    --success-soft: 150 50% 94%;
+    --warning: 30 85% 30%;
+    --warning-soft: 40 95% 93%;
 
-    /* Card stock: one colour per status */
-    --stock-draft: 45 43% 98%;
-    --stock-quoted: 48 85% 62%;
-    --stock-approved: 135 34% 67%;
-    --stock-printing: 211 56% 71%;
-    --stock-qc: 10 72% 74%;
-    --stock-failed: 4 64% 47%;
-    --stock-void: 42 9% 78%;
-    --stock-done: 205 13% 41%;
-    --stock-done-ink: 45 43% 98%;
-    --stock-ink: 210 13% 13%;
-    --stock-edge: 41 6% 64%;
+    --stock-draft: 215 10% 62%;
+    --stock-draft-soft: 220 14% 94%;
+    --stock-draft-ink: 215 14% 32%;
+    --stock-quoted: 36 88% 54%;
+    --stock-quoted-soft: 40 95% 93%;
+    --stock-quoted-ink: 28 80% 29%;
+    --stock-approved: 212 72% 52%;
+    --stock-approved-soft: 212 85% 95%;
+    --stock-approved-ink: 214 68% 35%;
+    --stock-printing: 172 83% 34%;
+    --stock-printing-soft: 168 55% 93%;
+    --stock-printing-ink: 173 84% 22%;
+    --stock-qc: 262 55% 60%;
+    --stock-qc-soft: 260 75% 96%;
+    --stock-qc-ink: 262 45% 40%;
+    --stock-failed: 358 72% 52%;
+    --stock-failed-soft: 0 86% 96%;
+    --stock-failed-ink: 358 70% 38%;
+    --stock-void: 220 9% 72%;
+    --stock-void-soft: 220 14% 95%;
+    --stock-void-ink: 220 9% 44%;
+    --stock-done: 152 55% 38%;
+    --stock-done-soft: 148 50% 94%;
+    --stock-done-ink: 152 62% 23%;
+    --stock-edge: 220 13% 88%;
 
-    --chart: 205 34% 25%;
-    --rack: 44 11% 82%;
-    --slot: 41 8% 70%;
-    --slot-hi: 45 20% 92%;
-    --border: 41 11% 76%;
-    --rule: 210 13% 13%;
-    --input: 43 5% 53%;
-    --ring: 205 34% 25%;
-    --radius: 2px;
+    --chart: 172 83% 34%;
+    --chart-muted: 168 35% 82%;
+    --border: 220 13% 91%;
+    --rule: 220 13% 91%;
+    --input: 220 12% 83%;
+    --ring: 172 83% 34%;
+    --radius: 10px;
   }
 
   .dark {
-    --background: 205 33% 11%;
-    --foreground: 43 20% 89%;
-    --card: 205 29% 15%;
-    --card-foreground: 43 20% 89%;
-    --popover: 205 28% 17%;
-    --popover-foreground: 43 20% 89%;
+    --background: 218 22% 9%;
+    --foreground: 216 20% 91%;
+    --card: 218 20% 12%;
+    --card-foreground: 216 20% 91%;
+    --popover: 218 19% 15%;
+    --popover-foreground: 216 20% 91%;
 
-    --sidebar: 205 37% 19%;
-    --sidebar-foreground: 203 22% 86%;
-    --sidebar-muted: 205 16% 62%;
-    --sidebar-raised: 205 32% 25%;
-    --sidebar-active: 43 20% 89%;
-    --sidebar-active-foreground: 205 33% 11%;
+    --sidebar: 218 22% 10.5%;
+    --sidebar-foreground: 216 16% 82%;
+    --sidebar-muted: 216 10% 58%;
+    --sidebar-raised: 218 16% 16%;
+    --sidebar-active: 172 32% 16%;
+    --sidebar-active-foreground: 170 50% 72%;
 
-    --primary: 43 20% 89%;
-    --primary-foreground: 205 33% 11%;
-    --secondary: 205 27% 20%;
-    --secondary-foreground: 43 20% 89%;
-    --muted: 205 27% 20%;
-    --muted-foreground: 205 14% 68%;
-    --accent: 205 27% 20%;
-    --accent-foreground: 43 20% 89%;
+    --brand: 171 50% 50%;
+    --primary: 171 48% 52%;
+    --primary-foreground: 218 25% 8%;
+    --secondary: 218 16% 17%;
+    --secondary-foreground: 216 20% 91%;
+    --muted: 218 16% 16%;
+    --muted-foreground: 216 10% 64%;
+    --accent: 218 16% 17%;
+    --accent-foreground: 216 20% 91%;
 
-    --destructive: 5 62% 60%;
-    --destructive-foreground: 205 33% 11%;
-    --destructive-soft: 5 35% 20%;
-    --success: 135 30% 62%;
-    --success-soft: 140 22% 18%;
-    --warning: 45 70% 60%;
-    --warning-soft: 42 30% 18%;
+    --destructive: 358 68% 63%;
+    --destructive-foreground: 218 25% 8%;
+    --destructive-soft: 358 32% 16%;
+    --success: 152 42% 60%;
+    --success-soft: 152 24% 15%;
+    --warning: 38 78% 64%;
+    --warning-soft: 36 32% 15%;
 
-    --stock-draft: 42 14% 82%;
-    --stock-quoted: 46 62% 54%;
-    --stock-approved: 135 25% 56%;
-    --stock-printing: 211 42% 61%;
-    --stock-qc: 11 54% 64%;
-    --stock-failed: 3 66% 47%;
-    --stock-void: 205 10% 56%;
-    --stock-done: 205 12% 64%;
-    --stock-done-ink: 205 33% 9%;
-    --stock-ink: 205 33% 9%;
-    --stock-edge: 205 25% 32%;
+    --stock-draft: 216 10% 55%;
+    --stock-draft-soft: 218 14% 18%;
+    --stock-draft-ink: 216 14% 76%;
+    --stock-quoted: 38 75% 58%;
+    --stock-quoted-soft: 36 30% 16%;
+    --stock-quoted-ink: 40 80% 72%;
+    --stock-approved: 212 60% 62%;
+    --stock-approved-soft: 214 32% 18%;
+    --stock-approved-ink: 212 75% 78%;
+    --stock-printing: 171 50% 50%;
+    --stock-printing-soft: 172 30% 15%;
+    --stock-printing-ink: 170 50% 70%;
+    --stock-qc: 262 45% 68%;
+    --stock-qc-soft: 262 22% 19%;
+    --stock-qc-ink: 262 60% 82%;
+    --stock-failed: 358 66% 60%;
+    --stock-failed-soft: 358 30% 17%;
+    --stock-failed-ink: 358 80% 78%;
+    --stock-void: 216 8% 42%;
+    --stock-void-soft: 218 12% 16%;
+    --stock-void-ink: 216 8% 60%;
+    --stock-done: 152 40% 52%;
+    --stock-done-soft: 152 24% 15%;
+    --stock-done-ink: 150 45% 72%;
+    --stock-edge: 218 15% 22%;
 
-    --chart: 211 42% 61%;
-    --rack: 205 20% 19%;
-    --slot: 205 18% 31%;
-    --slot-hi: 205 16% 24%;
-    --border: 205 25% 24%;
-    --rule: 43 20% 89%;
-    --input: 205 18% 40%;
-    --ring: 46 62% 54%;
+    --chart: 171 50% 50%;
+    --chart-muted: 172 18% 26%;
+    --border: 218 15% 19%;
+    --rule: 218 15% 19%;
+    --input: 218 13% 28%;
+    --ring: 171 50% 55%;
   }
 
   * {
@@ -138,13 +163,13 @@
   }
 
   ::selection {
-    background: hsl(var(--stock-quoted));
-    color: hsl(var(--stock-ink));
+    background: hsl(var(--brand) / 0.22);
+    color: hsl(var(--foreground));
   }
 
   input,
   textarea {
-    caret-color: hsl(var(--foreground));
+    caret-color: hsl(var(--brand));
   }
 
   :focus-visible {
@@ -156,7 +181,7 @@
   }
 
   * {
-    scrollbar-color: hsl(var(--slot)) transparent;
+    scrollbar-color: hsl(var(--input)) transparent;
   }
 }
 
@@ -167,22 +192,43 @@
 
   /* A quiet underlined link in the ink colour. */
   .link {
-    @apply inline-flex min-h-11 items-center sm:min-h-0 font-medium text-foreground underline decoration-[hsl(var(--input))] underline-offset-[3px] hover:decoration-foreground;
+    @apply inline-flex min-h-11 items-center rounded-md font-semibold text-primary underline decoration-transparent underline-offset-[3px] transition-colors hover:decoration-current sm:min-h-0;
   }
 }
 
-/* A card dropping into a new slot: two hard frames, like a card pushed into the rack. */
+/* A row whose order moved on: it settles in from a few pixels below. */
 @keyframes slot-in {
   from {
-    transform: translateY(-6px);
+    opacity: 0.4;
+    transform: translateY(4px);
   }
   to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
 
 .slot-in {
-  animation: slot-in 180ms steps(2, end);
+  animation: slot-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The stage line filling up to its new stage. */
+@keyframes stage-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.stage-fill {
+  transform-origin: left center;
+  animation: stage-fill 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[dir='rtl'] .stage-fill {
+  transform-origin: right center;
 }
 
 @media (prefers-reduced-motion: reduce) {

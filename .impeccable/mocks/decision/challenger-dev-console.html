@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Graphite Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:1440px;height:900px;overflow:hidden;font:13px/1.45 Geist,system-ui,sans-serif;background:#16181B;color:#E6E8EA;display:grid;grid-template-columns:210px 520px 1fr}
+.p{border-right:1px solid #2C3036;padding:16px}
+nav b{display:block;margin-bottom:18px;font-size:14px}
+nav a{display:block;padding:6px 8px;color:#9AA1A8}nav a.on{background:#1F2226;color:#fff}
+nav h6{font-size:11px;font-variant:small-caps;color:#6B7178;margin:14px 8px 4px;font-weight:500}
+h2{font-size:15px;font-weight:600;margin-bottom:12px}
+.item{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #2C3036}
+.item.on{background:#1F2226;box-shadow:inset 2px 0 #7CC4A4}
+.m{font-family:'Geist Mono';color:#9AA1A8}
+.g{color:#7CC4A4}.a{color:#E5B567}.r{color:#E06C75}
+dl{display:grid;grid-template-columns:180px 1fr;border-top:1px solid #2C3036}
+dt,dd{padding:9px 0;border-bottom:1px solid #2C3036}dt{color:#9AA1A8}dd{font-family:'Geist Mono'}
+.bar{display:flex;height:10px;margin:14px 0 6px}.bar i{display:block}
+.btns{margin-top:22px;display:flex;gap:10px}.btn{padding:8px 14px;background:#7CC4A4;color:#16181B;font-weight:600}.btn.o{background:none;border:1px solid #2C3036;color:#E6E8EA}.btn.d{margin-left:auto;border:1px solid #E06C75;color:#E06C75;background:none}
+</style></head><body>
+<nav class="p"><b>3D Print OS</b><a>Dashboard</a><a class="on">Quotes</a><a>Orders</a><a>Customers</a><h6>production</h6><a>Queue</a><a>Printers</a><a>Materials</a><h6>business</h6><a>Reports</a><a>Pricing</a></nav>
+<section class="p"><h2>Quotes · 12</h2>
+ <div class="item on"><span>Drone frame arms</span><span class="m">EGP 1,240 <span class="a">sent</span></span></div>
+ <div class="item"><span>Cosplay helmet</span><span class="m">— <span>slicing</span></span></div>
+ <div class="item"><span>Cable clips ×20</span><span class="m">EGP 380 <span class="a">sent</span></span></div>
+ <div class="item"><span>Headset hook</span><span class="m">EGP 420 <span class="g">approved</span></span></div>
+ <div class="item"><span>Bracket, customer STL</span><span class="m">EGP 310 <span class="g">approved</span></span></div>
+ <div class="item"><span>Phone dock</span><span class="m">EGP 260 <span class="r">expired</span></span></div>
+</section>
+<section class="p"><h2>Drone frame arms · Q-2031</h2>
+ <p class="m">Karim Labs · PETG Black · Bambu X1C · 0.20 mm · 20% gyroid</p>
+ <div class="bar"><i style="width:44%;background:#7CC4A4"></i><i style="width:30%;background:#5B9BD5"></i><i style="width:16%;background:#E5B567"></i><i style="width:10%;background:#6B7178"></i></div>
+ <p class="m">perimeters 44% · infill 30% · support 16% · other 10%</p>
+ <dl style="margin-top:16px"><dt>Print time</dt><dd>7 h 24 m</dd><dt>Filament</dt><dd>230 g</dd><dt>Layers</dt><dd>612</dd><dt>Orientation</dt><dd>auto · pose 3 of 5</dd><dt>Material</dt><dd>EGP 414</dd><dt>Machine time</dt><dd>EGP 666</dd><dt>Tax 14%</dt><dd>EGP 160</dd><dt>Total</dt><dd>EGP 1,240</dd></dl>
+ <div class="btns"><span class="btn">Approve</span><span class="btn o">Re-slice</span><span class="btn d">Delete</span></div>
+</section></body></html>

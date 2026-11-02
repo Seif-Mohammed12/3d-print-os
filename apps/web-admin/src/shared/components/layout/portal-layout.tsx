@@ -16,11 +16,11 @@ export function PortalLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4 sm:px-6">
+      <header className="sticky top-0 z-30 border-b border-border bg-sidebar text-sidebar-foreground">
+        <div className="mx-auto flex h-16 max-w-5xl items-center gap-6 px-4 sm:px-6">
           <NavLink to="/portal/upload" className="flex items-center gap-2">
             <BrandMark />
-            <span className="text-[15px] font-bold text-white dark:text-sidebar-foreground">
+            <span className="text-[15px] font-bold tracking-[-0.01em] text-foreground">
               {tenant?.name ?? '3D Print OS'}
             </span>
           </NavLink>
@@ -29,7 +29,7 @@ export function PortalLayout() {
           <UserMenu signOutTo="/portal/login" onRail />
         </div>
         <nav
-          className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 sm:px-6"
+          className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 pb-3 sm:px-6"
           aria-label="Portal"
         >
           {links.map((link) => (
@@ -38,10 +38,10 @@ export function PortalLayout() {
               to={link.to}
               className={({ isActive }) =>
                 cn(
-                  'whitespace-nowrap rounded-t-sm px-3 py-2.5 text-sm transition-colors duration-150 focus-visible:ring-offset-sidebar',
+                  'flex min-h-11 items-center whitespace-nowrap rounded-full px-4 text-sm transition-colors duration-150 sm:min-h-9',
                   isActive
-                    ? 'bg-background font-semibold text-foreground shadow-[inset_0_3px_0_hsl(var(--stock-quoted))]'
-                    : 'font-medium text-sidebar-foreground hover:bg-sidebar-raised',
+                    ? 'bg-sidebar-active font-semibold text-sidebar-active-foreground'
+                    : 'font-medium text-muted-foreground hover:bg-sidebar-raised hover:text-foreground',
                 )
               }
             >

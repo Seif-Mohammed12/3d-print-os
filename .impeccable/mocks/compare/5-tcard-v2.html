@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>T-Card Board v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--rail:#2B4557;--rail-2:#375669;--rail-ink:#DCE5EA;--rail-mute:#93AABA;
+--board:#E9E7E1;--rack:#D7D4CC;--slot:#B9B5AC;--slot-hi:#F1EFEA;--card:#FCFBF8;--edge:#ABA79E;
+--ink:#1C2024;--ink-2:#575E65;--rule:#C9C5BC;
+--draft:#FCFBF8;--quoted:#F1CF4A;--approved:#8DC79B;--printing:#8DB4DF;--qc:#ED9C8B;--fail:#C4352B;--fail-soft:#F6DED9}
+body{width:1440px;height:900px;overflow:hidden;font:14px/1.4 Archivo,system-ui,sans-serif;background:var(--board);color:var(--ink);display:flex;font-variant-numeric:tabular-nums}
+a{color:inherit;text-decoration:none}
+/* rail */
+.rail{width:208px;flex:none;background:var(--rail);color:var(--rail-ink);padding:16px 12px 14px;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;gap:10px;align-items:center;padding:2px 6px;font-weight:700;font-size:15px;color:#fff}
+.tmark{width:20px;height:22px;position:relative}.tmark:before{content:'';position:absolute;inset:0 0 auto;height:7px;background:var(--quoted)}.tmark:after{content:'';position:absolute;left:4px;right:4px;top:7px;bottom:0;background:var(--card)}
+.shop{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--rail-2);border-radius:2px;font-size:13px;font-weight:600}.shop small{display:block;font-weight:400;color:var(--rail-mute);font-size:12px}
+.grp h6{font-size:12px;font-weight:600;color:var(--rail-mute);margin:0 10px 4px}
+.grp a{display:flex;justify-content:space-between;align-items:center;height:34px;padding:0 10px;border-radius:2px;position:relative}
+.grp a:hover{background:var(--rail-2)}
+.grp a.on{background:var(--card);color:var(--ink);font-weight:600}
+.grp a.on:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--quoted)}
+.grp a b{font-weight:500;font-size:12px;color:var(--rail-mute)}.grp a.on b{color:var(--ink-2)}
+.grp a b.hot{background:var(--fail);color:#fff;padding:0 6px;border-radius:2px;font-weight:600}
+.me{margin-top:auto;display:flex;gap:10px;align-items:center;padding:10px 6px 0;border-top:1px solid var(--rail-2);font-size:13px}.me i{width:28px;height:28px;background:var(--rail-2);display:grid;place-items:center;font-style:normal;font-weight:600;font-size:12px}.me small{display:block;color:var(--rail-mute);font-size:12px}
+/* main */
+main{flex:1;min-width:0;padding:16px 22px 20px;display:flex;flex-direction:column;gap:14px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.search{flex:0 1 380px;height:36px;border:1px solid var(--rule);background:var(--card);border-radius:2px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:var(--ink-2);font-size:13px}.search kbd{font:inherit;font-size:12px;border:1px solid var(--rule);padding:0 5px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:2px;font-weight:600;background:var(--ink);color:#fff;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.btn.sm{height:30px;padding:0 12px;font-size:13px}
+.head{display:flex;justify-content:space-between;align-items:flex-end}
+h1{font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1.15}.sub{color:var(--ink-2);margin-top:3px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
+.kpi{padding:9px 18px 11px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.kpi+.kpi{padding-left:18px;border-left:1px solid var(--rule)}
+.kpi span{color:var(--ink-2);font-size:13px}.kpi strong{display:block;font-size:28px;font-weight:600;line-height:1.15;letter-spacing:-.01em}
+.kpi small{font-size:12px;color:var(--ink-2)}.kpi small.up{color:#2E6B43;font-weight:600}
+.spark{display:flex;align-items:flex-end;gap:2px;height:34px}.spark i{width:6px;background:var(--rail)}.spark i:last-child{background:var(--quoted);outline:1px solid var(--ink)}
+.cap{width:120px}.cap div{display:flex;height:10px;border:1px solid var(--ink)}.cap div i{display:block}.cap small{display:block;text-align:right;margin-top:3px}
+.alert{display:flex;align-items:center;gap:14px;background:var(--fail-soft);border:1px solid var(--fail);border-left:6px solid var(--fail);padding:8px 10px 8px 12px}
+.alert p{flex:1}.alert b{color:var(--fail)}
+.cols{flex:1;min-height:0;display:grid;grid-template-columns:1fr 300px;gap:16px}
+.sec{display:flex;flex-direction:column;min-height:0}
+.sec h2{font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;height:30px}
+.legend{display:flex;gap:12px;font-size:12px;font-weight:500;color:var(--ink-2)}.legend i{display:inline-block;width:12px;height:8px;margin-right:5px;border:1px solid var(--edge);vertical-align:0}
+/* rack */
+.rack{flex:1;background:var(--rack);border:1px solid var(--slot);display:grid;grid-template-columns:repeat(5,1fr);position:relative;
+ background-image:repeating-linear-gradient(to bottom,var(--slot) 0 2px,var(--slot-hi) 2px 3px,transparent 3px 100px);background-position:0 72px}
+.col{padding:0 8px;border-right:1px solid var(--slot)}.col:last-child{border:0}
+.col h5{height:58px;padding:7px 2px 0;font-size:13px;font-weight:700;background:var(--rack);position:relative;z-index:1;border-bottom:2px solid var(--ink)}
+.col h5 span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.col h5 .st{display:flex;justify-content:space-between;align-items:center;margin-top:1px}
+.col h5 em{font-style:normal;font-weight:600;font-size:12px;display:inline-flex;align-items:center;gap:5px}
+.lamp{width:8px;height:8px;border-radius:50%}
+.col h5 .use{display:flex;height:5px;margin-top:6px;background:#C6C2B9}.col h5 .use i{display:block;background:var(--ink)}
+.col h5 small{font-weight:500;color:var(--ink-2);font-size:11px}
+.slotted{padding-top:14px}
+.card{height:84px;margin-bottom:16px;position:relative}
+.card .tab{height:22px;padding:0 8px;font-size:11px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--edge);position:relative;z-index:1}
+.card .body{position:absolute;left:6px;right:6px;top:21px;bottom:0;background:var(--card);border:1px solid var(--edge);border-top:0;padding:6px 8px}
+.body p{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.body small{display:flex;justify-content:space-between;gap:6px;color:var(--ink-2);font-size:12px;margin-top:2px;white-space:nowrap}
+.prog{position:absolute;left:8px;right:8px;bottom:7px;height:4px;background:#DCE2E8}.prog i{display:block;height:100%;background:var(--rail)}
+.act{position:absolute;left:8px;bottom:6px;font-size:12px;font-weight:600;text-decoration:underline}
+.tab.draft{background:var(--draft)}.tab.quoted{background:var(--quoted)}.tab.approved{background:var(--approved)}.tab.printing{background:var(--printing)}.tab.qc{background:var(--qc)}.tab.fail{background:var(--fail);color:#fff;border-color:var(--fail)}
+.card.failed .body{border-color:var(--fail);border-width:0 2px 2px}
+.card.ghost .tab{border-style:dashed;background:transparent;color:var(--ink-2);font-weight:600}.card.ghost .body{border-style:dashed;background:transparent;color:var(--ink-2);display:grid;place-items:center;font-size:12px}
+/* quotes */
+.tabs{display:flex;border-bottom:1px solid var(--rule);margin-bottom:0}
+.tabs a{padding:6px 10px;font-size:13px;font-weight:600;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px}.tabs a.on{color:var(--ink);border-color:var(--ink)}
+.tabs a b{font-weight:500;color:var(--ink-2);margin-left:3px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--rule);border-top:0}
+td{padding:8px 10px;border-bottom:1px solid #E3E0D8;font-size:13px;vertical-align:top}
+td.chip{width:8px;padding:0}td.chip i{display:block;width:6px;height:41px}
+td .n{font-weight:600;white-space:nowrap}td small{display:block;color:var(--ink-2);font-size:12px;white-space:nowrap}
+td.r{text-align:right;white-space:nowrap}td.r small{text-align:right}
+</style></head><body>
+<nav class="rail">
+ <div class="brand"><span class="tmark"></span>3D Print OS</div>
+ <a class="shop">3D Print It<small>New Cairo · EGP</small></a>
+ <div class="grp"><h6>Sales</h6><a class="on">Dashboard</a><a>Quotes <b>12</b></a><a>Orders <b>7</b></a><a>Customers</a></div>
+ <div class="grp"><h6>Production</h6><a>Queue <b>9</b></a><a>Printers <b class="hot">1</b></a><a>Materials</a></div>
+ <div class="grp"><h6>Business</h6><a>Reports</a><a>Pricing</a><a>Settings</a></div>
+ <div class="me"><i>SM</i><div>Seif M.<small>Owner</small></div></div>
+</nav>
+<main>
+ <div class="bar"><span class="search">Search quotes, orders, customers <kbd>Ctrl K</kbd></span><div style="display:flex;gap:8px"><span class="btn ghost">Upload model</span><span class="btn">New quote</span></div></div>
+ <div class="head"><div><h1>Today on the floor</h1><p class="sub">Thursday 22 Oct · 2 printing · 1 waiting for quality check · next start 15:40</p></div></div>
+ <div class="kpis">
+  <div class="kpi"><div><span>Revenue, 14 days</span><strong>EGP 48,620</strong><small class="up">+12% vs previous 14</small></div><div class="spark"><i style="height:30%"></i><i style="height:52%"></i><i style="height:40%"></i><i style="height:66%"></i><i style="height:48%"></i><i style="height:72%"></i><i style="height:58%"></i><i style="height:90%"></i><i style="height:70%"></i><i style="height:84%"></i><i style="height:62%"></i><i style="height:100%"></i></div></div>
+  <div class="kpi"><div><span>Open orders</span><strong>7</strong><small>EGP 8,940 to collect</small></div></div>
+  <div class="kpi"><div><span>Draft quotes</span><strong>5</strong><small>oldest 2 days</small></div></div>
+  <div class="kpi"><div><span>Printer hours today</span><strong>31.5 h</strong><small>of 120 h</small></div><div class="cap"><div><i style="width:26%;background:var(--printing)"></i><i style="width:8%;background:var(--approved)"></i></div><small>26% booked</small></div></div>
+ </div>
+ <div class="alert"><p><b>Ender 3 S1 stopped at 41%</b> on #1036 Phone dock ×2 for Mariam H. · 120 g PLA Red lost. Prusa Mini is free and fits it (3 h 50).</p><span class="btn sm">Reprint on Prusa Mini</span><span class="btn sm ghost">Open job</span></div>
+ <div class="cols">
+  <section class="sec">
+   <h2>Printer rack<div class="legend"><span><i style="background:var(--approved)"></i>Next</span><span><i style="background:var(--printing)"></i>Printing</span><span><i style="background:var(--qc)"></i>QC</span><span><i style="background:var(--fail)"></i>Failed</span><span><i style="background:var(--quoted)"></i>Quoted</span></div></h2>
+   <div class="rack">
+    <div class="col"><h5><span>Bambu X1C · 1</span><div class="st"><em><i class="lamp" style="background:#3C74B5"></i>Printing</em><small>14 h today</small></div><div class="use"><i style="width:58%"></i></div></h5>
+     <div class="slotted">
+      <div class="card"><div class="tab printing">PRINTING 62%<span>3 h 10 left</span></div><div class="body"><p>Controller stand ×4</p><small><span>PLA Black · 188 g</span><span>#1040</span></small><div class="prog"><i style="width:62%"></i></div></div></div>
+      <div class="card"><div class="tab approved">NEXT · 18:55<span>2 h 05</span></div><div class="body"><p>Headset hook</p><small><span>PETG Gray · 74 g</span><span>#1042</span></small></div></div>
+     </div></div>
+    <div class="col"><h5><span>Bambu X1C · 2</span><div class="st"><em><i class="lamp" style="background:#3C74B5"></i>Printing</em><small>11.6 h today</small></div><div class="use"><i style="width:48%"></i></div></h5>
+     <div class="slotted">
+      <div class="card"><div class="tab printing">PRINTING 18%<span>9 h 40 left</span></div><div class="body"><p>Wall panel set</p><small><span>PLA White · 412 g</span><span>#1041</span></small><div class="prog"><i style="width:18%"></i></div></div></div>
+     </div></div>
+    <div class="col"><h5><span>Prusa MK4</span><div class="st"><em><i class="lamp" style="background:#D27B67"></i>Waiting</em><small>6.3 h today</small></div><div class="use"><i style="width:26%"></i></div></h5>
+     <div class="slotted">
+      <div class="card"><div class="tab qc">QC<span>off bed 14:20</span></div><div class="body"><p>Bracket, customer STL</p><small><span>PETG Black · 56 g</span><span>#1038</span></small><a class="act">Pass or reprint</a></div></div>
+      <div class="card"><div class="tab approved">NEXT · 15:40<span>4 h 30</span></div><div class="body"><p>Vase, spiral</p><small><span>PLA Gray · 95 g</span><span>#1044</span></small></div></div>
+     </div></div>
+    <div class="col"><h5><span>Ender 3 S1</span><div class="st"><em style="color:var(--fail)"><i class="lamp" style="background:var(--fail)"></i>Fault</em><small>stopped 11:52</small></div><div class="use"><i style="width:12%;background:var(--fail)"></i></div></h5>
+     <div class="slotted">
+      <div class="card failed"><div class="tab fail">FAILED 41%<span>11:52</span></div><div class="body"><p>Phone dock ×2</p><small><span>PLA Red · 120 g</span><span>#1036</span></small><a class="act">Reprint elsewhere</a></div></div>
+     </div></div>
+    <div class="col"><h5><span>Prusa Mini</span><div class="st"><em style="color:var(--ink-2)"><i class="lamp" style="background:#9A968D"></i>Idle</em><small>since 10:05</small></div><div class="use"><i style="width:0"></i></div></h5>
+     <div class="slotted">
+      <div class="card ghost"><div class="tab">EMPTY SLOT</div><div class="body">Drop an approved job here</div></div>
+     </div></div>
+   </div>
+  </section>
+  <section class="sec">
+   <h2>Quotes<a style="font-size:13px;font-weight:500;color:var(--ink-2);text-decoration:underline">All quotes</a></h2>
+   <div class="tabs"><a class="on">Recent</a><a>Draft<b>5</b></a><a>Sent<b>4</b></a><a>Approved<b>3</b></a></div>
+   <table>
+    <tr><td class="chip"><i style="background:var(--quoted)"></i></td><td><span class="n">Drone frame arms</span><small>Karim Labs · sent 2 h ago</small></td><td class="r">EGP 1,240<small>7 h 24 · 230 g</small></td></tr>
+    <tr><td class="chip"><i style="background:var(--draft);outline:1px solid var(--edge);outline-offset:-1px"></i></td><td><span class="n">Cosplay helmet</span><small>Salma R. · slicing…</small></td><td class="r">—<small>uploaded 09:12</small></td></tr>
+    <tr><td class="chip"><i style="background:var(--quoted)"></i></td><td><span class="n">Cable clips ×20</span><small>Omar K. · sent yesterday</small></td><td class="r">EGP 380<small>1 h 50 · 60 g</small></td></tr>
+    <tr><td class="chip"><i style="background:var(--approved)"></i></td><td><span class="n">Headset hook</span><small>Nour Studio · approved</small></td><td class="r">EGP 420<small>2 h 05 · 74 g</small></td></tr>
+    <tr><td class="chip"><i style="background:var(--approved)"></i></td><td><span class="n">Bracket, customer STL</span><small>Youssef A. · approved</small></td><td class="r">EGP 310<small>1 h 48 · 56 g</small></td></tr>
+    <tr><td class="chip"><i style="background:#CFCBC2"></i></td><td><span class="n">Phone dock</span><small>Mariam H. · expired</small></td><td class="r">EGP 260<small>1 h 55 · 60 g</small></td></tr>
+    <tr><td class="chip"><i style="background:var(--approved)"></i></td><td><span class="n">Wall panel set</span><small>Nour Studio · approved</small></td><td class="r">EGP 2,850<small>11 h 36 · 412 g</small></td></tr>
+    <tr><td class="chip"><i style="background:var(--quoted)"></i></td><td><span class="n">Desk organiser</span><small>Hana E. · sent Mon</small></td><td class="r">EGP 640<small>3 h 20 · 140 g</small></td></tr>
+   </table>
+  </section>
+ </div>
+</main></body></html>

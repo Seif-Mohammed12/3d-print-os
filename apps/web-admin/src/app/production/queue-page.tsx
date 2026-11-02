@@ -71,20 +71,20 @@ export function QueuePage() {
           />
         </Card>
       ) : (
-        <div className="grid gap-x-3 gap-y-6 rounded-sm border border-slot bg-rack p-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-x-4 gap-y-6 md:grid-cols-2 xl:grid-cols-4">
           {COLUMNS.map((column) => {
             const items = active.filter((order) =>
               column.statuses.includes(order.production_status),
             );
             return (
               <section key={column.title} className="flex min-w-0 flex-col">
-                <h2 className="flex items-baseline justify-between border-b-2 border-rule px-0.5 pb-1.5 text-[13px] font-bold text-foreground">
+                <h2 className="flex items-baseline justify-between px-1 pb-2 text-sm font-semibold text-foreground">
                   {column.title}
                   <span className="tabular text-xs font-medium text-muted-foreground">
                     {items.length} {items.length === 1 ? 'job' : 'jobs'}
                   </span>
                 </h2>
-                <div className="flex-1 space-y-4 bg-[repeating-linear-gradient(to_bottom,hsl(var(--slot))_0_2px,transparent_2px_142px)] bg-[position:0_10px] pt-3">
+                <div className="flex-1 space-y-3 rounded-2xl bg-muted/50 p-2.5">
                   {items.map((order) => (
                     <QueueCard
                       key={order.id}
@@ -94,7 +94,7 @@ export function QueuePage() {
                     />
                   ))}
                   {items.length === 0 && (
-                    <p className="flex h-20 items-center justify-center rounded-sm border border-dashed border-input text-xs text-muted-foreground">
+                    <p className="flex h-20 items-center justify-center rounded-xl border border-dashed border-input text-xs text-muted-foreground">
                       No jobs here
                     </p>
                   )}

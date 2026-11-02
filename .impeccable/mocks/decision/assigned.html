@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>3D Print OS · Facts Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:#F4F5F7;color:#14171C;font:400 14px/1.45 Geist,system-ui,sans-serif;font-variant-numeric:tabular-nums;display:flex;-webkit-font-smoothing:antialiased}
+svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.rail{width:232px;height:900px;background:#fff;border-right:1px solid #E3E6EA;padding:20px 16px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;padding:0 8px;height:32px}
+.mark{width:24px;height:24px;border-radius:6px;background:#14171C;display:grid;place-items:center;color:#fff}.mark svg{width:14px;height:14px}
+.tenant{margin:16px 0 8px;height:40px;border:1px solid #E3E6EA;border-radius:8px;display:flex;align-items:center;gap:10px;padding:0 10px;font-weight:500}
+.tenant i{width:22px;height:22px;border-radius:6px;background:#EEF0F3;font:600 11px Geist;display:grid;place-items:center;font-style:normal;color:#454B55}
+.tenant small{margin-left:auto;color:#9AA1AC;font-size:12px}
+.grp{margin-top:20px}.grp h6{font:500 12px Geist;color:#9AA1AC;padding:0 8px 6px}
+.nav{display:flex;align-items:center;height:32px;padding:0 8px;border-radius:8px;color:#454B55;gap:10px}
+.nav svg{color:#9AA1AC}.nav.on{background:#EEF0F3;color:#14171C;font-weight:500}.nav.on svg{color:#14171C}
+.nav b{margin-left:auto;font:500 12px Geist;color:#6B7280}.nav b.red{background:#FBE3E1;color:#B4231C;border-radius:10px;padding:0 7px;line-height:18px}
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:8px;border-top:1px solid #EEF0F3;padding-top:16px}
+.av{width:28px;height:28px;border-radius:50%;background:#E3E6EA;display:grid;place-items:center;font:600 11px Geist;color:#2A2F37}
+.me small{display:block;font-size:12px;color:#9AA1AC;line-height:1.2}
+.main{flex:1;padding:0 32px;overflow:hidden}
+.top{height:64px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E3E6EA;margin:0 -32px;padding:0 32px}
+.search{width:360px;height:36px;border:1px solid #E3E6EA;background:#fff;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 12px;color:#9AA1AC}
+.search kbd{margin-left:auto;font:500 11px Geist;border:1px solid #E3E6EA;border-radius:4px;padding:0 5px;color:#9AA1AC}
+.btn{height:32px;border-radius:8px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font:500 13px Geist;border:1px solid #C9CDD4;background:#fff;color:#14171C;white-space:nowrap}
+.btn.p{background:#14171C;border-color:#14171C;color:#fff}.top .btn{height:36px;margin-left:auto;padding:0 14px}
+.hd{padding:28px 0 24px}.hd h1{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.2}.hd p{color:#6B7280;margin-top:6px}.hd .f{color:#DC3B32}
+.card{background:#fff;border:1px solid #E3E6EA;border-radius:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr)}.kpi{padding:18px 20px;border-left:1px solid #EEF0F3}.kpi:first-child{border:0}
+.kpi .l{font-size:12px;color:#6B7280}.kpi .v{font-size:24px;font-weight:600;letter-spacing:-.01em;margin:4px 0 2px;line-height:1.25}.kpi .v small{font-size:13px;color:#6B7280;font-weight:500;margin-right:4px}.kpi .s{font-size:12px;color:#9AA1AC}
+.kpi .row{display:flex;align-items:flex-end;justify-content:space-between}
+.spark{display:flex;align-items:flex-end;gap:2px;height:28px}.spark i{width:4px;background:#C9CDD4;border-radius:1px}.spark i:last-child{background:#2A2F37}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin-top:24px}
+.c8{grid-column:span 8}.c4{grid-column:span 4}
+.st{display:flex;align-items:center;justify-content:space-between;height:28px;margin-bottom:12px}.st h2{font-size:15px;font-weight:600}.st a{font-size:13px;color:#6B7280;text-decoration:none}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pc{padding:14px 16px;height:252px;display:flex;flex-direction:column}
+.ph{display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:11px;font:500 12px Geist;white-space:nowrap}.chip:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.cob{background:#E6EEFF;color:#1F4FD1}.amb{background:#FDF3DC;color:#8A5A00}.grn{background:#E2F4EA;color:#1E7149}.cor{background:#FDE9E2;color:#B44A2C}.red{background:#FBE3E1;color:#B4231C}.sla{background:#EEF0F3;color:#454B55}
+.job{margin-top:10px;font-size:13px;color:#454B55}.job b{color:#14171C;font-weight:600;margin-right:6px}
+.fp{border:1px solid #14171C;border-radius:4px;padding:6px 8px 4px;margin-top:10px;font-size:12px}
+.fp .h{display:flex;justify-content:space-between;font-weight:700;border-bottom:4px solid #14171C;padding-bottom:3px;font-size:12px}
+.fp .r{display:flex;justify-content:space-between;border-bottom:1px solid #14171C;padding:3px 0;color:#2A2F37}.fp .r:last-child{border:0}.fp .r b{font-weight:600;color:#14171C}
+.bar{height:4px;background:#EEF0F3;border-radius:2px;margin-top:10px}.bar i{display:block;height:4px;border-radius:2px}
+.nx{margin-top:auto;font-size:12px;color:#9AA1AC;display:flex;justify-content:space-between}.nx span{color:#454B55}
+.acts{margin-top:auto;display:flex;gap:8px}
+.empty{flex:1;margin-top:10px;border:1px dashed #C9CDD4;border-radius:8px;display:grid;place-items:center;text-align:center;color:#9AA1AC;font-size:13px;padding:12px}
+.cap{font-size:12px;color:#9AA1AC;margin-top:4px}
+.list .it{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-top:1px solid #EEF0F3}.list .it:first-child{border:0}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none}
+.it .t{font-weight:500}.it .d{font-size:12px;color:#6B7280}.it .btn{margin-left:auto;height:28px}
+.q{padding:12px 16px;border-top:1px solid #EEF0F3}.q:first-child{border:0}
+.qh{display:flex;justify-content:space-between;align-items:center}.qh b{font-weight:600}.qh span{color:#6B7280;margin-left:6px}
+.fl{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px;border-top:4px solid #14171C;border-bottom:1px solid #14171C;font-size:12px}
+.fl div{padding:3px 8px;border-left:1px solid #14171C}.fl div:first-child{border:0;padding-left:0}.fl small{display:block;color:#6B7280;font-size:11px;line-height:1.3}.fl b{font-weight:600}
+</style></head><body>
+<aside class="rail">
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></span>3D Print OS</div>
+<div class="tenant"><i>3P</i>3D Print It<small>EGP</small><svg viewBox="0 0 24 24" style="color:#9AA1AC"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg></div>
+<div class="grp"><h6>Sales</h6>
+<div class="nav on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</div>
+<div class="nav"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>Quotes<b>8</b></div>
+<div class="nav"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>Orders<b>7</b></div>
+<div class="nav"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0114 0M16 4a4 4 0 010 8M22 21a7 7 0 00-4-6.3"/></svg>Customers</div></div>
+<div class="grp"><h6>Production</h6>
+<div class="nav"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Queue<b class="red">1</b></div>
+<div class="nav"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>Printers</div>
+<div class="nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>Materials</div></div>
+<div class="grp"><h6>Business</h6>
+<div class="nav"><svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>Reports</div>
+<div class="nav"><svg viewBox="0 0 24 24"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1"/></svg>Pricing</div>
+<div class="nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-2.9 1.2V21a2 2 0 11-4 0 1.7 1.7 0 00-2.9-1.2l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.7 1.7 0 003 15a2 2 0 110-4 1.7 1.7 0 001.2-2.9l-.1-.1a2 2 0 112.8-2.8l.1.1A1.7 1.7 0 009 4a2 2 0 114 0 1.7 1.7 0 002.9 1.2l.1-.1a2 2 0 112.8 2.8l-.1.1A1.7 1.7 0 0021 11a2 2 0 110 4z"/></svg>Settings</div></div>
+<div class="me"><span class="av">SM</span><div>Seif Mohammed<small>Owner</small></div></div>
+</aside>
+<main class="main">
+<div class="top"><div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search orders, quotes, customers<kbd>Ctrl K</kbd></div>
+<span class="btn p"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New quote</span></div>
+<div class="hd"><h1>Good afternoon, Seif</h1><p>2 prints running · 8 draft quotes waiting · <span class="f">1 failed print</span></p></div>
+<section class="card kpis">
+<div class="kpi"><div class="l">Revenue, 14 days</div><div class="row"><div><div class="v"><small>EGP</small>45,700</div><div class="s">51 orders</div></div>
+<div class="spark"><i style="height:9px"></i><i style="height:14px"></i><i style="height:11px"></i><i style="height:18px"></i><i style="height:12px"></i><i style="height:8px"></i><i style="height:16px"></i><i style="height:20px"></i><i style="height:13px"></i><i style="height:17px"></i><i style="height:22px"></i><i style="height:15px"></i><i style="height:19px"></i><i style="height:26px"></i></div></div></div>
+<div class="kpi"><div class="l">Open orders</div><div class="v">7</div><div class="s">2 printing now</div></div>
+<div class="kpi"><div class="l">Draft quotes</div><div class="v">8</div><div class="s">Waiting to be sent</div></div>
+<div class="kpi"><div class="l">Printers ready</div><div class="v">4 <small style="margin:0">/ 5</small></div><div class="s">1 in maintenance</div></div>
+</section>
+<div class="grid">
+<section class="c8"><div class="st"><h2>Printers</h2><a>All printers</a></div>
+<div class="pg">
+<div class="card pc"><div class="ph">Bambu X1C · 1<span class="chip cob">Printing</span></div>
+<div class="job"><b>ORD-1040</b>Mariam Hassan</div>
+<div class="fp"><div class="h"><span>Job facts</span><span>62%</span></div><div class="r"><span>Price</span><b>EGP 1,600</b></div><div class="r"><span>Print time</span><b>6h 20m</b></div><div class="r"><span>Filament</span><b>184 g</b></div><div class="r"><span>Layers</span><b>912</b></div></div>
+<div class="bar"><i style="width:62%;background:#2F6BFF"></i></div>
+<div class="nx">Queued next<span>ORD-1042 Nour Studio</span></div></div>
+<div class="card pc"><div class="ph">Bambu X1C · 2<span class="chip cob">Printing</span></div>
+<div class="job"><b>ORD-1041</b>Nour Studio</div>
+<div class="fp"><div class="h"><span>Job facts</span><span>28%</span></div><div class="r"><span>Price</span><b>EGP 2,850</b></div><div class="r"><span>Print time</span><b>11h 05m</b></div><div class="r"><span>Filament</span><b>342 g</b></div><div class="r"><span>Layers</span><b>1,540</b></div></div>
+<div class="bar"><i style="width:28%;background:#2F6BFF"></i></div>
+<div class="nx">Queued next<span>None</span></div></div>
+<div class="card pc"><div class="ph">Prusa MK4<span class="chip grn">Ready</span></div>
+<div class="job"><b>ORD-1038</b>Youssef Adel</div>
+<div style="margin-top:10px"><span class="chip cor">Awaiting QC</span></div>
+<div class="cap" style="margin-top:8px">Printed and off the bed. Check the part before it moves to packing.</div>
+<div class="acts"><span class="btn p">Pass QC</span><span class="btn">Open order</span></div></div>
+<div class="card pc"><div class="ph">Ender 3 S1<span class="chip red">Failed</span></div>
+<div class="job"><b>ORD-1036</b>Mariam Hassan</div>
+<div class="fp"><div class="h"><span>Job facts</span><span>Stopped</span></div><div class="r"><span>Price</span><b>EGP 520</b></div><div class="r"><span>Stopped at layer</span><b>214 / 640</b></div></div>
+<div class="bar"><i style="width:33%;background:#DC3B32"></i></div>
+<div class="acts"><span class="btn p">Reprint</span><span class="btn">Move printer</span></div></div>
+<div class="card pc"><div class="ph">Prusa Mini<span class="chip sla">Maintenance</span></div>
+<div class="empty">No job.<br>Assign a queued order.</div></div>
+<div class="card pc" style="background:#FAFBFC"><div class="ph">No printer yet<span class="chip amb">Queued</span></div>
+<div class="job"><b>ORD-1037</b>Omar Khaled</div>
+<div class="fp"><div class="h"><span>Job facts</span><span></span></div><div class="r"><span>Price</span><b>EGP 380</b></div></div>
+<div class="acts"><span class="btn p">Assign printer</span></div></div>
+</div></section>
+<section class="c4"><div class="st"><h2>Needs a hand</h2><a>3 items</a></div>
+<div class="card list">
+<div class="it"><span class="dot" style="background:#DC3B32"></span><div><div class="t">Failed print</div><div class="d">ORD-1036 · Ender 3 S1 · layer 214</div></div><span class="btn">Reprint</span></div>
+<div class="it"><span class="dot" style="background:#F07A5A"></span><div><div class="t">Ready for QC</div><div class="d">ORD-1038 · Prusa MK4</div></div><span class="btn">Check</span></div>
+<div class="it"><span class="dot" style="background:#F5B83D"></span><div><div class="t">8 draft quotes to send</div><div class="d">Oldest drafted 2 days ago</div></div><span class="btn">Review</span></div>
+</div>
+<div class="st" style="margin-top:24px"><h2>Recent quotes</h2><a>All quotes</a></div>
+<div class="card">
+<div class="q"><div class="qh"><div><b>Q-2213</b><span>Karim Fathy</span></div><span class="chip amb">Draft</span></div><div class="fl"><div><small>Time</small><b>3h 40m</b></div><div><small>Filament</small><b>112 g</b></div><div><small>Price</small><b>EGP 640</b></div></div></div>
+<div class="q"><div class="qh"><div><b>Q-2212</b><span>Laila Mostafa</span></div><span class="chip sla">Sent</span></div><div class="fl"><div><small>Time</small><b>1h 15m</b></div><div><small>Filament</small><b>38 g</b></div><div><small>Price</small><b>EGP 210</b></div></div></div>
+<div class="q"><div class="qh"><div><b>Q-2211</b><span>Ahmed Samir</span></div><span class="chip grn">Approved</span></div><div class="fl"><div><small>Time</small><b>9h 05m</b></div><div><small>Filament</small><b>286 g</b></div><div><small>Price</small><b>EGP 1,480</b></div></div></div>
+</div></section>
+</div></main></body></html>
