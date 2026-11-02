@@ -108,6 +108,10 @@ class ApiClient {
       : '/login';
   }
 
+  public setBaseUrl(url: string): void {
+    this.client.defaults.baseURL = url;
+  }
+
   public get instance(): AxiosInstance {
     return this.client;
   }

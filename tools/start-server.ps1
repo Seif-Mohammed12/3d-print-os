@@ -4,7 +4,8 @@
 #   API on 127.0.0.1:3000                         - public via https://<random>.trycloudflare.com
 #
 # It does not touch Tailscale or any other app's ports. Quick-tunnel addresses change on every
-# start: set the printed address as VITE_API_BASE_URL on Vercel and redeploy.
+# start, so the script publishes each one with tools\publish-api-address.ps1 (Supabase Storage);
+# the web app reads it on load (VITE_RUNTIME_CONFIG_URL), so no Vercel redeploy is needed.
 #
 # Usage (from the repo root):  powershell -ExecutionPolicy Bypass -File tools\start-server.ps1
 # Needs: root .env (DATABASE_URL, Supabase, JWT secrets), apps/geometry-service/.env
@@ -86,9 +87,18 @@ try {
     }
     if (-not $url) { throw "The tunnel did not start. See $tunnelLog" }
 
+    # The deployed web app reads this on load, so a new tunnel address needs no Vercel redeploy.
+    $published = $true
+    try { & (Join-Path $PSScriptRoot 'publish-api-address.ps1') -ApiBaseUrl "$url/api/v1" }
+    catch { $published = $false; Write-Warning "Could not publish the API address: $_" }
+
     Write-Host ''
     Write-Host 'Backend is online.' -ForegroundColor Green
-    Write-Host "  API:  $url/api/v1   (set as Vercel VITE_API_BASE_URL, then redeploy)" -ForegroundColor Cyan
+    if ($published) {
+        Write-Host "  API:  $url/api/v1   (published; the web app picks it up on its next load)" -ForegroundColor Cyan
+    } else {
+        Write-Host "  API:  $url/api/v1   (set as Vercel VITE_API_BASE_URL, then redeploy)" -ForegroundColor Cyan
+    }
     Write-Host "  Logs: $logDir"
     Write-Host ''
     Write-Host 'Keep this window open. Press Ctrl+C to stop.'

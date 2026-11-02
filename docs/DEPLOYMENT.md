@@ -40,14 +40,20 @@ powershell -ExecutionPolicy Bypass -File tools\start-server.ps1
 
 It starts the slicer (127.0.0.1:8000, private), the API (127.0.0.1:3000) and a Cloudflare quick
 tunnel, and prints the public API address (`https://<random>.trycloudflare.com/api/v1`).
-**The address changes on every start:** set it as `VITE_API_BASE_URL` on Vercel and redeploy.
+**The address changes on every start**, so the script publishes it with
+`tools/publish-api-address.ps1` to the public Supabase Storage file
+`<SUPABASE_URL>/storage/v1/object/public/runtime-config/api.json` (bucket created on first run).
+The web app reads that file on every load, so no Vercel redeploy is needed. To republish by hand:
+`powershell -ExecutionPolicy Bypass -File tools\publish-api-address.ps1 -ApiBaseUrl <address>/api/v1`.
 Ctrl+C stops everything.
 
 ## Vercel
 
 Project root `apps/web-admin`, environment variables:
 
-- `VITE_API_BASE_URL` = the address `tools/start-server.ps1` prints
+- `VITE_RUNTIME_CONFIG_URL` = `<SUPABASE_URL>/storage/v1/object/public/runtime-config/api.json`
+  (set once; this is where the app finds the current API address)
+- `VITE_API_BASE_URL` = fallback API address, used only if that file can't be read
 - `VITE_PORTAL_TENANT_SLUG` = your shop's address (e.g. `3d-print-it`)
 
 Redeploy after changing them (they are baked in at build time). The API allows
