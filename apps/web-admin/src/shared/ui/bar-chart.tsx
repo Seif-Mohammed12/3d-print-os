@@ -58,16 +58,15 @@ export function BarChart({
               >
                 <div
                   className={cn(
-                    'w-3/5 max-w-6 transition-colors duration-150',
-                    active === null || active === index ? 'bg-chart' : 'bg-chart/35',
-                    index === data.length - 1 &&
-                      (active === null || active === index) &&
-                      'bg-stock-quoted ring-1 ring-inset ring-stock-edge',
+                    'w-3/5 max-w-6 rounded-t-[4px] transition-colors duration-150',
+                    active === index || (active === null && index === data.length - 1)
+                      ? 'bg-chart'
+                      : 'bg-chart-muted',
                   )}
                   style={{ height: `${(datum.value / max) * 100}%` }}
                 />
                 {active === index && (
-                  <div className="pointer-events-none absolute bottom-full z-10 mb-1 whitespace-nowrap rounded-sm border border-border bg-popover px-2.5 py-1.5 text-xs shadow-popover">
+                  <div className="pointer-events-none absolute bottom-full z-10 mb-1 whitespace-nowrap rounded-lg border border-border bg-popover px-2.5 py-1.5 text-xs shadow-popover">
                     <p className="text-muted-foreground">{datum.label}</p>
                     <p className="tabular font-semibold text-foreground">{datum.display}</p>
                   </div>

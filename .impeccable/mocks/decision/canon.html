@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>3D Print OS · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ground:#F7F7F8;--surface:#fff;--ink:#111827;--muted:#6B7280;--faint:#9CA3AF;--border:#E5E7EB;--accent:#5B5BD6;--accent-soft:#EEEEFB}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:var(--ground);color:var(--ink);font:400 13px/1.45 Inter,system-ui,sans-serif;font-feature-settings:"tnum" 1,"cv11" 1;display:flex;-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums}
+aside{width:240px;flex:none;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px}
+.logo{width:26px;height:26px;border-radius:7px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px}
+.brand b{font-weight:600;font-size:14px;letter-spacing:-.01em}
+.ws{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:16px}
+.ws small{display:block;color:var(--muted);font-size:11px}.ws span{font-weight:500}
+.ws i{font-style:normal;color:var(--faint);font-size:11px}
+nav a{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:6px;color:#374151;text-decoration:none;font-weight:500;margin-bottom:1px}
+nav a.on{background:var(--accent-soft);color:var(--accent)}
+nav a em{font-style:normal;font-size:11px;color:var(--muted);font-weight:500}
+nav a em.red{background:#FEE2E2;color:#B91C1C;border-radius:10px;padding:0 7px;line-height:18px}
+nav hr{border:0;border-top:1px solid var(--border);margin:10px 8px}
+.user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px 8px;border-top:1px solid var(--border)}
+.av{width:28px;height:28px;border-radius:50%;background:#E0E7FF;color:#4338CA;display:grid;place-items:center;font-size:11px;font-weight:600}
+.user small{display:block;color:var(--muted);font-size:11px;line-height:1.2}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:56px;flex:none;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.search{width:360px;height:34px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:var(--faint)}
+kbd{font:500 11px Inter,sans-serif;color:var(--muted);border:1px solid var(--border);border-radius:4px;padding:1px 5px;background:var(--ground)}
+.btn{height:32px;padding:0 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface);font:500 13px Inter,sans-serif;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.wrap{padding:24px 32px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0}
+h1{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.sub{color:var(--muted);margin-top:2px}
+.alert{display:flex;align-items:center;justify-content:space-between;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 12px 10px 14px}
+.alert p{display:flex;align-items:center;gap:10px;color:#7F1D1D;font-weight:500}
+.alert .dot{width:8px;height:8px;border-radius:50%;background:#DC2626}
+.alert .btn{height:28px;font-size:12px}.alert .btn.red{background:#DC2626;border-color:#DC2626;color:#fff}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.stats{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:16px}
+.stat{padding:16px 18px;height:112px;display:flex;flex-direction:column;justify-content:space-between}
+.stat .l{color:var(--muted);font-weight:500;font-size:12px}
+.stat .v{font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.stat .v small{font-size:14px;color:var(--muted);font-weight:500;margin-right:4px}
+.stat .f{color:var(--muted);font-size:12px}
+.up{color:#047857;font-weight:500}
+.row{display:flex;align-items:flex-end;justify-content:space-between}
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;flex:1;min-height:0}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.ch h2{font-size:14px;font-weight:600}.ch a{color:var(--muted);font-size:12px;text-decoration:none;font-weight:500}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;font-weight:500;color:var(--muted);padding:9px 18px;background:#FAFAFB;border-bottom:1px solid var(--border)}
+td{padding:13px 18px;border-bottom:1px solid #F1F2F4;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td .s{display:block;color:var(--muted);font-size:12px}
+td.r,th.r{text-align:right}
+.m{color:var(--muted)}.id{font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;line-height:18px}
+.pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.blue{background:#EFF6FF;color:#1D4ED8}.green{background:#ECFDF5;color:#047857}.red{background:#FEF2F2;color:#B91C1C}.grey{background:#F3F4F6;color:#4B5563}.amber{background:#FFFBEB;color:#B45309}
+</style></head>
+<body>
+<aside>
+  <div class="brand"><div class="logo">3D</div><b>3D Print OS</b></div>
+  <div class="ws"><div><small>Workspace</small><span>3D Print It</span></div><i>&#8693;</i></div>
+  <nav>
+    <a class="on">Dashboard</a>
+    <a>Quotes <em>8</em></a>
+    <a>Orders <em>7</em></a>
+    <a>Customers</a>
+    <hr>
+    <a>Queue <em class="red">1</em></a>
+    <a>Printers</a>
+    <a>Materials</a>
+    <hr>
+    <a>Reports</a>
+    <a>Pricing</a>
+    <a>Settings</a>
+  </nav>
+  <div class="user"><div class="av">SM</div><div><b style="font-weight:500">Seif Mohammed</b><small>Owner</small></div></div>
+</aside>
+<main>
+  <div class="top">
+    <div class="search"><span>Search orders, quotes, customers…</span><kbd>⌘K</kbd></div>
+    <div style="display:flex;gap:8px"><span class="btn">Upload model</span><span class="btn primary">+ New quote</span></div>
+  </div>
+  <div class="wrap">
+    <div class="row" style="align-items:center">
+      <div><h1>Dashboard</h1><p class="sub num">2 prints running · 8 draft quotes waiting · 1 failed print</p></div>
+      <span class="btn m">Last 14 days &#9662;</span>
+    </div>
+    <div class="alert">
+      <p><span class="dot"></span><span><b>ORD-1036</b> for Mariam Hassan failed on Ender 3 S1.</span><span style="font-weight:400;color:#991B1B">Layer shift at 62%, 41 min ago</span></p>
+      <div style="display:flex;gap:8px"><span class="btn">Open order</span><span class="btn red">Reprint</span></div>
+    </div>
+    <div class="stats num">
+      <div class="card stat">
+        <div class="row"><span class="l">Revenue (14 days)</span><span class="up">+12%</span></div>
+        <div class="row">
+          <div><div class="v"><small>EGP</small>45,700</div><div class="f" style="margin-top:6px">vs EGP 40,800 prior period</div></div>
+          <svg width="150" height="44" viewBox="0 0 150 44" fill="none"><polyline points="0,34 11,30 22,32 33,25 44,27 55,21 66,24 77,17 88,20 99,14 110,16 121,10 132,12 150,6" stroke="#5B5BD6" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/><circle cx="150" cy="6" r="2.5" fill="#5B5BD6" transform="translate(-2,0)"/></svg>
+        </div>
+      </div>
+      <div class="card stat"><span class="l">Open orders</span><div class="v">7</div><span class="f">2 printing · 1 in QC · 4 queued</span></div>
+      <div class="card stat"><span class="l">Draft quotes</span><div class="v">8</div><span class="f">Oldest drafted 2 days ago</span></div>
+      <div class="card stat"><span class="l">Printers ready</span><div class="v">4<small style="margin:0 0 0 2px">/5</small></div><span class="f">Prusa Mini in maintenance</span></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="ch"><h2>Printers</h2><a>View all &rarr;</a></div>
+        <table class="num">
+          <tr><th>Printer</th><th>Status</th><th>Current job</th><th>Next</th></tr>
+          <tr><td class="id">Bambu X1C · 1</td><td><span class="pill blue">Printing</span></td><td>ORD-1040<span class="s">Mariam Hassan</span></td><td class="m">ORD-1042</td></tr>
+          <tr><td class="id">Bambu X1C · 2</td><td><span class="pill blue">Printing</span></td><td>ORD-1041<span class="s">Nour Studio</span></td><td class="m">—</td></tr>
+          <tr><td class="id">Prusa MK4</td><td><span class="pill green">Ready</span></td><td>ORD-1038<span class="s">Awaiting <span class="pill amber" style="font-size:11px;padding:0 6px;margin-left:2px">QC</span></span></td><td class="m">ORD-1044</td></tr>
+          <tr><td class="id">Ender 3 S1</td><td><span class="pill red">Failed</span></td><td>ORD-1036<span class="s">Mariam Hassan</span></td><td class="m">—</td></tr>
+          <tr><td class="id">Prusa Mini</td><td><span class="pill grey">Maintenance</span></td><td class="m">—</td><td class="m">—</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="ch"><h2>Recent quotes</h2><a>View all &rarr;</a></div>
+        <table class="num">
+          <tr><th>Quote</th><th>Customer</th><th class="r">Time</th><th class="r">Weight</th><th class="r">Total</th><th>Status</th></tr>
+          <tr><td class="id">Q-2213</td><td>Karim Fathy</td><td class="r m">3h 40m</td><td class="r m">112 g</td><td class="r id">EGP 640</td><td><span class="pill grey">Draft</span></td></tr>
+          <tr><td class="id">Q-2212</td><td>Laila Mostafa</td><td class="r m">1h 15m</td><td class="r m">38 g</td><td class="r id">EGP 210</td><td><span class="pill blue">Sent</span></td></tr>
+          <tr><td class="id">Q-2211</td><td>Ahmed Samir</td><td class="r m">9h 05m</td><td class="r m">286 g</td><td class="r id">EGP 1,480</td><td><span class="pill green">Approved</span></td></tr>
+          <tr><td class="id">Q-2210</td><td>Hana Zaki</td><td class="r m">2h 10m</td><td class="r m">64 g</td><td class="r id">EGP 330</td><td><span class="pill green">Approved</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</body></html>

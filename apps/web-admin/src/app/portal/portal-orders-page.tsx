@@ -4,8 +4,15 @@ import type { PortalOrder } from '../../features/portal/api/portal-api';
 import { usePortalOrders } from '../../features/portal/hooks/use-portal';
 import { getErrorMessage } from '../../shared/api/api-error-handler';
 import { formatDate, formatMoney } from '../../shared/lib/format';
-import { cn } from '../../shared/lib/utils';
-import { Badge, type BadgeTone, Card, EmptyState, ErrorNotice, Skeleton } from '../../shared/ui';
+import {
+  Badge,
+  type BadgeTone,
+  Card,
+  EmptyState,
+  ErrorNotice,
+  Skeleton,
+  StageLine,
+} from '../../shared/ui';
 
 const STATUS: Record<PortalOrder['status'], { label: string; tone: BadgeTone }> = {
   received: { label: 'Received', tone: 'neutral' },
@@ -18,7 +25,7 @@ const STATUS: Record<PortalOrder['status'], { label: string; tone: BadgeTone }> 
 
 const STAGES: Array<PortalOrder['status']> = ['received', 'printing', 'ready', 'delivered'];
 
-/** Shipped sits between ready and delivered on the progress bar. */
+/** Shipped sits between ready and delivered on the stage line. */
 const stageIndex = (status: PortalOrder['status']) =>
   status === 'shipped' ? STAGES.indexOf('ready') : STAGES.indexOf(status);
 
@@ -29,7 +36,7 @@ export function PortalOrdersPage() {
   return (
     <>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+        <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
           Your orders
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -63,7 +70,6 @@ export function PortalOrdersPage() {
         <div className="space-y-3">
           {rows.map((order) => {
             const status = STATUS[order.status];
-            const stage = stageIndex(order.status);
             return (
               <Card key={order.id} className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -102,30 +108,16 @@ export function PortalOrdersPage() {
                   </div>
                 </div>
                 {order.status !== 'cancelled' && (
-                  <ol className="mt-4 grid grid-cols-4 gap-2" aria-label="Progress">
-                    {STAGES.map((s, index) => (
-                      <li key={s}>
-                        <div
-                          className={cn(
-                            'h-2 rounded-sm border border-stock-edge',
-                            index < stage
-                              ? 'bg-stock-done'
-                              : index === stage
-                                ? 'bg-stock-printing'
-                                : 'bg-transparent',
-                          )}
-                        />
-                        <p
-                          className={cn(
-                            'mt-1.5 text-xs',
-                            index <= stage ? 'text-foreground' : 'text-muted-foreground',
-                          )}
-                        >
-                          {STATUS[s].label}
-                        </p>
-                      </li>
-                    ))}
-                  </ol>
+                  <StageLine
+                    className="mt-5"
+                    labels
+                    stages={STAGES.map((s) => STATUS[s].label)}
+                    stage={{
+                      index: stageIndex(order.status),
+                      state: order.status === 'delivered' ? 'finished' : 'moving',
+                      label: STATUS[order.status].label,
+                    }}
+                  />
                 )}
               </Card>
             );

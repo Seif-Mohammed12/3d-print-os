@@ -96,7 +96,7 @@ export function MaterialsPage() {
                   <TD>
                     <div className="flex items-center gap-2.5">
                       <span
-                        className="h-4 w-4 shrink-0 rounded-sm border border-stock-edge"
+                        className="h-4 w-4 shrink-0 rounded border border-border"
                         style={{ background: material.color_code ?? 'transparent' }}
                         aria-hidden="true"
                       />

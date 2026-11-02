@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import { AlertCircle, type LucideIcon } from 'lucide-react';
 
 import { cn } from '../lib/utils';
 
@@ -13,9 +13,9 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+        <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
           {title}
         </h1>
         {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
@@ -25,19 +25,9 @@ export function PageHeader({
   );
 }
 
-/** A row of figures ruled under a 2px ink line, like the header strip of a planning board. */
+/** A row of figure cards. */
 export function StatStrip({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <div
-      className={cn(
-        // gap-px over a border-coloured ground draws the hairlines between cells at any column count
-        'grid grid-cols-2 gap-px border-b border-t-2 border-b-border border-t-rule bg-border xl:grid-cols-4',
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
+  return <div className={cn('grid grid-cols-2 gap-3 xl:grid-cols-4', className)}>{children}</div>;
 }
 
 export function StatCard({
@@ -54,10 +44,10 @@ export function StatCard({
   aside?: ReactNode;
 }) {
   return (
-    <div className="flex min-w-0 flex-wrap items-end justify-between gap-x-3 gap-y-2 bg-background px-4 py-3">
+    <div className="flex min-w-0 flex-wrap items-end justify-between gap-x-3 gap-y-2 rounded-xl border border-border bg-card px-4 py-4 shadow-card dark:shadow-none sm:px-5">
       <div className="min-w-0">
-        <p className="text-[13px] text-muted-foreground">{label}</p>
-        <p className="tabular mt-0.5 text-[22px] font-semibold leading-tight tracking-[-0.01em] text-foreground sm:text-[26px]">
+        <p className="text-[13px] font-medium text-muted-foreground">{label}</p>
+        <p className="tabular mt-1.5 text-[22px] font-bold leading-tight tracking-[-0.02em] text-foreground sm:text-[28px]">
           {value}
         </p>
         {hint && (
@@ -79,7 +69,7 @@ export function StatCard({
   );
 }
 
-/** An empty rack slot: dashed outline, says what belongs here and how to put it there. */
+/** An empty state: says what belongs here and how to put it there. */
 export function EmptyState({
   icon: Icon,
   title,
@@ -94,14 +84,13 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        'm-4 flex flex-col items-center rounded-sm border border-dashed border-input px-6 py-10 text-center',
-        className,
+    <div className={cn('flex flex-col items-center px-6 py-12 text-center', className)}>
+      {Icon && (
+        <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-stock-printing-soft text-stock-printing-ink">
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
       )}
-    >
-      {Icon && <Icon className="mb-3 h-6 w-6 text-muted-foreground" aria-hidden="true" />}
-      <p className="text-[15px] font-bold text-foreground">{title}</p>
+      <p className="text-[15px] font-semibold text-foreground">{title}</p>
       {description && <p className="mt-1 max-w-sm text-sm text-muted-foreground">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
@@ -109,10 +98,10 @@ export function EmptyState({
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('animate-pulse rounded-sm bg-muted', className)} />;
+  return <div className={cn('animate-pulse rounded-lg bg-muted', className)} />;
 }
 
-/** Inline error strip for failed queries, headed like a failed card, with an optional retry. */
+/** Inline error notice for failed queries, with an optional retry. */
 export function ErrorNotice({
   message,
   onRetry,
@@ -126,19 +115,17 @@ export function ErrorNotice({
     <div
       role="alert"
       className={cn(
-        'flex items-stretch overflow-hidden rounded-sm border border-destructive bg-destructive-soft text-sm text-foreground',
+        'flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive-soft px-4 py-3 text-sm text-foreground',
         className,
       )}
     >
-      <span className="flex items-center bg-stock-failed px-2.5 text-[11px] font-bold tracking-[0.02em] text-white">
-        ERROR
-      </span>
-      <span className="flex-1 px-3 py-2.5">{message}</span>
+      <AlertCircle className="h-4 w-4 shrink-0 text-destructive" aria-hidden="true" />
+      <span className="flex-1">{message}</span>
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="px-3 font-semibold underline underline-offset-[3px] hover:bg-destructive/10"
+          className="rounded-lg px-2 py-1 font-semibold text-destructive hover:bg-destructive/10"
         >
           Try again
         </button>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>T-Card Board · v2</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{font:14px/1.4 system-ui,sans-serif;background:#202326;color:#eee;padding:16px}
+h1{font-size:16px;font-weight:600;margin-bottom:4px}p.s{color:#aaa;margin-bottom:14px}p.s a{color:#9cc4ff}
+.row{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+figcaption{padding:8px 0;font-weight:600}
+.frame{position:relative;width:100%;overflow:hidden}
+.frame iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0}
+.d{aspect-ratio:1440/900}.d iframe{width:1440px;height:900px}
+.m{aspect-ratio:390/844}.m iframe{width:390px;height:844px}
+</style></head><body>
+<h1>T-Card Planning Board, improved</h1>
+<p class="s">Desktop dashboard and the shop-floor phone view. Full size: <a href="5-tcard-v2.html" target="_blank">desktop</a> · <a href="6-tcard-phone.html" target="_blank">phone</a> · <a href="index.html">back to all four</a></p>
+<div class="row">
+ <figure><figcaption>Desktop · 1440×900</figcaption><div class="frame d"><iframe src="5-tcard-v2.html" scrolling="no"></iframe></div></figure>
+ <figure><figcaption>Phone on the floor · 390×844</figcaption><div class="frame m"><iframe src="6-tcard-phone.html" scrolling="no"></iframe></div></figure>
+</div>
+<script>
+function fit(){document.querySelectorAll('.frame').forEach(f=>{const w=f.classList.contains('d')?1440:390;f.firstElementChild.style.transform='scale('+(f.clientWidth/w)+')'})}
+addEventListener('resize',fit);fit();
+</script>
+</body></html>

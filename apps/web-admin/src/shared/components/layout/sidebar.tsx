@@ -69,19 +69,19 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="px-4 pb-3 pt-4">
-        <BrandName className="text-white dark:text-sidebar-foreground" />
+    <div className="flex h-full flex-col border-e border-border bg-sidebar text-sidebar-foreground">
+      <div className="px-4 pb-3 pt-5">
+        <BrandName className="px-1 text-foreground" />
         {tenant?.name && (
-          <p className="mt-3 truncate rounded-sm bg-sidebar-raised px-2.5 py-2 text-[13px] font-semibold">
+          <p className="mt-4 truncate rounded-[10px] border border-border px-3 py-2 text-[13px] font-semibold text-foreground">
             {tenant.name}
           </p>
         )}
       </div>
-      <nav className="flex-1 space-y-4 overflow-y-auto px-3 pb-4 pt-1" aria-label="Main">
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 pb-4 pt-2" aria-label="Main">
         {sections.map((section) => (
           <div key={section.label}>
-            <p className="px-2.5 pb-1 text-xs font-semibold text-sidebar-muted">{section.label}</p>
+            <p className="px-2.5 pb-1.5 text-xs font-medium text-sidebar-muted">{section.label}</p>
             <div className="space-y-px">
               {section.items.map((item) => (
                 <NavLink
@@ -91,10 +91,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   className={({ isActive }) =>
                     cn(
-                      'flex h-9 items-center gap-2.5 rounded-sm px-2.5 text-sm transition-colors duration-150 focus-visible:ring-offset-sidebar',
+                      'flex h-9 items-center gap-2.5 rounded-[10px] px-2.5 text-sm transition-colors duration-150 focus-visible:ring-offset-sidebar',
                       isActive
-                        ? // The current page is the card pulled from the rack: paper body, yellow head.
-                          'bg-sidebar-active font-semibold text-sidebar-active-foreground shadow-[inset_0_3px_0_hsl(var(--stock-quoted))]'
+                        ? 'bg-sidebar-active font-semibold text-sidebar-active-foreground'
                         : 'font-medium text-sidebar-foreground hover:bg-sidebar-raised',
                     )
                   }
@@ -112,11 +111,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                       {counts[item.to] && (
                         <span
                           className={cn(
-                            'tabular rounded-sm px-1.5 text-xs',
+                            'tabular min-w-5 rounded-full px-1.5 text-center text-xs leading-5',
                             counts[item.to]?.alert
-                              ? 'bg-stock-failed font-bold text-white'
+                              ? 'bg-stock-failed-soft font-semibold text-stock-failed-ink'
                               : isActive
-                                ? 'font-medium text-muted-foreground'
+                                ? 'font-semibold text-sidebar-active-foreground'
                                 : 'font-medium text-sidebar-muted',
                           )}
                           aria-label={

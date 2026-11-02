@@ -1,381 +1,457 @@
 ---
 name: 3D Print OS
-description: Operations console for 3D print shops, drawn as a T-card planning board in a steel rack.
+description: Operations console and customer portal for 3D print shops, where every order is a tracked parcel on one stage line.
 colors:
-  ink: 'hsl(210 13% 13%)'
-  enamel-rail: 'hsl(205 34% 25%)'
-  enamel-rail-raised: 'hsl(203 31% 31%)'
-  rail-text: 'hsl(203 26% 89%)'
-  rail-muted: 'hsl(205 20% 66%)'
-  board-ground: 'hsl(45 12% 90%)'
-  paper: 'hsl(45 43% 98%)'
-  board-tint: 'hsl(44 13% 85%)'
-  ink-muted: 'hsl(210 8% 31%)'
-  rack-bed: 'hsl(44 11% 82%)'
-  slot-rail: 'hsl(41 8% 70%)'
-  slot-highlight: 'hsl(45 20% 92%)'
-  hairline: 'hsl(41 11% 76%)'
-  control-edge: 'hsl(43 5% 53%)'
-  stock-draft: 'hsl(45 43% 98%)'
-  stock-quoted: 'hsl(48 85% 62%)'
-  stock-approved: 'hsl(135 34% 67%)'
-  stock-printing: 'hsl(211 56% 71%)'
-  stock-qc: 'hsl(10 72% 74%)'
-  stock-failed: 'hsl(4 64% 47%)'
-  stock-void: 'hsl(42 9% 78%)'
-  stock-done: 'hsl(205 13% 41%)'
-  stock-edge: 'hsl(41 6% 64%)'
-  failed-soft: 'hsl(9 60% 91%)'
-  success: 'hsl(141 40% 30%)'
-  warning: 'hsl(36 100% 26%)'
+  ground: 'hsl(220 20% 97%)'
+  ink: 'hsl(215 22% 11%)'
+  surface: 'hsl(0 0% 100%)'
+  popover: 'hsl(0 0% 100%)'
+  rail: 'hsl(0 0% 100%)'
+  rail-text: 'hsl(215 18% 22%)'
+  rail-muted: 'hsl(216 9% 46%)'
+  rail-raised: 'hsl(220 16% 95%)'
+  rail-active: 'hsl(168 52% 93%)'
+  rail-active-ink: 'hsl(173 84% 22%)'
+  tracker-teal: 'hsl(172 83% 34%)'
+  primary: 'hsl(173 84% 27%)'
+  on-primary: 'hsl(0 0% 100%)'
+  muted: 'hsl(220 16% 95%)'
+  ink-muted: 'hsl(216 9% 40%)'
+  hairline: 'hsl(220 13% 91%)'
+  control-edge: 'hsl(220 12% 83%)'
+  focus-ring: 'hsl(172 83% 34%)'
+  chart: 'hsl(172 83% 34%)'
+  chart-muted: 'hsl(168 35% 82%)'
+  destructive: 'hsl(358 72% 48%)'
+  destructive-soft: 'hsl(0 86% 96%)'
+  success: 'hsl(155 64% 27%)'
+  success-soft: 'hsl(150 50% 94%)'
+  warning: 'hsl(30 85% 30%)'
+  warning-soft: 'hsl(40 95% 93%)'
+  stock-draft: 'hsl(215 10% 62%)'
+  stock-draft-soft: 'hsl(220 14% 94%)'
+  stock-draft-ink: 'hsl(215 14% 32%)'
+  stock-quoted: 'hsl(36 88% 54%)'
+  stock-quoted-soft: 'hsl(40 95% 93%)'
+  stock-quoted-ink: 'hsl(28 80% 29%)'
+  stock-approved: 'hsl(212 72% 52%)'
+  stock-approved-soft: 'hsl(212 85% 95%)'
+  stock-approved-ink: 'hsl(214 68% 35%)'
+  stock-printing: 'hsl(172 83% 34%)'
+  stock-printing-soft: 'hsl(168 55% 93%)'
+  stock-printing-ink: 'hsl(173 84% 22%)'
+  stock-qc: 'hsl(262 55% 60%)'
+  stock-qc-soft: 'hsl(260 75% 96%)'
+  stock-qc-ink: 'hsl(262 45% 40%)'
+  stock-failed: 'hsl(358 72% 52%)'
+  stock-failed-soft: 'hsl(0 86% 96%)'
+  stock-failed-ink: 'hsl(358 70% 38%)'
+  stock-void: 'hsl(220 9% 72%)'
+  stock-void-soft: 'hsl(220 14% 95%)'
+  stock-void-ink: 'hsl(220 9% 44%)'
+  stock-done: 'hsl(152 55% 38%)'
+  stock-done-soft: 'hsl(148 50% 94%)'
+  stock-done-ink: 'hsl(152 62% 23%)'
+  stock-edge: 'hsl(220 13% 88%)'
 typography:
   display:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
-    fontSize: '32px'
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '34px'
     fontWeight: 700
-    lineHeight: 1.15
-    letterSpacing: '-0.01em'
-  headline:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
-    fontSize: '24px'
+    lineHeight: 1.12
+    letterSpacing: '-0.02em'
+  auth-title:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '28px'
     fontWeight: 700
     lineHeight: 1.25
-    letterSpacing: '-0.01em'
+    letterSpacing: '-0.02em'
   figure:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
-    fontSize: '26px'
-    fontWeight: 600
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '28px'
+    fontWeight: 700
     lineHeight: 1.25
-    letterSpacing: '-0.01em'
+    letterSpacing: '-0.02em'
     fontFeature: 'tnum'
+  figure-phone:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '22px'
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: '-0.02em'
+    fontFeature: 'tnum'
+  headline:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '26px'
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: '-0.02em'
+  price:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '24px'
+    fontWeight: 600
+    lineHeight: '32px'
+    letterSpacing: '-0.025em'
+    fontFeature: 'tnum'
+  headline-sm:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '20px'
+    fontWeight: 600
+    lineHeight: '28px'
+  title-lg:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '18px'
+    fontWeight: 600
+    lineHeight: '28px'
   title:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '16px'
+    fontWeight: 600
+    lineHeight: '24px'
+  title-sm:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '15px'
+    fontWeight: 600
+    lineHeight: 1.4
+  wordmark:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
     fontSize: '15px'
     fontWeight: 700
-    lineHeight: 1.4
+    letterSpacing: '-0.01em'
   body:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
     fontSize: '14px'
     fontWeight: 400
     lineHeight: '20px'
     fontFeature: 'tnum'
   label:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
     fontSize: '13px'
-    fontWeight: 600
-    lineHeight: 1.4
+    fontWeight: 500
+    lineHeight: '18px'
   caption:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
     fontSize: '12px'
     fontWeight: 500
     lineHeight: '16px'
-  card-head:
-    fontFamily: 'Archivo, ui-sans-serif, system-ui, sans-serif'
+  micro:
+    fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif'
     fontSize: '11px'
-    fontWeight: 700
-    lineHeight: '22px'
-    letterSpacing: '0.02em'
+    fontWeight: 400
+    lineHeight: '16px'
   mono:
-    fontFamily: 'JetBrains Mono, ui-monospace, monospace'
-    fontSize: '12px'
+    fontFamily: '"JetBrains Mono", ui-monospace, monospace'
+    fontSize: '11px'
     fontWeight: 400
     lineHeight: '16px'
 rounded:
-  sm: '2px'
-  lamp: '9999px'
+  sm: '6px'
+  md: '8px'
+  lg: '10px'
+  xl: '14px'
+  2xl: '18px'
+  full: '9999px'
 spacing:
+  hair: '2px'
   xs: '4px'
   sm: '8px'
   md: '12px'
   lg: '16px'
   xl: '20px'
   2xl: '24px'
-  slot-pitch: '112px'
+  3xl: '32px'
+  4xl: '48px'
 components:
   button-primary:
-    backgroundColor: '{colors.ink}'
-    textColor: '{colors.paper}'
-    typography: '{typography.label}'
-    rounded: '{rounded.sm}'
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.body}'
+    rounded: '{rounded.lg}'
     padding: '0 16px'
-    height: '36px'
+    height: '40px'
   button-primary-hover:
-    backgroundColor: 'hsl(210 13% 13% / 0.85)'
+    backgroundColor: 'hsl(173 84% 27% / 0.9)'
   button-secondary:
-    backgroundColor: 'transparent'
+    backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    typography: '{typography.label}'
-    rounded: '{rounded.sm}'
+    rounded: '{rounded.lg}'
     padding: '0 16px'
-    height: '36px'
+    height: '40px'
   button-secondary-hover:
-    backgroundColor: 'hsl(210 13% 13% / 0.06)'
+    backgroundColor: 'hsl(220 16% 95% / 0.6)'
   button-ghost:
     backgroundColor: 'transparent'
     textColor: '{colors.ink-muted}'
-    rounded: '{rounded.sm}'
+    rounded: '{rounded.lg}'
     padding: '0 16px'
-    height: '36px'
+    height: '40px'
   button-ghost-hover:
-    backgroundColor: '{colors.board-tint}'
+    backgroundColor: '{colors.muted}'
     textColor: '{colors.ink}'
   button-danger:
-    backgroundColor: 'transparent'
-    textColor: '{colors.stock-failed}'
-    rounded: '{rounded.sm}'
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.destructive}'
+    rounded: '{rounded.lg}'
     padding: '0 16px'
-    height: '36px'
+    height: '40px'
   button-danger-hover:
-    backgroundColor: '{colors.stock-failed}'
-    textColor: '{colors.paper}'
-  button-small:
+    backgroundColor: '{colors.destructive}'
+    textColor: '{colors.on-primary}'
+  button-sm:
+    typography: '{typography.label}'
+    rounded: '{rounded.lg}'
     padding: '0 12px'
     height: '32px'
   input:
-    backgroundColor: '{colors.paper}'
+    backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
     typography: '{typography.body}'
-    rounded: '{rounded.sm}'
+    rounded: '{rounded.lg}'
     padding: '0 12px'
-    height: '36px'
-  stock-tag:
-    backgroundColor: '{colors.stock-quoted}'
-    textColor: '{colors.ink}'
-    typography: '{typography.caption}'
-    rounded: '{rounded.sm}'
-    padding: '0 8px'
-    height: '22px'
-  stock-tag-failed:
-    backgroundColor: '{colors.stock-failed}'
-    textColor: '#ffffff'
-  tcard-head:
-    backgroundColor: '{colors.stock-printing}'
-    textColor: '{colors.ink}'
-    typography: '{typography.card-head}'
-    padding: '0 8px'
-    height: '22px'
-  tcard-body:
-    backgroundColor: '{colors.paper}'
-    textColor: '{colors.ink}'
-    padding: '6px 8px 8px'
-  nav-item:
-    backgroundColor: 'transparent'
-    textColor: '{colors.rail-text}'
-    rounded: '{rounded.sm}'
+    height: '40px'
+  status-chip-printing:
+    backgroundColor: '{colors.stock-printing-soft}'
+    textColor: '{colors.stock-printing-ink}'
+    rounded: '{rounded.full}'
     padding: '0 10px'
-    height: '36px'
-  nav-item-hover:
-    backgroundColor: '{colors.enamel-rail-raised}'
-  nav-item-active:
-    backgroundColor: '{colors.paper}'
-    textColor: '{colors.ink}'
-  stat-cell:
-    backgroundColor: '{colors.board-ground}'
-    textColor: '{colors.ink}'
-    typography: '{typography.figure}'
-    padding: '12px 16px'
-  table-header:
+    height: '24px'
+  status-chip-failed:
+    backgroundColor: '{colors.stock-failed-soft}'
+    textColor: '{colors.stock-failed-ink}'
+    rounded: '{rounded.full}'
+    padding: '0 10px'
+    height: '24px'
+  badge-neutral:
+    backgroundColor: '{colors.muted}'
     textColor: '{colors.ink-muted}'
     typography: '{typography.caption}'
-    padding: '8px 16px'
+    rounded: '{rounded.md}'
+    padding: '0 8px'
+    height: '24px'
   card:
-    backgroundColor: '{colors.paper}'
+    backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    rounded: '{rounded.sm}'
-    padding: '16px'
+    rounded: '{rounded.xl}'
+    padding: '20px'
+  stat-card:
+    backgroundColor: '{colors.surface}'
+    rounded: '{rounded.xl}'
+    padding: '16px 20px'
+  job-card:
+    backgroundColor: '{colors.surface}'
+    rounded: '{rounded.xl}'
+    padding: '12px'
+  nav-item:
+    textColor: '{colors.rail-text}'
+    typography: '{typography.body}'
+    rounded: '{rounded.lg}'
+    padding: '0 10px'
+    height: '36px'
+  nav-item-active:
+    backgroundColor: '{colors.rail-active}'
+    textColor: '{colors.rail-active-ink}'
+  dialog:
+    backgroundColor: '{colors.popover}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.2xl}'
+    padding: '20px 24px'
 ---
 
 # Design System: 3D Print OS
 
 ## Overview
 
-**Creative North Star: "The T-Card Planning Board"**
+**Creative North Star: "The Parcel Tracker"**
 
-Every job is a coloured T-card hanging in a steel rack. The card's stock colour is its status, and it is the same colour everywhere: in the printer rack, in every status tag, in the swatch that leads a list row, in the brand mark. A printer is a slot column; a card's place in the column is its place in that printer's queue. The console sits on a warm grey board ground with an enamel steel-blue rail down the left. Paper-white card bodies are the only raised material.
+Every order is a tracked parcel. It has one stage line, Accepted, Queued, Printing, QC, Ready, Delivered, and that line is drawn the same way wherever the order shows up: on the dashboard's orders-in-progress rows, the orders table, the order detail page, and the customer portal (which uses its own four stages through the same `StageLine` component). Staff and customers read progress the same way. Teal means something is moving, amber means it is waiting, red means it failed, and nothing else on the screen competes with that.
 
-The world is flat, square-cut and ruled. Structure comes from hairline rules and 2px ink rules under headers, not from boxes and shadows. Every number is set in tabular figures in Archivo. Density is high: it is a working board for staff at a desk and on a phone beside the printers, and it shows what every printer is doing and what needs a hand in one glance. Dark mode is the same rack at night. The ground and rail turn deep enamel blue, card bodies turn slate, the stock colours deepen but keep their identity, and ink becomes warm off-white. Nothing glows and nothing is pure black.
+The light world is a cool off-white ground with white surfaces, ink-dark text, 1px hairlines, and one teal. Surfaces are calm and roomy rather than ruled: 14px-radius cards on a 12px gap rhythm, sentence-case labels, Figtree with tabular figures everywhere. Status lives in soft tinted pill chips, each led by a solid dot of its own colour. Dark mode is **the workshop after hours**: a blue-graphite ground (never pure black), surfaces lifted by tone and 1px borders instead of shadow or glow, the teal lifted for contrast, and chips turned into low-chroma tints.
 
-Rejected (confirmed by the build and PRODUCT.md): white-card SaaS consoles with indigo pills and stat tiles, glass, gradients, neon, soft drop shadows on resting surfaces.
+PRODUCT.md rules out glass, gradients and neon, and the build uses none of them. The platform chrome is shop-neutral, since the shop's name comes from the tenant and the product mark is a teal tile carrying its own three-stop stage line.
 
 **Key Characteristics:**
-
-- Status is a card-stock colour, one vocabulary across every screen.
-- Square-cut corners (2px) everywhere; only status lamps are round.
-- Flat surfaces; depth only for overlays that leave the board.
-- Hairline rules and 2px ink rules build structure instead of boxes.
-- Archivo with tabular figures on the whole body.
-- Light and dark are both first-class; dark is the same rack at night.
+- One stage line per order (dots joined by a 2px track: passed stages filled teal, the current one ringed, later ones hollow; failed rings red, waiting rings amber), with a fill that slides forward when the order advances.
+- One teal (`--brand`) for progress, the primary action, the active nav item, focus, and the current chart bar.
+- Every status has three tokens (dot, soft ground, ink), and status is always a word plus a dot, never colour alone.
+- Resting cards: a hairline plus a faint contact shadow in light, a hairline only in dark.
+- Figtree 400–700 with tabular numerals on the body; JetBrains Mono only for order numbers and small asides.
 
 ## Colors
 
-A warm grey board, a steel-blue enamel rail, ink near-black, and a set of flat card-stock fills where each hue means exactly one status. Values are HSL triplets in `apps/web-admin/src/styles/globals.css` (`:root` and `.dark`); the frontmatter records light-mode values and the sidecar records the dark pair for each.
+A cool, low-chroma neutral field with one saturated teal and a fixed set of status hues. Values are HSL triplets in `apps/web-admin/src/styles/globals.css` (`:root` for light, `.dark` for dark). The frontmatter lists the light values; the dark values are in `.impeccable/design.json` (`colorMeta.*.dark`).
 
 ### Primary
+- **Tracker Teal** (`hsl(172 83% 34%)`, dark `hsl(171 50% 50%)`, `--brand`): the progress colour. Stage-line fills and passed dots, the brand mark tile, the focus ring (`--ring`), the caret, the text selection (22% alpha), the current chart bar, the printing status dot. It appears where something is moving or active.
+- **Deep Teal** (`hsl(173 84% 27%)`, dark `hsl(171 48% 52%)`, `--primary`): filled primary buttons and `.link` text. It is darker than Tracker Teal so white text on it keeps AA contrast. In dark mode its foreground turns graphite (`hsl(218 25% 8%)`).
+- **Rail Active** (`hsl(168 52% 93%)` on `hsl(173 84% 22%)`, dark `hsl(172 32% 16%)` on `hsl(170 50% 72%)`): the active nav item, the active portal tab, and the auth brand panel ground.
 
-- **Workshop Ink** (ink): text, primary buttons, the 2px rules under table heads, card headers, dialogs and the KPI strip. In dark mode it flips to warm off-white and primary buttons become light-on-dark.
-- **Enamel Steel Rail** (enamel-rail): the left navigation rail and the revenue mini-bars. In light mode it is also the focus ring colour. Raised Rail (enamel-rail-raised) is the tenant plate and the nav hover fill; Rail Text and Rail Muted (rail-text, rail-muted) are the rail's labels and its section titles and counts.
+### Status
+Each status has a dot (`--stock-X`), a soft chip ground (`--stock-X-soft`) and a chip ink (`--stock-X-ink`):
+- **Draft Slate** (`hsl(215 10% 62%)`): drafts and not-yet-sent quotes.
+- **Quoted Amber** (`hsl(36 88% 54%)`): quoted or waiting. It is also the ring on a waiting stage dot and the "waiting" lamp.
+- **Approved Blue** (`hsl(212 72% 52%)`): approved, accepted.
+- **Printing Teal** (`hsl(172 83% 34%)`, the same as Tracker Teal): in production, the running lamp, the empty-state icon disc and the user avatar.
+- **QC Violet** (`hsl(262 55% 60%)`): in quality check.
+- **Failed Red** (`hsl(358 72% 52%)`): failed prints, the fault lamp, the failed stage ring, alert counts in the rail.
+- **Void Grey** (`hsl(220 9% 72%)`): cancelled or rejected. The chip text is struck through.
+- **Done Green** (`hsl(152 55% 38%)`): finished, and the "ready" lamp.
 
-### Secondary: Card Stock
-
-Each stock is a flat fill with ink text and a 1px Stock Edge (stock-edge) outline.
-
-- **Draft Paper** (stock-draft): drafts, not-started production, pending orders. Same as the card paper.
-- **Quoted Yellow** (stock-quoted): quoted, paused, payment pending. It is also the "current" marker: the active nav item's 3px head, today's revenue bar, the brand mark's head, text selection, and the dark-mode focus ring.
-- **Approved Green** (stock-approved): approved quotes, accepted orders, queued jobs, paid.
-- **Printing Blue** (stock-printing): printing / in progress. Also the "running" printer lamp.
-- **QC Salmon** (stock-qc): quality check.
-- **Failed Red** (stock-failed): failed print or payment. Carries white text, not ink. It is also the destructive colour, the failure strip's tab, and the alert count in the rail.
-- **Void Grey** (stock-void): cancelled and refunded. The tag text is struck through.
-- **Done Slate** (stock-done): completed and delivered. Carries paper text.
-
-### Tertiary: Signal
-
-- **Failed Soft** (failed-soft): the ground of error notices and the dashboard failure strip.
-- **Ledger Green** (success) and **Amber Ink** (warning): text-only tones for KPI hints and outline badges. Each has a soft ground in the CSS (`--success-soft`, `--warning-soft`) that the build barely uses.
+Feedback tones outside the status set: **Destructive** (`hsl(358 72% 48%)` with soft `hsl(0 86% 96%)`) for errors, danger buttons and failure notices; **Success** (`hsl(155 64% 27%)`) and **Warning** (`hsl(30 85% 30%)`), each with a soft ground, for badges and stat hints.
 
 ### Neutral
-
-- **Board Ground** (board-ground): the page background, the top bar and the KPI strip cells.
-- **Card Paper** (paper): card bodies, inputs, popovers, the active nav item.
-- **Board Tint** (board-tint): muted fills: ghost-button hover, skeletons, row hover at 70%.
-- **Muted Ink** (ink-muted): secondary text, table header labels, hints.
-- **Rack Bed** (rack-bed), **Slot Rail** (slot-rail) and **Slot Highlight** (slot-highlight): the printer rack's bed, its 2px slot rails and their lit 1px top edge. Slot Rail is also the scrollbar thumb.
-- **Hairline** (hairline): every 1px border and divider, plus the KPI strip's cell gaps.
-- **Control Edge** (control-edge): input borders, dashed empty-slot outlines, link underlines.
+- **Cool Off-White** (`hsl(220 20% 97%)`, dark `hsl(218 22% 9%)`, `--background`): the page ground.
+- **Surface White** (`hsl(0 0% 100%)`, dark `hsl(218 20% 12%)`, `--card`): cards, controls and the light rail. In dark the rail sits at `hsl(218 22% 10.5%)`, between ground and card.
+- **Popover** (white, dark `hsl(218 19% 15%)`): dialogs, menus and tooltips. In dark it is one tone step above the card.
+- **Graphite Ink** (`hsl(215 22% 11%)`, dark `hsl(216 20% 91%)`): body text and headings.
+- **Muted Ink** (`hsl(216 9% 40%)`, dark `hsl(216 10% 64%)`): descriptions, table headers, secondary values.
+- **Muted Fill** (`hsl(220 16% 95%)`, dark `hsl(218 16% 16%)`): hover fills, table header tint (40% alpha), skeletons.
+- **Hairline** (`hsl(220 13% 91%)`, dark `hsl(218 15% 19%)`, `--border` = `--rule`): every 1px card, row and divider line, and the stage-line track.
+- **Control Edge** (`hsl(220 12% 83%)`, dark `hsl(218 13% 28%)`, `--input`): input and secondary-button strokes, hollow stage dots, the scrollbar thumb.
+- **Scrim** (`hsl(218 30% 8% / 0.45)`): behind dialogs and the mobile nav drawer.
 
 ### Named Rules
+**The Teal Means Moving Rule.** Tracker Teal is used for progress, the primary action, the active place, and focus. Do not use it as decoration, a section tint or an illustration fill. If something on screen is teal, it should be moving, actionable or selected.
 
-**The One Stock, One Meaning Rule.** A stock colour always means the same status, on every surface. Statuses use `StockTag`, `StockSwatch` or `TCard`. Outline `Badge` is for flags and attributes (Business, Active, Default) and never for status.
+**The Three-Token Status Rule.** Each status uses exactly its dot, soft and ink tokens, and keeps the same colour on every screen. Status is always shown as a word with a dot (StockTag, Lamp), never as colour alone. Do not invent a ninth status hue; map the new state to an existing one.
 
-**The Yellow Head Rule.** Quoted Yellow is also the only "you are here / today" marker: the active nav item, today's bar, the brand mark. Don't introduce a second highlight hue.
-
-**The Never Colour Alone Rule.** A lamp always has its word next to it, and a stock tag always carries its label. Colour backs up the text; it never replaces it.
+**The Workshop After Hours Rule.** Dark mode is blue-graphite (hue 216–218, lightness 9–17%), never `#000`. Surfaces separate by tone steps (ground 9%, rail 10.5%, card 12%, popover 15%) and 1px borders. Teal is lifted to ~50% lightness, and soft grounds drop to ~15–19% lightness with low chroma. No glow and no neon.
 
 ## Typography
 
-**Display / Body Font:** Archivo (with ui-sans-serif, system-ui), weights 400/500/600/700, loaded from Google Fonts.
-**Mono Font:** JetBrains Mono (with ui-monospace), for order and tracking numbers only.
+**Body Font:** Figtree (with ui-sans-serif, system-ui, sans-serif), weights 400/500/600/700 from Google Fonts.
+**Mono Font:** JetBrains Mono (with ui-monospace, monospace), weights 400/500.
 
-**Character:** A sturdy, slightly condensed grotesque that reads like stencilled board labels. The whole body is tabular-nums, so prices, counts and times line up in columns without extra classes.
+**Character:** Figtree is a friendly geometric grotesque. Large sizes are set tight (-0.02em) and bold, so headings feel current without being shouty. The body sets `font-variant-numeric: tabular-nums` globally, so prices, counts and times line up in every column.
 
 ### Hierarchy
-
-- **Display** (700, 32px, 1.15): the auth-shell statement on the enamel panel. Not used inside the console.
-- **Headline** (700, 24px, 1.25, -0.01em): one page title per screen ("Today on the floor"), via `PageHeader`.
-- **Figure** (600, 26px from `sm`, 22px on phones, -0.01em, tabular): KPI strip values.
-- **Title** (700, 15px): card headers, section headings (Printer rack, Recent quotes), empty-state titles, the wordmark. Dialog titles step up to 18px.
-- **Body** (400, 14px/20px): table cells, descriptions, inputs, buttons (600 on buttons).
-- **Label** (600, 13px): form labels, list-item names, rack-column printer names (700), small buttons, quote tabs.
-- **Caption** (500 to 600, 12px): table head labels, hints, counts, stock tags (600).
-- **Card Head** (700, 11px, 0.02em, uppercase): the status word in a T-card head and the `ERROR` / `FAILED` / `EMPTY SLOT` tabs. It is the card's own label, not a section kicker.
+- **Display** (700, 34px, 1.12, -0.02em): the auth brand-panel statement ("Run your print shop from one place."), max-width 28rem. Used only there.
+- **Auth Title** (700, 28px, 1.25, -0.02em): the sign-in and sign-up `h1`.
+- **Figure** (700, 28px, 1.25, -0.02em, tabular): StatCard values from `sm` up; **22px on phones**.
+- **Headline** (700, 26px, 1.25, -0.02em): every page title (`PageHeader`, the dashboard heading).
+- **Price** (600, 24px, -0.025em, tabular): the headline price on order detail, quote parts and the portal upload result.
+- **Headline Small** (600, 20px): stand-alone confirmation and error headings (the portal "Thanks, it's in the queue" screen, the error boundary).
+- **Title Large** (600, 18px): dialog titles.
+- **Title** (600, 16px): card headers and dashboard section headings.
+- **Title Small** (600, 15px): empty-state titles. The wordmark uses the same size at 700 and -0.01em.
+- **Body** (400, 14px, 20px): table cells, descriptions, nav items (500, or 600 when active).
+- **Label** (500, 13px): field labels, stat labels, section links, the tenant name in the rail.
+- **Caption** (500–600, 12px): chips and badges, table headers, rail group labels and counts, hints.
+- **Micro** (400, 11px): stage-line labels, chart ticks and axis labels, job-card asides.
+- **Mono** (JetBrains Mono, 11–12px): order numbers and job-card asides only.
 
 ### Named Rules
+**The Sentence Case Rule.** Labels, group names, table headers and buttons are sentence case at normal tracking. Hierarchy comes from size and weight steps, not from uppercase or letter-spacing.
 
-**The Tabular Board Rule.** Figures are always tabular. Never switch a number back to proportional figures to make it look nicer.
-
-**The Status Word Never Truncates Rule.** In a T-card head the status word keeps its full width, and the aside (order number, time) truncates instead.
+**The Tabular Everything Rule.** Numbers always use tabular figures (global on `body`, plus `.tabular` on figure elements). Never set a price or count in proportional figures.
 
 ## Layout
 
-The staff console is a fixed 224px rail with a fluid work area. The work area has a 56px top bar (menu toggle below `lg`, New quote, theme toggle, user menu) over a scrolling main column capped at 1400px with 16px gutters, 24px from `sm`. Below `lg` (1024px) the rail becomes a 256px drawer over a scrim. The customer portal drops the rail for a top bar and horizontal tabs in a 1024px (`max-w-5xl`) column.
+The staff console is a fixed **240px rail** (`w-60`, hidden below `lg`, where it becomes a 288px drawer over the scrim), a **64px top bar** (New quote, theme toggle, user menu) and a scrolling main column capped at **1400px**. Page padding is 16px on phones and 32px from `sm` up; vertical padding is 24px, rising to 32px at `lg`. The customer portal has no rail: a sticky header with the tenant wordmark and a row of pill tabs, over a **1024px** (`max-w-5xl`) column. The auth pages split 5:6 at `lg`, with a soft-teal brand panel (48px padding) carrying the statement and a vertical three-step stage line beside a 384px form column; on phones only the form shows.
 
-The dashboard runs top to bottom: headline with a one-line status sentence, then the KPI strip (2 columns, 4 from `xl` 1280px), the failure strip when a print failed, and the printer rack. The quotes list with status tabs sits under the rack and moves beside it in a 22rem column from `2xl` (1536px). The rack is one slot column per active printer (min 9.5rem, flexible), plus a "No printer yet" column that comes first when it holds cards. It scrolls sideways on desktop and stacks columns on phones. Slot rails repeat every 112px.
+The spacing rhythm is a 4px base. Card grids gap 12px. A page header sits 24px above content, the stat strip 24px above the fleet, and sections 32px apart. Section headings sit 12px above their card. Card padding is 20px (headers 20px by 16px), stat cards 16px by 20px, and job and fleet cards 12–16px. Lists inside cards are divided by hairlines rather than gaps.
 
-Spacing rhythm is 4px-based: 8px inside controls, 12px between rack columns and in KPI cells, 16px card padding and section gaps, 20px between major blocks. Touch targets grow to 44px on phones (rack card buttons, tabs, links) and shrink to 28 to 36px at `sm` and up.
+Responsive behaviour: the stat strip is 2 columns, then 4 at `xl`. The fleet grid is 2, then 3 at `md`, then 5 at `xl`. The dashboard's orders list and "Quotes to send" sit side by side at `xl` (`1fr` and `24rem`). Order rows reflow: on phones the stage line drops to its own full-width line under the order name, with the stage label written underneath. Interactive targets are at least 44px tall on phones (`min-h-11`, `h-11`) and shrink to 32–36px from `sm`.
+
+### Named Rules
+**The Thumb-First Rule.** Every tappable control (links, theme toggle, portal tabs, row actions) is at least 44px on phones. Compact 32–36px sizes are a `sm:` and wider affordance only.
 
 ## Elevation & Depth
 
-The board is flat. Cards, the KPI strip, tables and the rack sit on the ground with no shadow. Depth comes from tone (paper on board, board on rack bed) and from rules. A T-card's body is inset 6px under its head and shares its edge colour, so the card reads as hung rather than lifted.
+Hybrid, and mostly flat. In light mode, resting surfaces are a 1px hairline plus the faintest contact shadow. Overlays (dialogs, the user menu, chart tooltips, the mobile drawer) take a soft two-layer popover shadow. In dark mode, resting surfaces drop their shadow entirely (`dark:shadow-none` on cards, secondary buttons and inputs) and depth comes from tone steps and borders. Overlays keep `shadow-popover` in dark too; on graphite it reads as a faint darkening, and they are also separated by their lighter 15% popover tone.
 
 ### Shadow Vocabulary
-
-- **Overlay lift** (`box-shadow: 0 12px 28px -8px rgb(12 22 30 / 0.35), 0 2px 6px -2px rgb(12 22 30 / 0.2)`): dialogs, the mobile nav drawer, popovers. These are the only things that leave the board.
-- **Scrim** (`hsl(205 34% 10% / 0.55)`): an enamel-tinted dim behind dialogs and the mobile drawer.
-- **Card head marker** (`inset 0 3px 0` Quoted Yellow): draws the yellow head on the active nav item. This is a stock band, not depth.
+- **Contact** (`box-shadow: 0 1px 2px rgb(16 24 40 / 0.04)`, `shadow-card`): resting cards, stat cards, job and fleet cards, secondary buttons and inputs, in light mode only.
+- **Popover** (`box-shadow: 0 16px 32px -12px rgb(16 24 40 / 0.22), 0 4px 8px -4px rgb(16 24 40 / 0.1)`, `shadow-popover`): dialogs, the user menu, chart tooltips, the mobile nav drawer.
 
 ### Named Rules
+**The Hairline-and-Breath Rule.** A resting surface gets a 1px border plus the contact shadow, and nothing heavier. Do not lift cards on hover; hover changes the border or fill colour (`hover:border-foreground/20`).
 
-**The Only Overlays Lift Rule.** Resting surfaces have no shadow (`shadow-card` is `none`). A shadow means the element is floating above the board.
+**The No-Glow Rule.** Emphasis is a coloured border plus a 1px ring at low alpha (a failed job card is `border-stock-failed/60 ring-1 ring-stock-failed/30`). Never use a coloured shadow, a blur halo or a backdrop filter.
 
 ## Shapes
 
-Square-cut card stock. Every radius token in Tailwind (`sm` to `xl` and the default) resolves to 2px, so a stray `rounded-lg` still comes out square. The only round shape is the 8px status lamp dot. Borders are 1px hairlines. A 2px ink rule marks the top of the KPI strip, the bottom of every table head, card header and rack column header, and the top edge of dialogs. Dashed 1px Control Edge outlines mean "empty slot / nothing here yet". The T-card is the recurring shape: a full-width 22px head with a narrower body hanging below it. The brand mark draws the same shape.
-
-### Named Rules
-
-**The 2px Ceiling Rule.** Nothing rounds past 2px except status lamps.
+Soft but not bubbly corners on a clear scale: **6px** (`sm`), **8px** for badges and small hit areas (`md`), **10px** for controls (buttons, inputs, nav items, the tenant chip; `--radius`, `lg`), **14px** for cards and notices (`xl`), and **18px** for dialogs (`2xl`; on phones the dialog is a bottom sheet with only its top corners rounded). Full pills are reserved for status chips, count bubbles, portal tabs, avatars, dots and the stage-line track. Bars in the charts are rounded only at the top (4px), and the dashboard mini bars are full pills 5px wide. Borders are always 1px; the only heavier strokes are the 1.5px hollow stage dots and the 2px track. The brand mark is a 24px tile with a 7px radius carrying three white stops.
 
 ## Components
 
 ### Buttons
+Quiet and solid: semibold labels, colour-only transitions (150ms), no lift.
+- **Shape:** 10px radius at both sizes. `md` is 40px tall with 16px padding at 14px; `sm` is 32px with 12px padding at 13px; `icon` is a 40px square.
+- **Primary:** Deep Teal fill with white text (graphite text in dark). Hover is 90% alpha, active 80%.
+- **Secondary (default):** white surface, Control Edge stroke, contact shadow in light. Hover darkens the stroke to `foreground/25` and adds a 60% muted fill.
+- **Ghost:** muted ink on nothing; hover adds the muted fill and switches to full ink.
+- **Danger:** surface with a `destructive/40` stroke and red text; hover fills it solid red.
+- **Disabled / loading:** 45% opacity, with a spinning Loader2 leading the label while loading.
 
-Plain and decisive, square-cut and labelled in semibold.
+### Status Chips (StockTag)
+- **Style:** a 24px full pill with 10px padding at 12px semibold, the status soft ground and ink, and a 6px dot in the status colour before the word. Void chips are struck through.
+- **Badges** (Business, Active, Default) are a separate, quieter family: 24px, 8px radius, 1px tinted border, 12px medium. Statuses never use Badge.
 
-- **Shape:** 2px corners. Heights are 36px (md, 16px sides), 32px (sm, 12px sides), and 36px square for icon buttons.
-- **Primary:** solid Workshop Ink with paper text. Hover goes to 85% and active to 75%. Use it once per context: New quote, Reprint on a failed card.
-- **Secondary (default):** a 1px ink outline on transparent, with ink text and a 6% ink wash on hover. This is the rack-card action (Queue, Start print, Mark printed, Pass QC).
-- **Ghost:** Muted Ink text, Board Tint on hover.
-- **Danger:** a Failed Red outline and text that fills solid red on hover.
-- **States:** 150ms colour transitions. Disabled is 45% opacity. Loading puts a spinner before the label. Focus is the global 2px ring (enamel in light, yellow in dark) with a 2px offset.
-
-### Stock Tags and Swatches
-
-- **StockTag:** a 22px tag in the stock fill with a 1px Stock Edge outline, 2px corners, 12px semibold. Void is struck through.
-- **StockSwatch:** a 12px square of stock that leads a list row or table row.
-- **Badge (flags only):** a 22px outline in a tone colour on transparent, 12px medium.
+### Status Lamp (Lamp)
+An 8px dot plus a 12px medium word for machine state: running (teal), ready (green), waiting (amber), fault (red, with the word in destructive ink), off (grey).
 
 ### Cards / Containers
-
-- **Card:** Card Paper, 1px hairline, 2px corners, no shadow. The header has 16px/12px padding, a 15px bold title and a 2px ink rule below it. Content padding is 16px.
-- **StatStrip / StatCard:** a grid of Board Ground cells split by 1px hairline gaps, under a 2px ink top rule. Cells have a 13px muted label, a figure, and a hint in a tone colour. An optional aside holds the 14-day mini-bars: 5px Enamel bars with today in yellow.
-- **ErrorNotice / failure strip:** a Failed Soft ground with a 1px red outline, led by a solid red `ERROR` or `FAILED` card-head tab. It carries its action inline (Try again; Reprint and Open order).
-- **EmptyState:** a dashed Control Edge outline, centred title and description, and an optional action. It says what belongs here.
+- **Corner Style:** 14px.
+- **Background:** Surface White (dark `hsl(218 20% 12%)`).
+- **Shadow Strategy:** contact shadow in light, none in dark (see Elevation).
+- **Border:** 1px hairline. A card that needs attention swaps to a red-tinted border (`stock-failed/40` to `/60`).
+- **Internal Padding:** 20px. `CardHeader` is 20px by 16px with a hairline beneath, a 16px semibold title and a 14px muted description.
+- **StatCard:** label (13px muted), figure (28px bold, or 22px on phones), an optional hint (12px, semibold when toned), and an optional aside such as the 14-day mini bars.
+- **Job card (`TCard` in code):** 12px padding, a StockTag head and a mono 11px aside that truncates first (the status word never truncates).
+- **Failure notice:** a 14px-radius card in the destructive soft ground with a `destructive/30` border, an icon in a white disc, and inline actions (Reprint).
 
 ### Inputs / Fields
-
-- **Style:** 36px high, Card Paper fill, 1px Control Edge border, 2px corners, 12px sides, 14px text.
-- **Hover / Focus:** the border darkens to 60% ink on hover. On focus the border turns full ink and the ring sits flush (no offset).
-- **Error / Disabled:** a Failed Red border over a 40% Failed Soft wash, with the message in red below. Disabled is 60% opacity with a not-allowed cursor.
-- **Field:** a 13px semibold label, the control, then a 12px hint or error, spaced 6px apart.
-
-### Tables
-
-One table size. 14px body. Head cells are 12px semibold Muted Ink over a 2px ink rule. Rows have 1px hairline dividers, 16px horizontal and 10px vertical padding, and a Board Tint hover at 70% when clickable. Order numbers are 12px mono.
+- **Style:** 40px tall (textareas from 80px), 10px radius, white surface, Control Edge stroke, 12px horizontal padding, contact shadow in light.
+- **Hover:** the stroke darkens to `foreground/30`.
+- **Focus:** the stroke turns Tracker Teal with a 2px `brand/25` ring and no offset. Everywhere else, the global `:focus-visible` ring is 2px teal with a 2px offset on the ground.
+- **Error:** destructive stroke, a 40% destructive-soft fill, and a 12px red message wired via `aria-describedby`. **Disabled:** 60% opacity.
+- **Label:** 13px medium, 6px above the control.
 
 ### Navigation
+- **Rail:** white in light, with a 1px end border. Groups (Sales, Production, Business) carry 12px medium muted labels. Items are 36px tall with a 10px radius, a 16px muted Lucide icon and 14px medium text. Hover adds a raised fill. The active item gets the soft-teal ground, deep-teal ink and semibold text. Counts sit at the end as 12px tabular bubbles, which turn into a red soft pill for failed jobs.
+- **Portal tabs:** full pills, 44px on phones and 36px from `sm`, using the same active colours as the rail.
+- **Top bar:** 64px, `background/95` with a hairline under it. It carries the primary "New quote" `sm` button, the theme toggle and the user menu (a 32px teal-soft initials avatar).
 
-- **Rail:** Enamel Steel ground. The wordmark sits on top of a Raised Rail tenant plate. Sections (Sales / Production / Business) have 12px semibold Rail Muted titles. Items are 36px with a 16px icon in Rail Muted.
-- **Active item:** the card pulled from the rack. It has a paper fill, ink semibold text and a 3px Quoted Yellow head.
-- **Counts:** tabular 12px Rail Muted. A failure count becomes a solid red tag with white bold text.
-- **Tabs (quotes list):** 13px text over a 2px ink underline on the selected tab and Muted Ink on the others.
+### Tables
+14px body. Header cells are 12px medium muted on a `muted/40` tint, with 16px by 10px padding. Rows are divided by hairlines; clickable rows get a `muted/60` hover fill. Cells are 16px by 12px.
 
-### Status Lamp
+### Dialog
+A popover surface with an 18px radius and the popover shadow over the graphite scrim. It becomes a bottom sheet on phones. The header has 24px side padding and an 18px semibold title. The footer sits behind a hairline with right-aligned actions. Escape closes it.
 
-An 8px round dot in a stock fill with a 1px Stock Edge ring, followed by its 12px semibold word. The tones are running (Printing Blue), ready (Approved Green), waiting (Quoted Yellow), fault (Failed Red, word also red) and off (Void Grey).
+### Bar Chart
+Single series, so there is no legend. Bars are `chart-muted` with the hovered or latest bar in solid `chart` teal, rounded at the top by 4px, on hairline gridlines at the max, half and zero values. Ticks are 11px tabular. Each column is a full-height hover target with a popover tooltip.
 
-### T-Card and Printer Rack (signature)
+### Stage Line (signature)
+`StageLine` is one grid column per stage, with a 12px-tall track row:
+- **Track:** a 2px hairline-coloured track running from the first dot's centre to the last.
+- **Passed stages:** a teal fill over the track and 8px teal dots.
+- **Current stage:** a 12px dot with a 4px ring, teal at 20% when moving, amber at 30% when waiting, red at 25% when failed.
+- **Later stages:** 8px hollow dots (1.5px Control Edge stroke on the surface).
+- **Labels:** with `labels`, 11px stage names sit under the dots, and the current one is semibold (red and renamed "Failed" on failure).
+- **Cancelled:** every dot is hollow, with no fill.
+- **Motion:** an advance replays the `stage-fill` animation (scaleX from 0, 520ms, `cubic-bezier(0.16, 1, 0.3, 1)`, mirrored in RTL), and a moved row settles in with `slot-in` (4px rise and fade from 0.4, 320ms).
+- **Accessibility:** the line is `role="img"` with an "X, stage n of N" label.
 
-- **T-Card:** a 22px stock head (11px bold uppercase status word on the left, an underlined order-number link that truncates on the right) over a Card Paper body inset 6px each side. The body has 6px/8px/8px padding and shares the Stock Edge outline with no top border. A failed card gets a 2px Failed Red outline on its body. The body holds the customer (13px semibold), price and age (12px muted, tabular) and one next-action button.
-- **Printer Rack:** a Rack Bed panel with a 1px Slot Rail border and 12px padding. Each column header has the printer name (13px bold), a lamp and a job count over a 2px ink rule. Below it, slot rails (2px Slot Rail with a 1px Slot Highlight edge) repeat every 112px, with cards hanging 16px apart. An empty column shows a dashed "EMPTY SLOT" T-card with instructions.
-- **Motion:** when a card changes status it re-keys and plays `slot-in`: a 6px drop over 180ms in two hard steps (`steps(2, end)`), like a card pushed into a slot. Reduced motion collapses every animation and transition to 1ms.
+`OrderStageLine` maps an order onto the six stages (Accepted, Queued, Printing, QC, Ready, Delivered). The portal reuses `StageLine` with its own four. The auth brand panel draws the same idea vertically with 16px dots and a `brand/40` track.
+
+### Empty State
+A centred block: a 44px teal-soft disc holding a 20px Lucide icon, a 15px semibold title, a 14px muted description (max 24rem), and an optional action.
 
 ## Do's and Don'ts
 
 ### Do:
-
-- **Do** show every status as its card stock (`StockTag`, `StockSwatch`, `TCard`), using the same stock on every surface.
-- **Do** keep corners at 2px; only status lamps are round.
-- **Do** build structure with 1px hairlines and the 2px ink rule under headers, not with nested boxes.
-- **Do** keep resting surfaces flat; only overlays get the lift shadow, over the enamel scrim.
-- **Do** pair every lamp and tag with its word.
-- **Do** design dark mode as the same rack at night: enamel-blue ground, slate bodies, deepened stock, warm off-white ink.
-- **Do** put the card's next action on the card itself and grow touch targets to 44px on phones.
+- **Do** show every order's progress with `StageLine` / `OrderStageLine`, at row size without labels and on detail pages with labels.
+- **Do** keep teal (`--brand` / `--primary`) for progress, the primary action, active navigation and focus.
+- **Do** render every status as StockTag (soft pill + dot + word) or Lamp (dot + word), using that status's three tokens.
+- **Do** give resting cards a 14px radius, a 1px hairline, and `shadow-card dark:shadow-none`.
+- **Do** separate dark surfaces by the tone steps (9%, 10.5%, 12%, 15%) and 1px borders.
+- **Do** use the type ramp as recorded: 26px bold page titles, 28px figures (22px on phones), 34px auth statement, 28px auth title, 16px card titles, 14px body, 13px labels, 12px chips, 11px micro.
+- **Do** keep phone tap targets at least 44px, and limit motion to `slot-in`, `stage-fill` and 150ms colour transitions, all collapsed under `prefers-reduced-motion`.
 
 ### Don't:
-
-- **Don't** use outline `Badge` or ad-hoc coloured pills for statuses.
-- **Don't** add drop shadows to cards, KPI cells, tables or the rack.
-- **Don't** add glass, gradients, neon or glow. In dark mode, don't use pure black.
-- **Don't** add a second highlight hue; Quoted Yellow is the only "current" marker.
-- **Don't** use proportional figures for prices, counts or times.
-- **Don't** truncate the status word in a T-card head.
+- **Don't** use glass, backdrop blur, gradients or neon (PRODUCT.md brand commitment).
+- **Don't** use pure black or near-black-plus-neon in dark mode, and don't add glow or coloured shadows for emphasis.
+- **Don't** convey status by colour alone, or reuse a status hue for an unrelated meaning.
+- **Don't** add a second progress device (percent bars, step pills) for order stage alongside the stage line.
+- **Don't** set labels or headers in uppercase with wide tracking, or set numbers in proportional figures.
+- **Don't** brand the platform chrome as a specific shop; the shop name comes from the tenant.

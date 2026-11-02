@@ -127,7 +127,10 @@ export function ModelPreview({
 
   return (
     <div
-      className={cn('relative overflow-hidden rounded-sm border border-slot bg-rack', className)}
+      className={cn(
+        'relative overflow-hidden rounded-lg border border-border bg-muted/40',
+        className,
+      )}
     >
       <div ref={containerRef} className="absolute inset-0" />
       {error && (

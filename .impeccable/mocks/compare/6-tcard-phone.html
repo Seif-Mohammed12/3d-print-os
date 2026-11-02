@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=390"><title>T-Card Board phone</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--rail:#2B4557;--rail-2:#375669;--board:#E9E7E1;--rack:#D7D4CC;--slot:#B9B5AC;--card:#FCFBF8;--edge:#ABA79E;--ink:#1C2024;--ink-2:#575E65;--rule:#C9C5BC;
+--approved:#8DC79B;--printing:#8DB4DF;--qc:#ED9C8B;--fail:#C4352B;--fail-soft:#F6DED9;--quoted:#F1CF4A}
+body{width:390px;height:844px;overflow:hidden;font:15px/1.4 Archivo,system-ui,sans-serif;background:var(--board);color:var(--ink);font-variant-numeric:tabular-nums}
+header{height:52px;background:var(--rail);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-weight:700}
+header span{font-weight:500;color:#C9D6DE;font-size:14px}
+.seg{display:flex;margin:12px 16px 0;border:1px solid var(--ink)}.seg a{flex:1;height:40px;display:grid;place-items:center;font-weight:600;font-size:14px}.seg a.on{background:var(--ink);color:#fff}
+.alert{margin:12px 16px 0;background:var(--fail-soft);border:1px solid var(--fail);border-left:6px solid var(--fail);padding:10px 12px}
+.alert b{color:var(--fail)}.alert .btn{margin-top:8px}
+.btn{display:flex;align-items:center;justify-content:center;height:44px;background:var(--ink);color:#fff;font-weight:600;border-radius:2px}
+.pr{margin:14px 16px 0}
+.pr h5{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.pr h5 em{font-style:normal;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}.lamp{width:9px;height:9px;border-radius:50%}
+.card{margin-top:10px;position:relative;height:92px}
+.tab{height:26px;padding:0 10px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--edge);position:relative;z-index:1}
+.body{position:absolute;left:7px;right:7px;top:25px;bottom:0;background:var(--card);border:1px solid var(--edge);border-top:0;padding:7px 10px}
+.body p{font-weight:600}.body small{display:flex;justify-content:space-between;color:var(--ink-2);font-size:13px;margin-top:2px}
+.prog{position:absolute;left:10px;right:10px;bottom:8px;height:5px;background:#DCE2E8}.prog i{display:block;height:100%;background:var(--rail)}
+.printing{background:var(--printing)}.approved{background:var(--approved)}.qc{background:var(--qc)}
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:62px;background:var(--card);border-top:1px solid var(--rule);display:flex}
+.tabbar a{flex:1;display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--ink-2)}.tabbar a.on{color:var(--ink);box-shadow:inset 0 3px var(--rail)}
+</style></head><body>
+<header>3D Print OS <span>3D Print It</span></header>
+<div class="seg"><a class="on">Rack</a><a>Queue · 9</a><a>Printers</a></div>
+<div class="alert"><b>Ender 3 S1 stopped at 41%</b><br>#1036 Phone dock ×2 · Prusa Mini is free and fits it.<a class="btn">Reprint on Prusa Mini</a></div>
+<div class="pr"><h5>Bambu X1C · 1<em><i class="lamp" style="background:#3C74B5"></i>Printing</em></h5>
+ <div class="card"><div class="tab printing">PRINTING 62%<span>#1040</span></div><div class="body"><p>Controller stand ×4</p><small><span>PLA Black · 188 g</span><span>3 h 10 left</span></small><div class="prog"><i style="width:62%"></i></div></div></div></div>
+<div class="pr"><h5>Prusa MK4<em><i class="lamp" style="background:#D27B67"></i>Waiting</em></h5>
+ <div class="card"><div class="tab qc">QUALITY CHECK<span>#1038</span></div><div class="body"><p>Bracket, customer STL</p><small><span>PETG · 56 g</span><span>off bed 14:20</span></small></div></div></div>
+<div class="pr"><h5>Bambu X1C · 2<em><i class="lamp" style="background:#3C74B5"></i>Printing</em></h5>
+ <div class="card"><div class="tab printing">PRINTING 18%<span>#1041</span></div><div class="body"><p>Wall panel set</p><small><span>PLA White · 412 g</span><span>9 h 40 left</span></small><div class="prog"><i style="width:18%"></i></div></div></div></div>
+<nav class="tabbar"><a>Home</a><a class="on">Floor</a><a>Quotes</a><a>Orders</a><a>More</a></nav>
+</body></html>

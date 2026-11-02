@@ -41,19 +41,19 @@ export function Dialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-[hsl(205_34%_10%/0.55)]" onClick={onClose} />
+      <div className="absolute inset-0 bg-[hsl(218_30%_8%/0.45)]" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          'relative flex max-h-[90vh] w-full flex-col rounded-t-sm border border-border border-t-rule bg-popover text-popover-foreground shadow-popover sm:rounded-sm',
+          'relative flex max-h-[90vh] w-full flex-col rounded-t-2xl border border-border bg-popover text-popover-foreground shadow-popover sm:rounded-2xl',
           size === 'md' ? 'sm:max-w-lg' : 'sm:max-w-2xl',
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b-2 border-rule px-5 py-4">
+        <div className="flex items-start justify-between gap-4 px-6 pb-2 pt-5">
           <div>
-            <h2 id={titleId} className="text-lg font-bold">
+            <h2 id={titleId} className="text-lg font-semibold">
               {title}
             </h2>
             {description && <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>}
@@ -61,15 +61,15 @@ export function Dialog({
           <button
             type="button"
             onClick={onClose}
-            className="-m-1 rounded-sm p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="-m-1 rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="overflow-y-auto px-5 py-4">{children}</div>
+        <div className="overflow-y-auto px-6 py-4">{children}</div>
         {footer && (
-          <div className="flex justify-end gap-2 border-t border-border px-5 py-3">{footer}</div>
+          <div className="flex justify-end gap-2 border-t border-border px-6 py-4">{footer}</div>
         )}
       </div>
     </div>

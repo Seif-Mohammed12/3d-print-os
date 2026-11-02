@@ -1,532 +1,980 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T00:52:55.974Z",
+  "generatedAt": "2026-11-02T22:33:04+00:00",
   "title": "Design System: 3D Print OS",
   "extensions": {
     "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Cool Off-White",
+        "canonical": "hsl(220 20% 97%)",
+        "cssVar": "--background",
+        "dark": "hsl(218 22% 9%)",
+        "tonalRamp": [
+          "hsl(220 20% 15%)",
+          "hsl(220 20% 25%)",
+          "hsl(220 20% 35%)",
+          "hsl(220 20% 45%)",
+          "hsl(220 20% 55%)",
+          "hsl(220 20% 65%)",
+          "hsl(220 20% 80%)",
+          "hsl(220 20% 95%)"
+        ]
+      },
       "ink": {
-        "role": "primary",
-        "displayName": "Workshop Ink",
-        "canonical": "hsl(210 13% 13%)",
+        "role": "neutral",
+        "displayName": "Graphite Ink",
+        "canonical": "hsl(215 22% 11%)",
         "cssVar": "--foreground",
-        "dark": "hsl(43 20% 89%)",
+        "dark": "hsl(216 20% 91%)",
         "tonalRamp": [
-          "hsl(210 13% 15%)",
-          "hsl(210 13% 25%)",
-          "hsl(210 13% 35%)",
-          "hsl(210 13% 45%)",
-          "hsl(210 13% 55%)",
-          "hsl(210 13% 65%)",
-          "hsl(210 13% 80%)",
-          "hsl(210 13% 95%)"
+          "hsl(215 22% 15%)",
+          "hsl(215 22% 25%)",
+          "hsl(215 22% 35%)",
+          "hsl(215 22% 45%)",
+          "hsl(215 22% 55%)",
+          "hsl(215 22% 65%)",
+          "hsl(215 22% 80%)",
+          "hsl(215 22% 95%)"
         ]
       },
-      "enamel-rail": {
-        "role": "primary",
-        "displayName": "Enamel Steel Rail",
-        "canonical": "hsl(205 34% 25%)",
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface White",
+        "canonical": "hsl(0 0% 100%)",
+        "cssVar": "--card",
+        "dark": "hsl(218 20% 12%)",
+        "tonalRamp": [
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 55%)",
+          "hsl(0 0% 65%)",
+          "hsl(0 0% 80%)",
+          "hsl(0 0% 95%)"
+        ]
+      },
+      "popover": {
+        "role": "neutral",
+        "displayName": "Popover",
+        "canonical": "hsl(0 0% 100%)",
+        "cssVar": "--popover",
+        "dark": "hsl(218 19% 15%)",
+        "tonalRamp": [
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 55%)",
+          "hsl(0 0% 65%)",
+          "hsl(0 0% 80%)",
+          "hsl(0 0% 95%)"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Rail",
+        "canonical": "hsl(0 0% 100%)",
         "cssVar": "--sidebar",
-        "dark": "hsl(205 37% 19%)",
+        "dark": "hsl(218 22% 10.5%)",
         "tonalRamp": [
-          "hsl(205 34% 15%)",
-          "hsl(205 34% 25%)",
-          "hsl(205 34% 35%)",
-          "hsl(205 34% 45%)",
-          "hsl(205 34% 55%)",
-          "hsl(205 34% 65%)",
-          "hsl(205 34% 80%)",
-          "hsl(205 34% 95%)"
-        ]
-      },
-      "enamel-rail-raised": {
-        "role": "primary",
-        "displayName": "Raised Rail",
-        "canonical": "hsl(203 31% 31%)",
-        "cssVar": "--sidebar-raised",
-        "dark": "hsl(205 32% 25%)",
-        "tonalRamp": [
-          "hsl(203 31% 15%)",
-          "hsl(203 31% 25%)",
-          "hsl(203 31% 35%)",
-          "hsl(203 31% 45%)",
-          "hsl(203 31% 55%)",
-          "hsl(203 31% 65%)",
-          "hsl(203 31% 80%)",
-          "hsl(203 31% 95%)"
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 55%)",
+          "hsl(0 0% 65%)",
+          "hsl(0 0% 80%)",
+          "hsl(0 0% 95%)"
         ]
       },
       "rail-text": {
-        "role": "primary",
+        "role": "neutral",
         "displayName": "Rail Text",
-        "canonical": "hsl(203 26% 89%)",
+        "canonical": "hsl(215 18% 22%)",
         "cssVar": "--sidebar-foreground",
-        "dark": "hsl(203 22% 86%)",
+        "dark": "hsl(216 16% 82%)",
         "tonalRamp": [
-          "hsl(203 26% 15%)",
-          "hsl(203 26% 25%)",
-          "hsl(203 26% 35%)",
-          "hsl(203 26% 45%)",
-          "hsl(203 26% 55%)",
-          "hsl(203 26% 65%)",
-          "hsl(203 26% 80%)",
-          "hsl(203 26% 95%)"
+          "hsl(215 18% 15%)",
+          "hsl(215 18% 25%)",
+          "hsl(215 18% 35%)",
+          "hsl(215 18% 45%)",
+          "hsl(215 18% 55%)",
+          "hsl(215 18% 65%)",
+          "hsl(215 18% 80%)",
+          "hsl(215 18% 95%)"
         ]
       },
       "rail-muted": {
-        "role": "primary",
+        "role": "neutral",
         "displayName": "Rail Muted",
-        "canonical": "hsl(205 20% 66%)",
+        "canonical": "hsl(216 9% 46%)",
         "cssVar": "--sidebar-muted",
-        "dark": "hsl(205 16% 62%)",
+        "dark": "hsl(216 10% 58%)",
         "tonalRamp": [
-          "hsl(205 20% 15%)",
-          "hsl(205 20% 25%)",
-          "hsl(205 20% 35%)",
-          "hsl(205 20% 45%)",
-          "hsl(205 20% 55%)",
-          "hsl(205 20% 65%)",
-          "hsl(205 20% 80%)",
-          "hsl(205 20% 95%)"
+          "hsl(216 9% 15%)",
+          "hsl(216 9% 25%)",
+          "hsl(216 9% 35%)",
+          "hsl(216 9% 45%)",
+          "hsl(216 9% 55%)",
+          "hsl(216 9% 65%)",
+          "hsl(216 9% 80%)",
+          "hsl(216 9% 95%)"
         ]
       },
-      "board-ground": {
+      "rail-raised": {
         "role": "neutral",
-        "displayName": "Board Ground",
-        "canonical": "hsl(45 12% 90%)",
-        "cssVar": "--background",
-        "dark": "hsl(205 33% 11%)",
+        "displayName": "Rail Raised",
+        "canonical": "hsl(220 16% 95%)",
+        "cssVar": "--sidebar-raised",
+        "dark": "hsl(218 16% 16%)",
         "tonalRamp": [
-          "hsl(45 12% 15%)",
-          "hsl(45 12% 25%)",
-          "hsl(45 12% 35%)",
-          "hsl(45 12% 45%)",
-          "hsl(45 12% 55%)",
-          "hsl(45 12% 65%)",
-          "hsl(45 12% 80%)",
-          "hsl(45 12% 95%)"
+          "hsl(220 16% 15%)",
+          "hsl(220 16% 25%)",
+          "hsl(220 16% 35%)",
+          "hsl(220 16% 45%)",
+          "hsl(220 16% 55%)",
+          "hsl(220 16% 65%)",
+          "hsl(220 16% 80%)",
+          "hsl(220 16% 95%)"
         ]
       },
-      "paper": {
-        "role": "neutral",
-        "displayName": "Card Paper",
-        "canonical": "hsl(45 43% 98%)",
-        "cssVar": "--card",
-        "dark": "hsl(205 29% 15%)",
+      "rail-active": {
+        "role": "primary",
+        "displayName": "Rail Active",
+        "canonical": "hsl(168 52% 93%)",
+        "cssVar": "--sidebar-active",
+        "dark": "hsl(172 32% 16%)",
         "tonalRamp": [
-          "hsl(45 43% 15%)",
-          "hsl(45 43% 25%)",
-          "hsl(45 43% 35%)",
-          "hsl(45 43% 45%)",
-          "hsl(45 43% 55%)",
-          "hsl(45 43% 65%)",
-          "hsl(45 43% 80%)",
-          "hsl(45 43% 95%)"
+          "hsl(168 52% 15%)",
+          "hsl(168 52% 25%)",
+          "hsl(168 52% 35%)",
+          "hsl(168 52% 45%)",
+          "hsl(168 52% 55%)",
+          "hsl(168 52% 65%)",
+          "hsl(168 52% 80%)",
+          "hsl(168 52% 95%)"
         ]
       },
-      "board-tint": {
+      "rail-active-ink": {
+        "role": "primary",
+        "displayName": "Rail Active Ink",
+        "canonical": "hsl(173 84% 22%)",
+        "cssVar": "--sidebar-active-foreground",
+        "dark": "hsl(170 50% 72%)",
+        "tonalRamp": [
+          "hsl(173 84% 15%)",
+          "hsl(173 84% 25%)",
+          "hsl(173 84% 35%)",
+          "hsl(173 84% 45%)",
+          "hsl(173 84% 55%)",
+          "hsl(173 84% 65%)",
+          "hsl(173 84% 80%)",
+          "hsl(173 84% 95%)"
+        ]
+      },
+      "tracker-teal": {
+        "role": "primary",
+        "displayName": "Tracker Teal",
+        "canonical": "hsl(172 83% 34%)",
+        "cssVar": "--brand",
+        "dark": "hsl(171 50% 50%)",
+        "tonalRamp": [
+          "hsl(172 83% 15%)",
+          "hsl(172 83% 25%)",
+          "hsl(172 83% 35%)",
+          "hsl(172 83% 45%)",
+          "hsl(172 83% 55%)",
+          "hsl(172 83% 65%)",
+          "hsl(172 83% 80%)",
+          "hsl(172 83% 95%)"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Deep Teal",
+        "canonical": "hsl(173 84% 27%)",
+        "cssVar": "--primary",
+        "dark": "hsl(171 48% 52%)",
+        "tonalRamp": [
+          "hsl(173 84% 15%)",
+          "hsl(173 84% 25%)",
+          "hsl(173 84% 35%)",
+          "hsl(173 84% 45%)",
+          "hsl(173 84% 55%)",
+          "hsl(173 84% 65%)",
+          "hsl(173 84% 80%)",
+          "hsl(173 84% 95%)"
+        ]
+      },
+      "on-primary": {
+        "role": "primary",
+        "displayName": "On Primary",
+        "canonical": "hsl(0 0% 100%)",
+        "cssVar": "--primary-foreground",
+        "dark": "hsl(218 25% 8%)",
+        "tonalRamp": [
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 55%)",
+          "hsl(0 0% 65%)",
+          "hsl(0 0% 80%)",
+          "hsl(0 0% 95%)"
+        ]
+      },
+      "muted": {
         "role": "neutral",
-        "displayName": "Board Tint",
-        "canonical": "hsl(44 13% 85%)",
+        "displayName": "Muted Fill",
+        "canonical": "hsl(220 16% 95%)",
         "cssVar": "--muted",
-        "dark": "hsl(205 27% 20%)",
+        "dark": "hsl(218 16% 16%)",
         "tonalRamp": [
-          "hsl(44 13% 15%)",
-          "hsl(44 13% 25%)",
-          "hsl(44 13% 35%)",
-          "hsl(44 13% 45%)",
-          "hsl(44 13% 55%)",
-          "hsl(44 13% 65%)",
-          "hsl(44 13% 80%)",
-          "hsl(44 13% 95%)"
+          "hsl(220 16% 15%)",
+          "hsl(220 16% 25%)",
+          "hsl(220 16% 35%)",
+          "hsl(220 16% 45%)",
+          "hsl(220 16% 55%)",
+          "hsl(220 16% 65%)",
+          "hsl(220 16% 80%)",
+          "hsl(220 16% 95%)"
         ]
       },
       "ink-muted": {
         "role": "neutral",
         "displayName": "Muted Ink",
-        "canonical": "hsl(210 8% 31%)",
+        "canonical": "hsl(216 9% 40%)",
         "cssVar": "--muted-foreground",
-        "dark": "hsl(205 14% 68%)",
+        "dark": "hsl(216 10% 64%)",
         "tonalRamp": [
-          "hsl(210 8% 15%)",
-          "hsl(210 8% 25%)",
-          "hsl(210 8% 35%)",
-          "hsl(210 8% 45%)",
-          "hsl(210 8% 55%)",
-          "hsl(210 8% 65%)",
-          "hsl(210 8% 80%)",
-          "hsl(210 8% 95%)"
-        ]
-      },
-      "rack-bed": {
-        "role": "neutral",
-        "displayName": "Rack Bed",
-        "canonical": "hsl(44 11% 82%)",
-        "cssVar": "--rack",
-        "dark": "hsl(205 20% 19%)",
-        "tonalRamp": [
-          "hsl(44 11% 15%)",
-          "hsl(44 11% 25%)",
-          "hsl(44 11% 35%)",
-          "hsl(44 11% 45%)",
-          "hsl(44 11% 55%)",
-          "hsl(44 11% 65%)",
-          "hsl(44 11% 80%)",
-          "hsl(44 11% 95%)"
-        ]
-      },
-      "slot-rail": {
-        "role": "neutral",
-        "displayName": "Slot Rail",
-        "canonical": "hsl(41 8% 70%)",
-        "cssVar": "--slot",
-        "dark": "hsl(205 18% 31%)",
-        "tonalRamp": [
-          "hsl(41 8% 15%)",
-          "hsl(41 8% 25%)",
-          "hsl(41 8% 35%)",
-          "hsl(41 8% 45%)",
-          "hsl(41 8% 55%)",
-          "hsl(41 8% 65%)",
-          "hsl(41 8% 80%)",
-          "hsl(41 8% 95%)"
-        ]
-      },
-      "slot-highlight": {
-        "role": "neutral",
-        "displayName": "Slot Highlight",
-        "canonical": "hsl(45 20% 92%)",
-        "cssVar": "--slot-hi",
-        "dark": "hsl(205 16% 24%)",
-        "tonalRamp": [
-          "hsl(45 20% 15%)",
-          "hsl(45 20% 25%)",
-          "hsl(45 20% 35%)",
-          "hsl(45 20% 45%)",
-          "hsl(45 20% 55%)",
-          "hsl(45 20% 65%)",
-          "hsl(45 20% 80%)",
-          "hsl(45 20% 95%)"
+          "hsl(216 9% 15%)",
+          "hsl(216 9% 25%)",
+          "hsl(216 9% 35%)",
+          "hsl(216 9% 45%)",
+          "hsl(216 9% 55%)",
+          "hsl(216 9% 65%)",
+          "hsl(216 9% 80%)",
+          "hsl(216 9% 95%)"
         ]
       },
       "hairline": {
         "role": "neutral",
         "displayName": "Hairline",
-        "canonical": "hsl(41 11% 76%)",
+        "canonical": "hsl(220 13% 91%)",
         "cssVar": "--border",
-        "dark": "hsl(205 25% 24%)",
+        "dark": "hsl(218 15% 19%)",
         "tonalRamp": [
-          "hsl(41 11% 15%)",
-          "hsl(41 11% 25%)",
-          "hsl(41 11% 35%)",
-          "hsl(41 11% 45%)",
-          "hsl(41 11% 55%)",
-          "hsl(41 11% 65%)",
-          "hsl(41 11% 80%)",
-          "hsl(41 11% 95%)"
+          "hsl(220 13% 15%)",
+          "hsl(220 13% 25%)",
+          "hsl(220 13% 35%)",
+          "hsl(220 13% 45%)",
+          "hsl(220 13% 55%)",
+          "hsl(220 13% 65%)",
+          "hsl(220 13% 80%)",
+          "hsl(220 13% 95%)"
         ]
       },
       "control-edge": {
         "role": "neutral",
         "displayName": "Control Edge",
-        "canonical": "hsl(43 5% 53%)",
+        "canonical": "hsl(220 12% 83%)",
         "cssVar": "--input",
-        "dark": "hsl(205 18% 40%)",
+        "dark": "hsl(218 13% 28%)",
         "tonalRamp": [
-          "hsl(43 5% 15%)",
-          "hsl(43 5% 25%)",
-          "hsl(43 5% 35%)",
-          "hsl(43 5% 45%)",
-          "hsl(43 5% 55%)",
-          "hsl(43 5% 65%)",
-          "hsl(43 5% 80%)",
-          "hsl(43 5% 95%)"
+          "hsl(220 12% 15%)",
+          "hsl(220 12% 25%)",
+          "hsl(220 12% 35%)",
+          "hsl(220 12% 45%)",
+          "hsl(220 12% 55%)",
+          "hsl(220 12% 65%)",
+          "hsl(220 12% 80%)",
+          "hsl(220 12% 95%)"
         ]
       },
-      "stock-draft": {
-        "role": "secondary",
-        "displayName": "Draft Paper",
-        "canonical": "hsl(45 43% 98%)",
-        "cssVar": "--stock-draft",
-        "dark": "hsl(42 14% 82%)",
+      "focus-ring": {
+        "role": "primary",
+        "displayName": "Focus Ring",
+        "canonical": "hsl(172 83% 34%)",
+        "cssVar": "--ring",
+        "dark": "hsl(171 50% 55%)",
         "tonalRamp": [
-          "hsl(45 43% 15%)",
-          "hsl(45 43% 25%)",
-          "hsl(45 43% 35%)",
-          "hsl(45 43% 45%)",
-          "hsl(45 43% 55%)",
-          "hsl(45 43% 65%)",
-          "hsl(45 43% 80%)",
-          "hsl(45 43% 95%)"
+          "hsl(172 83% 15%)",
+          "hsl(172 83% 25%)",
+          "hsl(172 83% 35%)",
+          "hsl(172 83% 45%)",
+          "hsl(172 83% 55%)",
+          "hsl(172 83% 65%)",
+          "hsl(172 83% 80%)",
+          "hsl(172 83% 95%)"
         ]
       },
-      "stock-quoted": {
-        "role": "secondary",
-        "displayName": "Quoted Yellow",
-        "canonical": "hsl(48 85% 62%)",
-        "cssVar": "--stock-quoted",
-        "dark": "hsl(46 62% 54%)",
+      "chart": {
+        "role": "primary",
+        "displayName": "Chart Teal",
+        "canonical": "hsl(172 83% 34%)",
+        "cssVar": "--chart",
+        "dark": "hsl(171 50% 50%)",
         "tonalRamp": [
-          "hsl(48 85% 15%)",
-          "hsl(48 85% 25%)",
-          "hsl(48 85% 35%)",
-          "hsl(48 85% 45%)",
-          "hsl(48 85% 55%)",
-          "hsl(48 85% 65%)",
-          "hsl(48 85% 80%)",
-          "hsl(48 85% 95%)"
+          "hsl(172 83% 15%)",
+          "hsl(172 83% 25%)",
+          "hsl(172 83% 35%)",
+          "hsl(172 83% 45%)",
+          "hsl(172 83% 55%)",
+          "hsl(172 83% 65%)",
+          "hsl(172 83% 80%)",
+          "hsl(172 83% 95%)"
         ]
       },
-      "stock-approved": {
-        "role": "secondary",
-        "displayName": "Approved Green",
-        "canonical": "hsl(135 34% 67%)",
-        "cssVar": "--stock-approved",
-        "dark": "hsl(135 25% 56%)",
+      "chart-muted": {
+        "role": "primary",
+        "displayName": "Chart Muted",
+        "canonical": "hsl(168 35% 82%)",
+        "cssVar": "--chart-muted",
+        "dark": "hsl(172 18% 26%)",
         "tonalRamp": [
-          "hsl(135 34% 15%)",
-          "hsl(135 34% 25%)",
-          "hsl(135 34% 35%)",
-          "hsl(135 34% 45%)",
-          "hsl(135 34% 55%)",
-          "hsl(135 34% 65%)",
-          "hsl(135 34% 80%)",
-          "hsl(135 34% 95%)"
+          "hsl(168 35% 15%)",
+          "hsl(168 35% 25%)",
+          "hsl(168 35% 35%)",
+          "hsl(168 35% 45%)",
+          "hsl(168 35% 55%)",
+          "hsl(168 35% 65%)",
+          "hsl(168 35% 80%)",
+          "hsl(168 35% 95%)"
         ]
       },
-      "stock-printing": {
-        "role": "secondary",
-        "displayName": "Printing Blue",
-        "canonical": "hsl(211 56% 71%)",
-        "cssVar": "--stock-printing",
-        "dark": "hsl(211 42% 61%)",
+      "destructive": {
+        "role": "status",
+        "displayName": "Destructive",
+        "canonical": "hsl(358 72% 48%)",
+        "cssVar": "--destructive",
+        "dark": "hsl(358 68% 63%)",
         "tonalRamp": [
-          "hsl(211 56% 15%)",
-          "hsl(211 56% 25%)",
-          "hsl(211 56% 35%)",
-          "hsl(211 56% 45%)",
-          "hsl(211 56% 55%)",
-          "hsl(211 56% 65%)",
-          "hsl(211 56% 80%)",
-          "hsl(211 56% 95%)"
+          "hsl(358 72% 15%)",
+          "hsl(358 72% 25%)",
+          "hsl(358 72% 35%)",
+          "hsl(358 72% 45%)",
+          "hsl(358 72% 55%)",
+          "hsl(358 72% 65%)",
+          "hsl(358 72% 80%)",
+          "hsl(358 72% 95%)"
         ]
       },
-      "stock-qc": {
-        "role": "secondary",
-        "displayName": "QC Salmon",
-        "canonical": "hsl(10 72% 74%)",
-        "cssVar": "--stock-qc",
-        "dark": "hsl(11 54% 64%)",
-        "tonalRamp": [
-          "hsl(10 72% 15%)",
-          "hsl(10 72% 25%)",
-          "hsl(10 72% 35%)",
-          "hsl(10 72% 45%)",
-          "hsl(10 72% 55%)",
-          "hsl(10 72% 65%)",
-          "hsl(10 72% 80%)",
-          "hsl(10 72% 95%)"
-        ]
-      },
-      "stock-failed": {
-        "role": "secondary",
-        "displayName": "Failed Red",
-        "canonical": "hsl(4 64% 47%)",
-        "cssVar": "--stock-failed",
-        "dark": "hsl(3 66% 47%)",
-        "tonalRamp": [
-          "hsl(4 64% 15%)",
-          "hsl(4 64% 25%)",
-          "hsl(4 64% 35%)",
-          "hsl(4 64% 45%)",
-          "hsl(4 64% 55%)",
-          "hsl(4 64% 65%)",
-          "hsl(4 64% 80%)",
-          "hsl(4 64% 95%)"
-        ]
-      },
-      "stock-void": {
-        "role": "secondary",
-        "displayName": "Void Grey",
-        "canonical": "hsl(42 9% 78%)",
-        "cssVar": "--stock-void",
-        "dark": "hsl(205 10% 56%)",
-        "tonalRamp": [
-          "hsl(42 9% 15%)",
-          "hsl(42 9% 25%)",
-          "hsl(42 9% 35%)",
-          "hsl(42 9% 45%)",
-          "hsl(42 9% 55%)",
-          "hsl(42 9% 65%)",
-          "hsl(42 9% 80%)",
-          "hsl(42 9% 95%)"
-        ]
-      },
-      "stock-done": {
-        "role": "secondary",
-        "displayName": "Done Slate",
-        "canonical": "hsl(205 13% 41%)",
-        "cssVar": "--stock-done",
-        "dark": "hsl(205 12% 64%)",
-        "tonalRamp": [
-          "hsl(205 13% 15%)",
-          "hsl(205 13% 25%)",
-          "hsl(205 13% 35%)",
-          "hsl(205 13% 45%)",
-          "hsl(205 13% 55%)",
-          "hsl(205 13% 65%)",
-          "hsl(205 13% 80%)",
-          "hsl(205 13% 95%)"
-        ]
-      },
-      "stock-edge": {
-        "role": "secondary",
-        "displayName": "Stock Edge",
-        "canonical": "hsl(41 6% 64%)",
-        "cssVar": "--stock-edge",
-        "dark": "hsl(205 25% 32%)",
-        "tonalRamp": [
-          "hsl(41 6% 15%)",
-          "hsl(41 6% 25%)",
-          "hsl(41 6% 35%)",
-          "hsl(41 6% 45%)",
-          "hsl(41 6% 55%)",
-          "hsl(41 6% 65%)",
-          "hsl(41 6% 80%)",
-          "hsl(41 6% 95%)"
-        ]
-      },
-      "failed-soft": {
-        "role": "tertiary",
-        "displayName": "Failed Soft",
-        "canonical": "hsl(9 60% 91%)",
+      "destructive-soft": {
+        "role": "status",
+        "displayName": "Destructive Soft",
+        "canonical": "hsl(0 86% 96%)",
         "cssVar": "--destructive-soft",
-        "dark": "hsl(5 35% 20%)",
+        "dark": "hsl(358 32% 16%)",
         "tonalRamp": [
-          "hsl(9 60% 15%)",
-          "hsl(9 60% 25%)",
-          "hsl(9 60% 35%)",
-          "hsl(9 60% 45%)",
-          "hsl(9 60% 55%)",
-          "hsl(9 60% 65%)",
-          "hsl(9 60% 80%)",
-          "hsl(9 60% 95%)"
+          "hsl(0 86% 15%)",
+          "hsl(0 86% 25%)",
+          "hsl(0 86% 35%)",
+          "hsl(0 86% 45%)",
+          "hsl(0 86% 55%)",
+          "hsl(0 86% 65%)",
+          "hsl(0 86% 80%)",
+          "hsl(0 86% 95%)"
         ]
       },
       "success": {
-        "role": "tertiary",
-        "displayName": "Ledger Green",
-        "canonical": "hsl(141 40% 30%)",
+        "role": "status",
+        "displayName": "Success",
+        "canonical": "hsl(155 64% 27%)",
         "cssVar": "--success",
-        "dark": "hsl(135 30% 62%)",
+        "dark": "hsl(152 42% 60%)",
         "tonalRamp": [
-          "hsl(141 40% 15%)",
-          "hsl(141 40% 25%)",
-          "hsl(141 40% 35%)",
-          "hsl(141 40% 45%)",
-          "hsl(141 40% 55%)",
-          "hsl(141 40% 65%)",
-          "hsl(141 40% 80%)",
-          "hsl(141 40% 95%)"
+          "hsl(155 64% 15%)",
+          "hsl(155 64% 25%)",
+          "hsl(155 64% 35%)",
+          "hsl(155 64% 45%)",
+          "hsl(155 64% 55%)",
+          "hsl(155 64% 65%)",
+          "hsl(155 64% 80%)",
+          "hsl(155 64% 95%)"
+        ]
+      },
+      "success-soft": {
+        "role": "status",
+        "displayName": "Success Soft",
+        "canonical": "hsl(150 50% 94%)",
+        "cssVar": "--success-soft",
+        "dark": "hsl(152 24% 15%)",
+        "tonalRamp": [
+          "hsl(150 50% 15%)",
+          "hsl(150 50% 25%)",
+          "hsl(150 50% 35%)",
+          "hsl(150 50% 45%)",
+          "hsl(150 50% 55%)",
+          "hsl(150 50% 65%)",
+          "hsl(150 50% 80%)",
+          "hsl(150 50% 95%)"
         ]
       },
       "warning": {
-        "role": "tertiary",
-        "displayName": "Amber Ink",
-        "canonical": "hsl(36 100% 26%)",
+        "role": "status",
+        "displayName": "Warning",
+        "canonical": "hsl(30 85% 30%)",
         "cssVar": "--warning",
-        "dark": "hsl(45 70% 60%)",
+        "dark": "hsl(38 78% 64%)",
         "tonalRamp": [
-          "hsl(36 100% 15%)",
-          "hsl(36 100% 25%)",
-          "hsl(36 100% 35%)",
-          "hsl(36 100% 45%)",
-          "hsl(36 100% 55%)",
-          "hsl(36 100% 65%)",
-          "hsl(36 100% 80%)",
-          "hsl(36 100% 95%)"
+          "hsl(30 85% 15%)",
+          "hsl(30 85% 25%)",
+          "hsl(30 85% 35%)",
+          "hsl(30 85% 45%)",
+          "hsl(30 85% 55%)",
+          "hsl(30 85% 65%)",
+          "hsl(30 85% 80%)",
+          "hsl(30 85% 95%)"
+        ]
+      },
+      "warning-soft": {
+        "role": "status",
+        "displayName": "Warning Soft",
+        "canonical": "hsl(40 95% 93%)",
+        "cssVar": "--warning-soft",
+        "dark": "hsl(36 32% 15%)",
+        "tonalRamp": [
+          "hsl(40 95% 15%)",
+          "hsl(40 95% 25%)",
+          "hsl(40 95% 35%)",
+          "hsl(40 95% 45%)",
+          "hsl(40 95% 55%)",
+          "hsl(40 95% 65%)",
+          "hsl(40 95% 80%)",
+          "hsl(40 95% 95%)"
+        ]
+      },
+      "stock-draft": {
+        "role": "status",
+        "displayName": "Draft Slate",
+        "canonical": "hsl(215 10% 62%)",
+        "cssVar": "--stock-draft",
+        "dark": "hsl(216 10% 55%)",
+        "tonalRamp": [
+          "hsl(215 10% 15%)",
+          "hsl(215 10% 25%)",
+          "hsl(215 10% 35%)",
+          "hsl(215 10% 45%)",
+          "hsl(215 10% 55%)",
+          "hsl(215 10% 65%)",
+          "hsl(215 10% 80%)",
+          "hsl(215 10% 95%)"
+        ]
+      },
+      "stock-draft-soft": {
+        "role": "status",
+        "displayName": "Draft Slate Soft",
+        "canonical": "hsl(220 14% 94%)",
+        "cssVar": "--stock-draft-soft",
+        "dark": "hsl(218 14% 18%)",
+        "tonalRamp": [
+          "hsl(220 14% 15%)",
+          "hsl(220 14% 25%)",
+          "hsl(220 14% 35%)",
+          "hsl(220 14% 45%)",
+          "hsl(220 14% 55%)",
+          "hsl(220 14% 65%)",
+          "hsl(220 14% 80%)",
+          "hsl(220 14% 95%)"
+        ]
+      },
+      "stock-draft-ink": {
+        "role": "status",
+        "displayName": "Draft Slate Ink",
+        "canonical": "hsl(215 14% 32%)",
+        "cssVar": "--stock-draft-ink",
+        "dark": "hsl(216 14% 76%)",
+        "tonalRamp": [
+          "hsl(215 14% 15%)",
+          "hsl(215 14% 25%)",
+          "hsl(215 14% 35%)",
+          "hsl(215 14% 45%)",
+          "hsl(215 14% 55%)",
+          "hsl(215 14% 65%)",
+          "hsl(215 14% 80%)",
+          "hsl(215 14% 95%)"
+        ]
+      },
+      "stock-quoted": {
+        "role": "status",
+        "displayName": "Quoted Amber",
+        "canonical": "hsl(36 88% 54%)",
+        "cssVar": "--stock-quoted",
+        "dark": "hsl(38 75% 58%)",
+        "tonalRamp": [
+          "hsl(36 88% 15%)",
+          "hsl(36 88% 25%)",
+          "hsl(36 88% 35%)",
+          "hsl(36 88% 45%)",
+          "hsl(36 88% 55%)",
+          "hsl(36 88% 65%)",
+          "hsl(36 88% 80%)",
+          "hsl(36 88% 95%)"
+        ]
+      },
+      "stock-quoted-soft": {
+        "role": "status",
+        "displayName": "Quoted Amber Soft",
+        "canonical": "hsl(40 95% 93%)",
+        "cssVar": "--stock-quoted-soft",
+        "dark": "hsl(36 30% 16%)",
+        "tonalRamp": [
+          "hsl(40 95% 15%)",
+          "hsl(40 95% 25%)",
+          "hsl(40 95% 35%)",
+          "hsl(40 95% 45%)",
+          "hsl(40 95% 55%)",
+          "hsl(40 95% 65%)",
+          "hsl(40 95% 80%)",
+          "hsl(40 95% 95%)"
+        ]
+      },
+      "stock-quoted-ink": {
+        "role": "status",
+        "displayName": "Quoted Amber Ink",
+        "canonical": "hsl(28 80% 29%)",
+        "cssVar": "--stock-quoted-ink",
+        "dark": "hsl(40 80% 72%)",
+        "tonalRamp": [
+          "hsl(28 80% 15%)",
+          "hsl(28 80% 25%)",
+          "hsl(28 80% 35%)",
+          "hsl(28 80% 45%)",
+          "hsl(28 80% 55%)",
+          "hsl(28 80% 65%)",
+          "hsl(28 80% 80%)",
+          "hsl(28 80% 95%)"
+        ]
+      },
+      "stock-approved": {
+        "role": "status",
+        "displayName": "Approved Blue",
+        "canonical": "hsl(212 72% 52%)",
+        "cssVar": "--stock-approved",
+        "dark": "hsl(212 60% 62%)",
+        "tonalRamp": [
+          "hsl(212 72% 15%)",
+          "hsl(212 72% 25%)",
+          "hsl(212 72% 35%)",
+          "hsl(212 72% 45%)",
+          "hsl(212 72% 55%)",
+          "hsl(212 72% 65%)",
+          "hsl(212 72% 80%)",
+          "hsl(212 72% 95%)"
+        ]
+      },
+      "stock-approved-soft": {
+        "role": "status",
+        "displayName": "Approved Blue Soft",
+        "canonical": "hsl(212 85% 95%)",
+        "cssVar": "--stock-approved-soft",
+        "dark": "hsl(214 32% 18%)",
+        "tonalRamp": [
+          "hsl(212 85% 15%)",
+          "hsl(212 85% 25%)",
+          "hsl(212 85% 35%)",
+          "hsl(212 85% 45%)",
+          "hsl(212 85% 55%)",
+          "hsl(212 85% 65%)",
+          "hsl(212 85% 80%)",
+          "hsl(212 85% 95%)"
+        ]
+      },
+      "stock-approved-ink": {
+        "role": "status",
+        "displayName": "Approved Blue Ink",
+        "canonical": "hsl(214 68% 35%)",
+        "cssVar": "--stock-approved-ink",
+        "dark": "hsl(212 75% 78%)",
+        "tonalRamp": [
+          "hsl(214 68% 15%)",
+          "hsl(214 68% 25%)",
+          "hsl(214 68% 35%)",
+          "hsl(214 68% 45%)",
+          "hsl(214 68% 55%)",
+          "hsl(214 68% 65%)",
+          "hsl(214 68% 80%)",
+          "hsl(214 68% 95%)"
+        ]
+      },
+      "stock-printing": {
+        "role": "status",
+        "displayName": "Printing Teal",
+        "canonical": "hsl(172 83% 34%)",
+        "cssVar": "--stock-printing",
+        "dark": "hsl(171 50% 50%)",
+        "tonalRamp": [
+          "hsl(172 83% 15%)",
+          "hsl(172 83% 25%)",
+          "hsl(172 83% 35%)",
+          "hsl(172 83% 45%)",
+          "hsl(172 83% 55%)",
+          "hsl(172 83% 65%)",
+          "hsl(172 83% 80%)",
+          "hsl(172 83% 95%)"
+        ]
+      },
+      "stock-printing-soft": {
+        "role": "status",
+        "displayName": "Printing Teal Soft",
+        "canonical": "hsl(168 55% 93%)",
+        "cssVar": "--stock-printing-soft",
+        "dark": "hsl(172 30% 15%)",
+        "tonalRamp": [
+          "hsl(168 55% 15%)",
+          "hsl(168 55% 25%)",
+          "hsl(168 55% 35%)",
+          "hsl(168 55% 45%)",
+          "hsl(168 55% 55%)",
+          "hsl(168 55% 65%)",
+          "hsl(168 55% 80%)",
+          "hsl(168 55% 95%)"
+        ]
+      },
+      "stock-printing-ink": {
+        "role": "status",
+        "displayName": "Printing Teal Ink",
+        "canonical": "hsl(173 84% 22%)",
+        "cssVar": "--stock-printing-ink",
+        "dark": "hsl(170 50% 70%)",
+        "tonalRamp": [
+          "hsl(173 84% 15%)",
+          "hsl(173 84% 25%)",
+          "hsl(173 84% 35%)",
+          "hsl(173 84% 45%)",
+          "hsl(173 84% 55%)",
+          "hsl(173 84% 65%)",
+          "hsl(173 84% 80%)",
+          "hsl(173 84% 95%)"
+        ]
+      },
+      "stock-qc": {
+        "role": "status",
+        "displayName": "QC Violet",
+        "canonical": "hsl(262 55% 60%)",
+        "cssVar": "--stock-qc",
+        "dark": "hsl(262 45% 68%)",
+        "tonalRamp": [
+          "hsl(262 55% 15%)",
+          "hsl(262 55% 25%)",
+          "hsl(262 55% 35%)",
+          "hsl(262 55% 45%)",
+          "hsl(262 55% 55%)",
+          "hsl(262 55% 65%)",
+          "hsl(262 55% 80%)",
+          "hsl(262 55% 95%)"
+        ]
+      },
+      "stock-qc-soft": {
+        "role": "status",
+        "displayName": "QC Violet Soft",
+        "canonical": "hsl(260 75% 96%)",
+        "cssVar": "--stock-qc-soft",
+        "dark": "hsl(262 22% 19%)",
+        "tonalRamp": [
+          "hsl(260 75% 15%)",
+          "hsl(260 75% 25%)",
+          "hsl(260 75% 35%)",
+          "hsl(260 75% 45%)",
+          "hsl(260 75% 55%)",
+          "hsl(260 75% 65%)",
+          "hsl(260 75% 80%)",
+          "hsl(260 75% 95%)"
+        ]
+      },
+      "stock-qc-ink": {
+        "role": "status",
+        "displayName": "QC Violet Ink",
+        "canonical": "hsl(262 45% 40%)",
+        "cssVar": "--stock-qc-ink",
+        "dark": "hsl(262 60% 82%)",
+        "tonalRamp": [
+          "hsl(262 45% 15%)",
+          "hsl(262 45% 25%)",
+          "hsl(262 45% 35%)",
+          "hsl(262 45% 45%)",
+          "hsl(262 45% 55%)",
+          "hsl(262 45% 65%)",
+          "hsl(262 45% 80%)",
+          "hsl(262 45% 95%)"
+        ]
+      },
+      "stock-failed": {
+        "role": "status",
+        "displayName": "Failed Red",
+        "canonical": "hsl(358 72% 52%)",
+        "cssVar": "--stock-failed",
+        "dark": "hsl(358 66% 60%)",
+        "tonalRamp": [
+          "hsl(358 72% 15%)",
+          "hsl(358 72% 25%)",
+          "hsl(358 72% 35%)",
+          "hsl(358 72% 45%)",
+          "hsl(358 72% 55%)",
+          "hsl(358 72% 65%)",
+          "hsl(358 72% 80%)",
+          "hsl(358 72% 95%)"
+        ]
+      },
+      "stock-failed-soft": {
+        "role": "status",
+        "displayName": "Failed Red Soft",
+        "canonical": "hsl(0 86% 96%)",
+        "cssVar": "--stock-failed-soft",
+        "dark": "hsl(358 30% 17%)",
+        "tonalRamp": [
+          "hsl(0 86% 15%)",
+          "hsl(0 86% 25%)",
+          "hsl(0 86% 35%)",
+          "hsl(0 86% 45%)",
+          "hsl(0 86% 55%)",
+          "hsl(0 86% 65%)",
+          "hsl(0 86% 80%)",
+          "hsl(0 86% 95%)"
+        ]
+      },
+      "stock-failed-ink": {
+        "role": "status",
+        "displayName": "Failed Red Ink",
+        "canonical": "hsl(358 70% 38%)",
+        "cssVar": "--stock-failed-ink",
+        "dark": "hsl(358 80% 78%)",
+        "tonalRamp": [
+          "hsl(358 70% 15%)",
+          "hsl(358 70% 25%)",
+          "hsl(358 70% 35%)",
+          "hsl(358 70% 45%)",
+          "hsl(358 70% 55%)",
+          "hsl(358 70% 65%)",
+          "hsl(358 70% 80%)",
+          "hsl(358 70% 95%)"
+        ]
+      },
+      "stock-void": {
+        "role": "status",
+        "displayName": "Void Grey",
+        "canonical": "hsl(220 9% 72%)",
+        "cssVar": "--stock-void",
+        "dark": "hsl(216 8% 42%)",
+        "tonalRamp": [
+          "hsl(220 9% 15%)",
+          "hsl(220 9% 25%)",
+          "hsl(220 9% 35%)",
+          "hsl(220 9% 45%)",
+          "hsl(220 9% 55%)",
+          "hsl(220 9% 65%)",
+          "hsl(220 9% 80%)",
+          "hsl(220 9% 95%)"
+        ]
+      },
+      "stock-void-soft": {
+        "role": "status",
+        "displayName": "Void Grey Soft",
+        "canonical": "hsl(220 14% 95%)",
+        "cssVar": "--stock-void-soft",
+        "dark": "hsl(218 12% 16%)",
+        "tonalRamp": [
+          "hsl(220 14% 15%)",
+          "hsl(220 14% 25%)",
+          "hsl(220 14% 35%)",
+          "hsl(220 14% 45%)",
+          "hsl(220 14% 55%)",
+          "hsl(220 14% 65%)",
+          "hsl(220 14% 80%)",
+          "hsl(220 14% 95%)"
+        ]
+      },
+      "stock-void-ink": {
+        "role": "status",
+        "displayName": "Void Grey Ink",
+        "canonical": "hsl(220 9% 44%)",
+        "cssVar": "--stock-void-ink",
+        "dark": "hsl(216 8% 60%)",
+        "tonalRamp": [
+          "hsl(220 9% 15%)",
+          "hsl(220 9% 25%)",
+          "hsl(220 9% 35%)",
+          "hsl(220 9% 45%)",
+          "hsl(220 9% 55%)",
+          "hsl(220 9% 65%)",
+          "hsl(220 9% 80%)",
+          "hsl(220 9% 95%)"
+        ]
+      },
+      "stock-done": {
+        "role": "status",
+        "displayName": "Done Green",
+        "canonical": "hsl(152 55% 38%)",
+        "cssVar": "--stock-done",
+        "dark": "hsl(152 40% 52%)",
+        "tonalRamp": [
+          "hsl(152 55% 15%)",
+          "hsl(152 55% 25%)",
+          "hsl(152 55% 35%)",
+          "hsl(152 55% 45%)",
+          "hsl(152 55% 55%)",
+          "hsl(152 55% 65%)",
+          "hsl(152 55% 80%)",
+          "hsl(152 55% 95%)"
+        ]
+      },
+      "stock-done-soft": {
+        "role": "status",
+        "displayName": "Done Green Soft",
+        "canonical": "hsl(148 50% 94%)",
+        "cssVar": "--stock-done-soft",
+        "dark": "hsl(152 24% 15%)",
+        "tonalRamp": [
+          "hsl(148 50% 15%)",
+          "hsl(148 50% 25%)",
+          "hsl(148 50% 35%)",
+          "hsl(148 50% 45%)",
+          "hsl(148 50% 55%)",
+          "hsl(148 50% 65%)",
+          "hsl(148 50% 80%)",
+          "hsl(148 50% 95%)"
+        ]
+      },
+      "stock-done-ink": {
+        "role": "status",
+        "displayName": "Done Green Ink",
+        "canonical": "hsl(152 62% 23%)",
+        "cssVar": "--stock-done-ink",
+        "dark": "hsl(150 45% 72%)",
+        "tonalRamp": [
+          "hsl(152 62% 15%)",
+          "hsl(152 62% 25%)",
+          "hsl(152 62% 35%)",
+          "hsl(152 62% 45%)",
+          "hsl(152 62% 55%)",
+          "hsl(152 62% 65%)",
+          "hsl(152 62% 80%)",
+          "hsl(152 62% 95%)"
+        ]
+      },
+      "stock-edge": {
+        "role": "status",
+        "displayName": "Stock Edge",
+        "canonical": "hsl(220 13% 88%)",
+        "cssVar": "--stock-edge",
+        "dark": "hsl(218 15% 22%)",
+        "tonalRamp": [
+          "hsl(220 13% 15%)",
+          "hsl(220 13% 25%)",
+          "hsl(220 13% 35%)",
+          "hsl(220 13% 45%)",
+          "hsl(220 13% 55%)",
+          "hsl(220 13% 65%)",
+          "hsl(220 13% 80%)",
+          "hsl(220 13% 95%)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Auth-shell statement only."
+        "purpose": "Auth brand-panel statement only."
       },
-      "headline": {
-        "displayName": "Headline",
-        "purpose": "One page title per screen."
+      "auth-title": {
+        "displayName": "Auth Title",
+        "purpose": "Sign-in and sign-up h1."
       },
       "figure": {
         "displayName": "Figure",
-        "purpose": "KPI values; 22px on phones."
+        "purpose": "StatCard values from sm up."
+      },
+      "figure-phone": {
+        "displayName": "Figure Phone",
+        "purpose": "StatCard values on phones."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Every page title."
+      },
+      "price": {
+        "displayName": "Price",
+        "purpose": "Headline price on order detail, quote parts, portal upload result."
+      },
+      "headline-sm": {
+        "displayName": "Headline Sm",
+        "purpose": "Stand-alone confirmation and error headings."
+      },
+      "title-lg": {
+        "displayName": "Title Lg",
+        "purpose": "Dialog titles."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Card and section headings."
+        "purpose": "Card headers and dashboard section headings."
+      },
+      "title-sm": {
+        "displayName": "Title Sm",
+        "purpose": "Empty-state titles."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "The 3D Print OS / tenant wordmark beside the mark."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Tables, inputs, descriptions, buttons."
+        "purpose": "Table cells, descriptions, nav items."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Form labels, list names, small buttons, tabs."
+        "purpose": "Field labels, stat labels, section links."
       },
       "caption": {
         "displayName": "Caption",
-        "purpose": "Table heads, hints, counts, stock tags."
+        "purpose": "Chips, badges, table headers, rail group labels and counts."
       },
-      "card-head": {
-        "displayName": "Card Head",
-        "purpose": "Uppercase status word in a T-card head and strip tabs."
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "Stage-line labels, chart ticks, job-card asides."
       },
       "mono": {
         "displayName": "Mono",
-        "purpose": "Order and tracking numbers."
+        "purpose": "Order numbers and job-card asides only."
       }
     },
     "shadows": [
       {
-        "name": "popover",
-        "value": "0 12px 28px -8px rgb(12 22 30 / 0.35), 0 2px 6px -2px rgb(12 22 30 / 0.2)",
-        "purpose": "Dialogs, mobile nav drawer, popovers: the only things that leave the board."
+        "name": "card",
+        "value": "0 1px 2px rgb(16 24 40 / 0.04)",
+        "purpose": "Contact shadow under resting cards, secondary buttons and inputs in light mode; none in dark (dark:shadow-none)."
       },
       {
-        "name": "card",
-        "value": "none",
-        "purpose": "Resting surfaces are flat."
+        "name": "popover",
+        "value": "0 16px 32px -12px rgb(16 24 40 / 0.22), 0 4px 8px -4px rgb(16 24 40 / 0.1)",
+        "purpose": "Dialogs, user menu, chart tooltips, mobile drawer (both modes)."
       },
       {
         "name": "scrim",
-        "value": "hsl(205 34% 10% / 0.55)",
-        "purpose": "Enamel-tinted dim behind dialogs and the mobile drawer."
-      },
-      {
-        "name": "nav-active-head",
-        "value": "inset 0 3px 0 hsl(var(--stock-quoted))",
-        "purpose": "Yellow card head on the active rail item; a stock band, not depth."
-      },
-      {
-        "name": "focus-ring",
-        "value": "0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring))",
-        "purpose": "Global :focus-visible; enamel in light, yellow in dark; flush on inputs."
+        "value": "hsl(218 30% 8% / 0.45)",
+        "purpose": "Graphite dim behind dialogs and the mobile nav drawer."
       }
     ],
     "motion": [
       {
-        "name": "color-transition",
-        "value": "150ms ease (transition-colors)",
-        "purpose": "Hover and active fills on buttons, rows, nav."
+        "name": "stage-fill",
+        "value": "520ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Stage-line fill sliding to a new stage (scaleX 0 to 1, origin flips in RTL)."
       },
       {
         "name": "slot-in",
-        "value": "translateY(-6px) to 0, 180ms steps(2, end)",
-        "purpose": "A card that changes status drops into its new slot in two hard frames."
+        "value": "320ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "A row whose order moved settles in from 4px below, opacity 0.4 to 1."
+      },
+      {
+        "name": "state-colour",
+        "value": "150ms",
+        "purpose": "Colour, background and border transitions on buttons, nav, rows, cards."
       },
       {
         "name": "reduced-motion",
         "value": "1ms",
-        "purpose": "prefers-reduced-motion collapses all animation and transition durations."
+        "purpose": "All animations and transitions collapse under prefers-reduced-motion."
       }
     ],
     "breakpoints": [
@@ -535,16 +983,16 @@
         "value": "640px"
       },
       {
+        "name": "md",
+        "value": "768px"
+      },
+      {
         "name": "lg",
         "value": "1024px"
       },
       {
         "name": "xl",
         "value": "1280px"
-      },
-      {
-        "name": "2xl",
-        "value": "1536px"
       }
     ]
   },
@@ -553,147 +1001,151 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Solid ink action, once per context (New quote, Reprint).",
-      "html": "<button class=\"ds-btn ds-btn-primary\">New quote</button>",
-      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 16px;font:600 14px/1 Archivo,ui-sans-serif,system-ui,sans-serif;border-radius:2px;border:1px solid transparent;cursor:pointer;transition:background-color 150ms,color 150ms}.ds-btn-primary{background:hsl(var(--primary, 210 13% 13%));color:hsl(var(--primary-foreground, 45 43% 98%))}.ds-btn-primary:hover{background:hsl(var(--primary, 210 13% 13%) / 0.85)}.ds-btn-primary:active{background:hsl(var(--primary, 210 13% 13%) / 0.75)}.ds-btn:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(var(--background, 45 12% 90%)),0 0 0 4px hsl(var(--ring, 205 34% 25%))}"
+      "description": "Deep teal filled action.",
+      "html": "<button class=\"ds-btn-primary\">New quote</button>",
+      "css": ".ds-btn-primary { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; height: 40px; padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; border: 0; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); } .ds-btn-primary:hover { background: hsl(var(--primary) / 0.9); } .ds-btn-primary:active { background: hsl(var(--primary) / 0.8); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)); }"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Default button: 1px ink outline; the rack-card next action.",
-      "html": "<button class=\"ds-btn2\">Start print</button>",
-      "css": ".ds-btn2{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 16px;font:600 14px/1 Archivo,ui-sans-serif,system-ui,sans-serif;border-radius:2px;border:1px solid hsl(var(--foreground, 210 13% 13%));background:transparent;color:hsl(var(--foreground, 210 13% 13%));cursor:pointer;transition:background-color 150ms}.ds-btn2:hover{background:hsl(var(--foreground, 210 13% 13%) / 0.06)}.ds-btn2:active{background:hsl(var(--foreground, 210 13% 13%) / 0.1)}.ds-btn2:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(var(--background, 45 12% 90%)),0 0 0 4px hsl(var(--ring, 205 34% 25%))}"
+      "description": "Default button: surface, control-edge stroke, contact shadow in light.",
+      "html": "<button class=\"ds-btn-secondary\">Pass QC</button>",
+      "css": ".ds-btn-secondary { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; height: 40px; padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; border: 1px solid hsl(var(--input)); background: hsl(var(--card)); color: hsl(var(--foreground)); box-shadow: 0 1px 2px rgb(16 24 40 / 0.04); } .ds-btn-secondary:hover { border-color: hsl(var(--foreground) / 0.25); background: hsl(var(--muted) / 0.6); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)); }"
     },
     {
       "name": "Danger Button",
       "kind": "button",
       "refersTo": "button-danger",
-      "description": "Red outline that fills solid on hover; destructive actions.",
+      "description": "Destructive action; fills red on hover.",
       "html": "<button class=\"ds-btn-danger\">Cancel order</button>",
-      "css": ".ds-btn-danger{display:inline-flex;align-items:center;height:36px;padding:0 16px;font:600 14px/1 Archivo,ui-sans-serif,system-ui,sans-serif;border-radius:2px;border:1px solid hsl(var(--destructive, 4 64% 47%));background:transparent;color:hsl(var(--destructive, 4 64% 47%));cursor:pointer;transition:background-color 150ms,color 150ms}.ds-btn-danger:hover{background:hsl(var(--destructive, 4 64% 47%));color:hsl(var(--destructive-foreground, 45 43% 98%))}.ds-btn-danger:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(var(--background, 45 12% 90%)),0 0 0 4px hsl(var(--ring, 205 34% 25%))}"
+      "css": ".ds-btn-danger { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; height: 40px; padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; border: 1px solid hsl(var(--destructive) / 0.4); background: hsl(var(--card)); color: hsl(var(--destructive)); } .ds-btn-danger:hover { border-color: hsl(var(--destructive)); background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground)); } .ds-btn-danger:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)); }"
     },
     {
       "name": "Input Field",
       "kind": "input",
       "refersTo": "input",
-      "description": "Label, paper control with control-edge border, hint below.",
-      "html": "<div class=\"ds-field\"><label class=\"ds-label\" for=\"ds-q\">Customer name</label><input id=\"ds-q\" class=\"ds-input\" placeholder=\"Mariam Hassan\"><p class=\"ds-hint\">Shown on the quote.</p></div>",
-      "css": ".ds-field{display:grid;gap:6px;max-width:320px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif}.ds-label{font-size:13px;font-weight:600;color:hsl(var(--foreground, 210 13% 13%))}.ds-input{height:36px;padding:0 12px;font-size:14px;border-radius:2px;border:1px solid hsl(var(--input, 43 5% 53%));background:hsl(var(--card, 45 43% 98%));color:hsl(var(--foreground, 210 13% 13%));transition:border-color 150ms}.ds-input::placeholder{color:hsl(var(--muted-foreground, 210 8% 31%))}.ds-input:hover{border-color:hsl(var(--foreground, 210 13% 13%) / 0.6)}.ds-input:focus-visible{outline:none;border-color:hsl(var(--foreground, 210 13% 13%));box-shadow:0 0 0 2px hsl(var(--ring, 205 34% 25%))}.ds-input[aria-invalid=true]{border-color:hsl(var(--destructive, 4 64% 47%));background:hsl(var(--destructive-soft, 9 60% 91%) / 0.4)}.ds-hint{margin:0;font-size:12px;color:hsl(var(--muted-foreground, 210 8% 31%))}"
+      "description": "40px control, 10px radius; teal stroke and soft ring on focus.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Customer email</span><input class=\"ds-input\" placeholder=\"name@shop.com\" /></label>",
+      "css": ".ds-field { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; display: block; width: 300px; } .ds-field-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: hsl(var(--foreground)); } .ds-input { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; display: block; width: 100%; height: 40px; padding: 0 12px; border: 1px solid hsl(var(--input)); border-radius: 10px; background: hsl(var(--card)); color: hsl(var(--foreground)); font-size: 14px; box-shadow: 0 1px 2px rgb(16 24 40 / 0.04); transition: border-color 150ms; } .ds-input::placeholder { color: hsl(var(--muted-foreground)); } .ds-input:hover { border-color: hsl(var(--foreground) / 0.3); } .ds-input:focus-visible { outline: none; border-color: hsl(var(--brand)); box-shadow: 0 0 0 2px hsl(var(--brand) / 0.25); }"
     },
     {
       "name": "Rail Navigation",
       "kind": "nav",
-      "refersTo": "nav-item-active",
-      "description": "Enamel rail; the active item is a paper card with a yellow head.",
-      "html": "<nav class=\"ds-rail\"><p class=\"ds-rail-sec\">Production</p><a class=\"ds-rail-item ds-active\" href=\"#\">Queue<span class=\"ds-count ds-alert\">1</span></a><a class=\"ds-rail-item\" href=\"#\">Printers</a><a class=\"ds-rail-item\" href=\"#\">Materials<span class=\"ds-count\">3</span></a></nav>",
-      "css": ".ds-rail{width:224px;padding:12px;background:hsl(var(--sidebar, 205 34% 25%));font-family:Archivo,ui-sans-serif,system-ui,sans-serif;display:grid;gap:1px}.ds-rail-sec{margin:0;padding:0 10px 4px;font-size:12px;font-weight:600;color:hsl(var(--sidebar-muted, 205 20% 66%))}.ds-rail-item{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:2px;font-size:14px;font-weight:500;color:hsl(var(--sidebar-foreground, 203 26% 89%));text-decoration:none;transition:background-color 150ms}.ds-rail-item:hover{background:hsl(var(--sidebar-raised, 203 31% 31%))}.ds-rail-item.ds-active{background:hsl(var(--sidebar-active, 45 43% 98%));color:hsl(var(--sidebar-active-foreground, 210 13% 13%));font-weight:600;box-shadow:inset 0 3px 0 hsl(var(--stock-quoted, 48 85% 62%))}.ds-rail-item:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(var(--sidebar, 205 34% 25%)),0 0 0 4px hsl(var(--ring, 205 34% 25%))}.ds-count{margin-left:auto;padding:0 6px;border-radius:2px;font-size:12px;font-variant-numeric:tabular-nums;color:hsl(var(--sidebar-muted, 205 20% 66%))}.ds-alert{background:hsl(var(--stock-failed, 4 64% 47%));color:#fff;font-weight:700}"
+      "refersTo": "nav-item",
+      "description": "Light rail item; active is soft teal with deep-teal ink; counts at the end, red pill for failures.",
+      "html": "<nav class=\"ds-rail\"><p class=\"ds-rail-group\">Sales</p><a class=\"ds-rail-item ds-rail-active\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1\"/></svg><span class=\"ds-rail-label\">Dashboard</span></a><a class=\"ds-rail-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z\"/></svg><span class=\"ds-rail-label\">Orders</span><span class=\"ds-rail-count\">7</span></a><a class=\"ds-rail-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M10 12h11M10 18h11M10 6h11M4 10h2M4 6h1v4M6 18H4c0-1 2-2 2-3s-1-1.5-2-1\"/></svg><span class=\"ds-rail-label\">Queue</span><span class=\"ds-rail-count ds-rail-alert\">2</span></a></nav>",
+      "css": ".ds-rail { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; width: 216px; padding: 12px; background: hsl(var(--sidebar)); border-inline-end: 1px solid hsl(var(--border)); } .ds-rail-group { margin: 0; padding: 0 10px 6px; font-size: 12px; font-weight: 500; color: hsl(var(--sidebar-muted)); } .ds-rail-item { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: 10px; font-size: 14px; font-weight: 500; color: hsl(var(--sidebar-foreground)); text-decoration: none; transition: background-color 150ms; } .ds-rail-item svg { color: hsl(var(--sidebar-muted)); flex-shrink: 0; } .ds-rail-label { flex: 1; } .ds-rail-item:hover { background: hsl(var(--sidebar-raised)); } .ds-rail-item:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--sidebar)), 0 0 0 4px hsl(var(--ring)); } .ds-rail-active, .ds-rail-active:hover { background: hsl(var(--sidebar-active)); color: hsl(var(--sidebar-active-foreground)); font-weight: 600; } .ds-rail-active svg { color: hsl(var(--sidebar-active-foreground)); } .ds-rail-count { min-width: 20px; padding: 0 6px; border-radius: 9999px; text-align: center; font-size: 12px; line-height: 20px; font-weight: 500; color: hsl(var(--sidebar-muted)); font-variant-numeric: tabular-nums; } .ds-rail-alert { background: hsl(var(--stock-failed-soft)); color: hsl(var(--stock-failed-ink)); font-weight: 600; }"
     },
     {
-      "name": "Stock Tags",
+      "name": "Status Chips",
       "kind": "chip",
-      "refersTo": "stock-tag",
-      "description": "Status as card stock; one colour per status, everywhere.",
-      "html": "<div class=\"ds-tags\"><span class=\"ds-tag ds-draft\">Draft</span><span class=\"ds-tag ds-quoted\">Quoted</span><span class=\"ds-tag ds-approved\">Approved</span><span class=\"ds-tag ds-printing\">Printing</span><span class=\"ds-tag ds-qc\">Quality check</span><span class=\"ds-tag ds-failed\">Failed</span><span class=\"ds-tag ds-void\">Cancelled</span><span class=\"ds-tag ds-done\">Completed</span></div>",
-      "css": ".ds-tags{display:flex;flex-wrap:wrap;gap:6px}.ds-tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:2px;border:1px solid hsl(var(--stock-edge, 41 6% 64%));font:600 12px/1 Archivo,ui-sans-serif,system-ui,sans-serif;color:hsl(var(--stock-ink, 210 13% 13%));white-space:nowrap}.ds-draft{background:hsl(var(--stock-draft, 45 43% 98%))}.ds-quoted{background:hsl(var(--stock-quoted, 48 85% 62%))}.ds-approved{background:hsl(var(--stock-approved, 135 34% 67%))}.ds-printing{background:hsl(var(--stock-printing, 211 56% 71%))}.ds-qc{background:hsl(var(--stock-qc, 10 72% 74%))}.ds-void{background:hsl(var(--stock-void, 42 9% 78%))}.ds-void{text-decoration:line-through}.ds-failed{background:hsl(var(--stock-failed, 4 64% 47%));color:#fff}.ds-done{background:hsl(var(--stock-done, 205 13% 41%));color:hsl(var(--stock-done-ink, 45 43% 98%))}"
+      "refersTo": "status-chip-printing",
+      "description": "StockTag: soft pill, status dot, status word; void is struck through.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip ds-chip-draft\"><i></i>Draft</span><span class=\"ds-chip ds-chip-quoted\"><i></i>Quoted</span><span class=\"ds-chip ds-chip-approved\"><i></i>Approved</span><span class=\"ds-chip ds-chip-printing\"><i></i>Printing</span><span class=\"ds-chip ds-chip-qc\"><i></i>In QC</span><span class=\"ds-chip ds-chip-failed\"><i></i>Failed</span><span class=\"ds-chip ds-chip-done\"><i></i>Done</span><span class=\"ds-chip ds-chip-void\"><i></i>Cancelled</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; } .ds-chip { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; white-space: nowrap; } .ds-chip i { width: 6px; height: 6px; border-radius: 9999px; } .ds-chip-draft { background: hsl(var(--stock-draft-soft)); color: hsl(var(--stock-draft-ink)); } .ds-chip-draft i { background: hsl(var(--stock-draft)); } .ds-chip-quoted { background: hsl(var(--stock-quoted-soft)); color: hsl(var(--stock-quoted-ink)); } .ds-chip-quoted i { background: hsl(var(--stock-quoted)); } .ds-chip-approved { background: hsl(var(--stock-approved-soft)); color: hsl(var(--stock-approved-ink)); } .ds-chip-approved i { background: hsl(var(--stock-approved)); } .ds-chip-printing { background: hsl(var(--stock-printing-soft)); color: hsl(var(--stock-printing-ink)); } .ds-chip-printing i { background: hsl(var(--stock-printing)); } .ds-chip-qc { background: hsl(var(--stock-qc-soft)); color: hsl(var(--stock-qc-ink)); } .ds-chip-qc i { background: hsl(var(--stock-qc)); } .ds-chip-failed { background: hsl(var(--stock-failed-soft)); color: hsl(var(--stock-failed-ink)); } .ds-chip-failed i { background: hsl(var(--stock-failed)); } .ds-chip-void { background: hsl(var(--stock-void-soft)); color: hsl(var(--stock-void-ink)); } .ds-chip-void i { background: hsl(var(--stock-void)); } .ds-chip-done { background: hsl(var(--stock-done-soft)); color: hsl(var(--stock-done-ink)); } .ds-chip-done i { background: hsl(var(--stock-done)); } .ds-chip-void { text-decoration: line-through; text-decoration-thickness: 1px; }"
     },
     {
-      "name": "T-Card",
+      "name": "Stage Line",
       "kind": "custom",
-      "refersTo": "tcard-head",
-      "description": "Signature: stock head over an inset paper body, with the next action on the card.",
-      "html": "<div class=\"ds-tcard\"><div class=\"ds-tc-head\"><span>PRINTING</span><a href=\"#\">ORD-1040</a></div><div class=\"ds-tc-body\"><p class=\"ds-tc-name\">Mariam Hassan</p><p class=\"ds-tc-meta\"><span>EGP 1,600.00</span><span>3h ago</span></p><button class=\"ds-tc-btn\">Mark printed</button></div></div>",
-      "css": ".ds-tcard{width:150px;font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums}.ds-tc-head{position:relative;z-index:1;display:flex;justify-content:space-between;gap:8px;align-items:center;height:22px;padding:0 8px;border:1px solid hsl(var(--stock-edge, 41 6% 64%));background:hsl(var(--stock-printing, 211 56% 71%));color:hsl(var(--stock-ink, 210 13% 13%));font-size:11px;font-weight:700;letter-spacing:0.02em}.ds-tc-head span{flex-shrink:0;white-space:nowrap}.ds-tc-head a{min-width:0;color:inherit;font-weight:600;text-underline-offset:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-tc-head a:hover{text-decoration:none}.ds-tc-body{margin:-1px 6px 0;padding:6px 8px 8px;border:1px solid hsl(var(--stock-edge, 41 6% 64%));border-top:0;background:hsl(var(--card, 45 43% 98%));color:hsl(var(--card-foreground, 210 13% 13%))}.ds-tc-name{margin:0;font-size:13px;font-weight:600}.ds-tc-meta{margin:2px 0 0;display:flex;justify-content:space-between;font-size:12px;color:hsl(var(--muted-foreground, 210 8% 31%))}.ds-tc-btn{margin-top:8px;width:100%;height:28px;border-radius:2px;border:1px solid hsl(var(--foreground, 210 13% 13%));background:transparent;color:hsl(var(--foreground, 210 13% 13%));font:600 13px/1 Archivo,ui-sans-serif,system-ui,sans-serif;cursor:pointer;transition:background-color 150ms}.ds-tc-btn:hover{background:hsl(var(--foreground, 210 13% 13%) / 0.06)}.ds-tc-btn:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(var(--background, 45 12% 90%)),0 0 0 4px hsl(var(--ring, 205 34% 25%))}"
+      "refersTo": "stage-line",
+      "description": "The signature: one dot per stage on a 2px track; passed teal, current ringed, later hollow; the fill slides on advance.",
+      "html": "<div class=\"ds-stage\" role=\"img\" aria-label=\"Printing, stage 3 of 6\"><div class=\"ds-stage-track\"><span class=\"ds-stage-rail\"></span><span class=\"ds-stage-fill\"></span><span class=\"ds-dot ds-pass\" style=\"inset-inline-start: 8.333%\"></span><span class=\"ds-dot ds-pass\" style=\"inset-inline-start: 25%\"></span><span class=\"ds-dot ds-current\" style=\"inset-inline-start: 41.667%\"></span><span class=\"ds-dot\" style=\"inset-inline-start: 58.333%\"></span><span class=\"ds-dot\" style=\"inset-inline-start: 75%\"></span><span class=\"ds-dot\" style=\"inset-inline-start: 91.667%\"></span></div><div class=\"ds-stage-labels\"><span>Accepted</span><span>Queued</span><span class=\"ds-now\">Printing</span><span>QC</span><span>Ready</span><span>Delivered</span></div></div>",
+      "css": ".ds-stage { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; width: 360px; } .ds-stage-track { position: relative; height: 12px; } .ds-stage-rail, .ds-stage-fill { position: absolute; top: 5px; height: 2px; border-radius: 9999px; } .ds-stage-rail { inset-inline: 8.333%; background: hsl(var(--border)); } .ds-stage-fill { inset-inline-start: 8.333%; width: 33.333%; background: hsl(var(--brand)); transform-origin: left center; animation: ds-stage-fill 520ms cubic-bezier(0.16, 1, 0.3, 1); } @keyframes ds-stage-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } } .ds-dot { position: absolute; top: 50%; width: 8px; height: 8px; box-sizing: border-box; border-radius: 9999px; transform: translate(-50%, -50%); border: 1.5px solid hsl(var(--input)); background: hsl(var(--card)); } .ds-pass { border: 0; background: hsl(var(--brand)); } .ds-current { width: 12px; height: 12px; border: 0; background: hsl(var(--brand)); box-shadow: 0 0 0 4px hsl(var(--brand) / 0.2); } .ds-stage-labels { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: 8px; } .ds-stage-labels span { font-size: 11px; line-height: 16px; text-align: center; color: hsl(var(--muted-foreground)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-stage-labels .ds-now { font-weight: 600; color: hsl(var(--foreground)); } @media (prefers-reduced-motion: reduce) { .ds-stage-fill { animation-duration: 1ms; } }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Resting container: 14px radius, hairline, contact shadow in light only.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-head\"><h2>Quotes to send</h2><p>Drafts waiting on a price check</p></div><div class=\"ds-card-body\">Q-1042 · 3 parts · 4h 12m · 186 g</div></div>",
+      "css": ".ds-card { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; width: 340px; border: 1px solid hsl(var(--border)); border-radius: 14px; background: hsl(var(--card)); color: hsl(var(--card-foreground)); box-shadow: 0 1px 2px rgb(16 24 40 / 0.04); overflow: hidden; } .ds-card-head { padding: 16px 20px; border-bottom: 1px solid hsl(var(--border)); } .ds-card-head h2 { margin: 0; font-size: 16px; font-weight: 600; } .ds-card-head p { margin: 2px 0 0; font-size: 14px; color: hsl(var(--muted-foreground)); } .ds-card-body { padding: 20px; font-size: 14px; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "stat-card",
+      "description": "Figure card: 13px label, 28px bold tabular figure (22px on phones), hint, 14-day mini bars.",
+      "html": "<div class=\"ds-stat\"><div><p class=\"ds-stat-label\">Revenue this month</p><p class=\"ds-stat-value\">48,250</p><p class=\"ds-stat-hint\">+12% on last month</p></div><div class=\"ds-bars\"><i style=\"height:30%\"></i><i style=\"height:55%\"></i><i style=\"height:40%\"></i><i style=\"height:70%\"></i><i style=\"height:45%\"></i><i style=\"height:60%\"></i><i class=\"ds-today\" style=\"height:90%\"></i></div></div>",
+      "css": ".ds-stat { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; width: 300px; padding: 16px 20px; border: 1px solid hsl(var(--border)); border-radius: 14px; background: hsl(var(--card)); box-shadow: 0 1px 2px rgb(16 24 40 / 0.04); } .ds-stat p { margin: 0; } .ds-stat-label { font-size: 13px; font-weight: 500; color: hsl(var(--muted-foreground)); } .ds-stat-value { margin-top: 6px !important; font-size: 28px; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; } .ds-stat-hint { margin-top: 2px !important; font-size: 12px; font-weight: 600; color: hsl(var(--success)); } .ds-bars { display: flex; align-items: flex-end; gap: 3px; height: 40px; } .ds-bars i { width: 5px; border-radius: 9999px; background: hsl(var(--chart-muted)); } .ds-bars .ds-today { background: hsl(var(--chart)); }"
     },
     {
       "name": "Status Lamp",
       "kind": "custom",
       "refersTo": "lamp",
-      "description": "Printer state: a lit dot plus its word, never colour alone.",
-      "html": "<div class=\"ds-lamps\"><span class=\"ds-lamp\"><i class=\"ds-run\"></i>Printing</span><span class=\"ds-lamp\"><i class=\"ds-ready\"></i>Ready</span><span class=\"ds-lamp ds-fault\"><i class=\"ds-bad\"></i>Failed print</span></div>",
-      "css": ".ds-lamps{display:flex;gap:16px}.ds-lamp{display:inline-flex;align-items:center;gap:6px;font:600 12px/1 Archivo,ui-sans-serif,system-ui,sans-serif;color:hsl(var(--foreground, 210 13% 13%))}.ds-lamp i{width:8px;height:8px;border-radius:9999px;box-shadow:0 0 0 1px hsl(var(--stock-edge, 41 6% 64%))}.ds-run{background:hsl(var(--stock-printing, 211 56% 71%))}.ds-ready{background:hsl(var(--stock-approved, 135 34% 67%))}.ds-bad{background:hsl(var(--stock-failed, 4 64% 47%))}.ds-fault{color:hsl(var(--destructive, 4 64% 47%))}"
-    },
-    {
-      "name": "KPI Strip",
-      "kind": "card",
-      "refersTo": "stat-cell",
-      "description": "Figures ruled under a 2px ink line, hairline gaps between cells.",
-      "html": "<div class=\"ds-strip\"><div class=\"ds-cell\"><p class=\"ds-l\">Open orders</p><p class=\"ds-v\">7</p><p class=\"ds-h\">2 printing now</p></div><div class=\"ds-cell\"><p class=\"ds-l\">Printers ready</p><p class=\"ds-v\">4 / 5</p><p class=\"ds-h\">Active in your fleet</p></div></div>",
-      "css": ".ds-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:hsl(var(--border, 41 11% 76%));border-top:2px solid hsl(var(--rule, 210 13% 13%));border-bottom:1px solid hsl(var(--border, 41 11% 76%));font-family:Archivo,ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums}.ds-cell{background:hsl(var(--background, 45 12% 90%));padding:12px 16px}.ds-l,.ds-v,.ds-h{margin:0}.ds-l{font-size:13px;color:hsl(var(--muted-foreground, 210 8% 31%))}.ds-v{margin-top:2px;font-size:26px;font-weight:600;letter-spacing:-0.01em;line-height:1.25;color:hsl(var(--foreground, 210 13% 13%))}.ds-h{margin-top:2px;font-size:12px;color:hsl(var(--muted-foreground, 210 8% 31%))}"
-    },
-    {
-      "name": "Failure Strip",
-      "kind": "custom",
-      "refersTo": "error-notice",
-      "description": "Failed-card tab, message, and the fix inline.",
-      "html": "<div class=\"ds-fail\" role=\"alert\"><span class=\"ds-fail-tab\">FAILED</span><p>ORD-1036 stopped printing.</p><button class=\"ds-fail-btn\">Reprint</button></div>",
-      "css": ".ds-fail{display:flex;align-items:stretch;border:1px solid hsl(var(--destructive, 4 64% 47%));border-radius:2px;overflow:hidden;background:hsl(var(--destructive-soft, 9 60% 91%));font:14px/20px Archivo,ui-sans-serif,system-ui,sans-serif;color:hsl(var(--foreground, 210 13% 13%))}.ds-fail-tab{display:flex;align-items:center;padding:0 10px;background:hsl(var(--stock-failed, 4 64% 47%));color:#fff;font-size:11px;font-weight:700;letter-spacing:0.02em}.ds-fail p{flex:1;margin:0;padding:10px 12px}.ds-fail-btn{margin:6px 8px;height:32px;padding:0 12px;border:0;border-radius:2px;background:hsl(var(--primary, 210 13% 13%));color:hsl(var(--primary-foreground, 45 43% 98%));font:600 13px/1 Archivo,ui-sans-serif,system-ui,sans-serif;cursor:pointer;transition:background-color 150ms}.ds-fail-btn:hover{background:hsl(var(--primary, 210 13% 13%) / 0.85)}.ds-fail-btn:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(var(--background, 45 12% 90%)),0 0 0 4px hsl(var(--ring, 205 34% 25%))}"
+      "description": "Machine state: dot plus word, never colour alone.",
+      "html": "<div class=\"ds-lamps\"><span class=\"ds-lamp\"><i class=\"ds-l-run\"></i>Printing</span><span class=\"ds-lamp\"><i class=\"ds-l-ready\"></i>Ready</span><span class=\"ds-lamp\"><i class=\"ds-l-wait\"></i>Paused</span><span class=\"ds-lamp ds-fault\"><i class=\"ds-l-fault\"></i>Print failed</span></div>",
+      "css": ".ds-lamps { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; display: flex; gap: 16px; } .ds-lamp { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: hsl(var(--muted-foreground)); white-space: nowrap; } .ds-lamp i { width: 8px; height: 8px; border-radius: 9999px; } .ds-l-run { background: hsl(var(--stock-printing)); } .ds-l-ready { background: hsl(var(--stock-done)); } .ds-l-wait { background: hsl(var(--stock-quoted)); } .ds-l-fault { background: hsl(var(--stock-failed)); } .ds-fault { color: hsl(var(--destructive)); }"
     }
   ],
   "narrative": {
-    "northStar": "The T-Card Planning Board",
-    "overview": "Every job is a coloured T-card hanging in a steel rack. The card's stock colour is its status, and it is the same colour everywhere: in the printer rack, in every status tag, in the swatch that leads a list row, in the brand mark. A printer is a slot column; a card's place in the column is its place in that printer's queue. The console sits on a warm grey board ground with an enamel steel-blue rail down the left. Paper-white card bodies are the only raised material.\n\nThe world is flat, square-cut and ruled. Structure comes from hairline rules and 2px ink rules under headers, not from boxes and shadows. Every number is set in tabular figures in Archivo. Density is high: it is a working board for staff at a desk and on a phone beside the printers, and it shows what every printer is doing and what needs a hand in one glance. Dark mode is the same rack at night. The ground and rail turn deep enamel blue, card bodies turn slate, the stock colours deepen but keep their identity, and ink becomes warm off-white. Nothing glows and nothing is pure black.\n\nRejected (confirmed by the build and PRODUCT.md): white-card SaaS consoles with indigo pills and stat tiles, glass, gradients, neon, soft drop shadows on resting surfaces.",
+    "northStar": "The Parcel Tracker",
+    "overview": "Every order is a tracked parcel. It has one stage line, Accepted, Queued, Printing, QC, Ready, Delivered, and that line is drawn the same way wherever the order shows up: on the dashboard's orders-in-progress rows, the orders table, the order detail page, and the customer portal (which uses its own four stages through the same `StageLine` component). Staff and customers read progress the same way. Teal means something is moving, amber means it is waiting, red means it failed, and nothing else on the screen competes with that.\n\nThe light world is a cool off-white ground with white surfaces, ink-dark text, 1px hairlines, and one teal. Surfaces are calm and roomy rather than ruled: 14px-radius cards on a 12px gap rhythm, sentence-case labels, Figtree with tabular figures everywhere. Status lives in soft tinted pill chips, each led by a solid dot of its own colour. Dark mode is **the workshop after hours**: a blue-graphite ground (never pure black), surfaces lifted by tone and 1px borders instead of shadow or glow, the teal lifted for contrast, and chips turned into low-chroma tints.\n\nPRODUCT.md rules out glass, gradients and neon, and the build uses none of them. The platform chrome is shop-neutral, since the shop's name comes from the tenant and the product mark is a teal tile carrying its own three-stop stage line.",
     "keyCharacteristics": [
-      "Status is a card-stock colour, one vocabulary across every screen.",
-      "Square-cut corners (2px) everywhere; only status lamps are round.",
-      "Flat surfaces; depth only for overlays that leave the board.",
-      "Hairline rules and 2px ink rules build structure instead of boxes.",
-      "Archivo with tabular figures on the whole body.",
-      "Light and dark are both first-class; dark is the same rack at night."
+      "One stage line per order (dots joined by a 2px track: passed stages filled teal, the current one ringed, later ones hollow; failed rings red, waiting rings amber), with a fill that slides forward when the order advances.",
+      "One teal (`--brand`) for progress, the primary action, the active nav item, focus, and the current chart bar.",
+      "Every status has three tokens (dot, soft ground, ink), and status is always a word plus a dot, never colour alone.",
+      "Resting cards: a hairline plus a faint contact shadow in light, a hairline only in dark.",
+      "Figtree 400–700 with tabular numerals on the body; JetBrains Mono only for order numbers and small asides."
     ],
     "rules": [
       {
-        "name": "The One Stock, One Meaning Rule",
-        "body": "A stock colour always means the same status, on every surface. Statuses use `StockTag`, `StockSwatch` or `TCard`. Outline `Badge` is for flags and attributes (Business, Active, Default) and never for status.",
+        "name": "The Teal Means Moving Rule",
+        "body": "Tracker Teal is used for progress, the primary action, the active place, and focus. Do not use it as decoration, a section tint or an illustration fill. If something on screen is teal, it should be moving, actionable or selected.",
         "section": "colors"
       },
       {
-        "name": "The Yellow Head Rule",
-        "body": "Quoted Yellow is also the only \"you are here / today\" marker: the active nav item, today's bar, the brand mark. Don't introduce a second highlight hue.",
+        "name": "The Three-Token Status Rule",
+        "body": "Each status uses exactly its dot, soft and ink tokens, and keeps the same colour on every screen. Status is always shown as a word with a dot (StockTag, Lamp), never as colour alone. Do not invent a ninth status hue; map the new state to an existing one.",
         "section": "colors"
       },
       {
-        "name": "The Never Colour Alone Rule",
-        "body": "A lamp always has its word next to it, and a stock tag always carries its label. Colour backs up the text; it never replaces it.",
+        "name": "The Workshop After Hours Rule",
+        "body": "Dark mode is blue-graphite (hue 216–218, lightness 9–17%), never `#000`. Surfaces separate by tone steps (ground 9%, rail 10.5%, card 12%, popover 15%) and 1px borders. Teal is lifted to ~50% lightness, and soft grounds drop to ~15–19% lightness with low chroma. No glow and no neon.",
         "section": "colors"
       },
       {
-        "name": "The Tabular Board Rule",
-        "body": "Figures are always tabular. Never switch a number back to proportional figures to make it look nicer.",
+        "name": "The Sentence Case Rule",
+        "body": "Labels, group names, table headers and buttons are sentence case at normal tracking. Hierarchy comes from size and weight steps, not from uppercase or letter-spacing.",
         "section": "typography"
       },
       {
-        "name": "The Status Word Never Truncates Rule",
-        "body": "In a T-card head the status word keeps its full width, and the aside (order number, time) truncates instead.",
+        "name": "The Tabular Everything Rule",
+        "body": "Numbers always use tabular figures (global on `body`, plus `.tabular` on figure elements). Never set a price or count in proportional figures.",
         "section": "typography"
       },
       {
-        "name": "The Only Overlays Lift Rule",
-        "body": "Resting surfaces have no shadow (`shadow-card` is `none`). A shadow means the element is floating above the board.",
+        "name": "The Thumb-First Rule",
+        "body": "Every tappable control (links, theme toggle, portal tabs, row actions) is at least 44px on phones. Compact 32–36px sizes are a `sm:` and wider affordance only.",
+        "section": "layout"
+      },
+      {
+        "name": "The Hairline-and-Breath Rule",
+        "body": "A resting surface gets a 1px border plus the contact shadow, and nothing heavier. Do not lift cards on hover; hover changes the border or fill colour (`hover:border-foreground/20`).",
         "section": "elevation"
       },
       {
-        "name": "The 2px Ceiling Rule",
-        "body": "Nothing rounds past 2px except status lamps.",
-        "section": "shapes"
+        "name": "The No-Glow Rule",
+        "body": "Emphasis is a coloured border plus a 1px ring at low alpha (a failed job card is `border-stock-failed/60 ring-1 ring-stock-failed/30`). Never use a coloured shadow, a blur halo or a backdrop filter.",
+        "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** show every status as its card stock (`StockTag`, `StockSwatch`, `TCard`), using the same stock on every surface.",
-      "**Do** keep corners at 2px; only status lamps are round.",
-      "**Do** build structure with 1px hairlines and the 2px ink rule under headers, not with nested boxes.",
-      "**Do** keep resting surfaces flat; only overlays get the lift shadow, over the enamel scrim.",
-      "**Do** pair every lamp and tag with its word.",
-      "**Do** design dark mode as the same rack at night: enamel-blue ground, slate bodies, deepened stock, warm off-white ink.",
-      "**Do** put the card's next action on the card itself and grow touch targets to 44px on phones."
+      "**Do** show every order's progress with `StageLine` / `OrderStageLine`, at row size without labels and on detail pages with labels.",
+      "**Do** keep teal (`--brand` / `--primary`) for progress, the primary action, active navigation and focus.",
+      "**Do** render every status as StockTag (soft pill + dot + word) or Lamp (dot + word), using that status's three tokens.",
+      "**Do** give resting cards a 14px radius, a 1px hairline, and `shadow-card dark:shadow-none`.",
+      "**Do** separate dark surfaces by the tone steps (9%, 10.5%, 12%, 15%) and 1px borders.",
+      "**Do** use the type ramp as recorded: 26px bold page titles, 28px figures (22px on phones), 34px auth statement, 28px auth title, 16px card titles, 14px body, 13px labels, 12px chips, 11px micro.",
+      "**Do** keep phone tap targets at least 44px, and limit motion to `slot-in`, `stage-fill` and 150ms colour transitions, all collapsed under `prefers-reduced-motion`."
     ],
     "donts": [
-      "**Don't** use outline `Badge` or ad-hoc coloured pills for statuses.",
-      "**Don't** add drop shadows to cards, KPI cells, tables or the rack.",
-      "**Don't** add glass, gradients, neon or glow. In dark mode, don't use pure black.",
-      "**Don't** add a second highlight hue; Quoted Yellow is the only \"current\" marker.",
-      "**Don't** use proportional figures for prices, counts or times.",
-      "**Don't** truncate the status word in a T-card head."
+      "**Don't** use glass, backdrop blur, gradients or neon (PRODUCT.md brand commitment).",
+      "**Don't** use pure black or near-black-plus-neon in dark mode, and don't add glow or coloured shadows for emphasis.",
+      "**Don't** convey status by colour alone, or reuse a status hue for an unrelated meaning.",
+      "**Don't** add a second progress device (percent bars, step pills) for order stage alongside the stage line.",
+      "**Don't** set labels or headers in uppercase with wide tracking, or set numbers in proportional figures.",
+      "**Don't** brand the platform chrome as a specific shop; the shop name comes from the tenant."
     ]
   }
 }

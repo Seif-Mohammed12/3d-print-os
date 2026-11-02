@@ -12,5 +12,6 @@ export {
   StatCard,
   StatStrip,
 } from './layout-blocks';
+export { StageLine, type StageLineState } from './stage-line';
 export { Lamp, type LampTone, type Stock, StockSwatch, StockTag, TCard } from './stock';
 export { Table, TBody, TD, TH, THead, TR } from './table';

@@ -85,15 +85,15 @@ export function QuoteChoices({
                   aria-pressed={selected}
                   onClick={() => onMaterial(material.id)}
                   className={cn(
-                    'inline-flex h-10 items-center gap-2 rounded-sm border px-3 text-sm transition-colors duration-150 disabled:opacity-60',
+                    'inline-flex h-10 items-center gap-2 rounded-full border px-3.5 text-sm transition-colors duration-150 disabled:opacity-60',
                     selected
-                      ? 'border-2 border-foreground bg-card font-semibold text-foreground'
-                      : 'border-input bg-card font-medium text-foreground hover:border-foreground',
+                      ? 'border-brand bg-stock-printing-soft font-semibold text-foreground ring-1 ring-brand'
+                      : 'border-input bg-card font-medium text-foreground hover:border-foreground/30',
                   )}
                 >
                   <span
                     aria-hidden="true"
-                    className="h-4 w-4 rounded-sm border border-stock-edge"
+                    className="h-4 w-4 rounded-full border border-border"
                     style={{ background: material.color_code ?? 'transparent' }}
                   />
                   {material.color ?? 'Standard'}
@@ -106,7 +106,7 @@ export function QuoteChoices({
 
       <fieldset>
         <legend className="mb-1.5 block text-[13px] font-semibold text-foreground">Quality</legend>
-        <div className="grid grid-cols-3 rounded-sm border border-foreground">
+        <div className="grid grid-cols-3 gap-1 rounded-[10px] bg-muted p-1">
           {options.qualities.map((q) => (
             <button
               key={q.code}
@@ -115,10 +115,10 @@ export function QuoteChoices({
               aria-pressed={q.code === quality}
               onClick={() => onQuality(q.code)}
               className={cn(
-                'h-10 text-sm transition-colors duration-150 disabled:opacity-60 [&+&]:border-s [&+&]:border-foreground',
+                'h-9 rounded-lg text-sm transition-colors duration-150 disabled:opacity-60',
                 q.code === quality
-                  ? 'bg-primary font-semibold text-primary-foreground'
-                  : 'font-medium text-foreground hover:bg-foreground/[0.06]',
+                  ? 'bg-card font-semibold text-foreground shadow-card'
+                  : 'font-medium text-muted-foreground hover:text-foreground',
               )}
             >
               {q.label}
@@ -140,7 +140,7 @@ export function QuoteChoices({
               aria-label="Fewer"
               disabled={disabled || quantity <= 1}
               onClick={() => onQuantity(clamp(quantity - 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-foreground bg-card text-foreground hover:bg-muted disabled:opacity-40"
+              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40"
             >
               <Minus className="h-4 w-4" />
             </button>
@@ -153,14 +153,14 @@ export function QuoteChoices({
               value={quantity}
               disabled={disabled}
               onChange={(e) => onQuantity(clamp(Number(e.target.value)))}
-              className="tabular block h-10 w-16 rounded-sm border border-input bg-card text-center text-sm font-semibold text-foreground disabled:opacity-60"
+              className="tabular block h-10 w-16 rounded-[10px] border border-input bg-card text-center text-sm font-semibold text-foreground disabled:opacity-60"
             />
             <button
               type="button"
               aria-label="More"
               disabled={disabled || quantity >= options.max_quantity}
               onClick={() => onQuantity(clamp(quantity + 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-foreground bg-card text-foreground hover:bg-muted disabled:opacity-40"
+              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40"
             >
               <Plus className="h-4 w-4" />
             </button>

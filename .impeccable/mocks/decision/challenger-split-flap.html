@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Split-Flap</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/1.4 Barlow,system-ui,sans-serif;background:#121417;color:#F4F4F0;display:flex;font-variant-numeric:tabular-nums}
+nav{width:220px;background:#2A2E33;padding:20px 12px}
+nav b{display:block;font:700 18px 'Barlow Condensed';letter-spacing:.02em;margin:0 8px 22px}
+nav a{display:block;padding:8px;color:#B9BCBF}nav a.on{color:#121417;background:#F5A623;font-weight:600}
+nav h6{font-size:12px;color:#7D8287;margin:18px 8px 4px;font-weight:500}
+main{flex:1;padding:24px 28px}
+h1{font:700 30px 'Barlow Condensed'}.sub{color:#9A9EA2;margin-bottom:18px}
+.board{border:6px solid #3A3F45;background:#0B0C0E}
+.row{display:grid;grid-template-columns:110px 1fr 220px 110px 110px 190px;border-bottom:1px solid #26292D;align-items:center}
+.row.h{color:#7D8287;font-size:12px}.row.h div{padding:8px 12px}
+.cell{padding:8px 12px;font:600 22px 'Barlow Condensed';letter-spacing:.04em}
+.flap{display:inline-block;background:#1C1F23;border-top:1px solid #33373C;padding:0 3px;margin-right:2px;position:relative}
+.flap:after{content:'';position:absolute;left:0;right:0;top:50%;border-top:1px solid #0B0C0E}
+.amber .cell{color:#F5A623}.red .cell{color:#D0453A}
+.st{font-size:18px}
+</style></head><body>
+<nav><b>3D PRINT OS</b><a>Dashboard</a><a>Quotes</a><a>Orders</a><h6>Production</h6><a class="on">Queue</a><a>Printers</a><a>Materials</a><h6>Business</h6><a>Reports</a><a>Pricing</a></nav>
+<main><h1>Departures · production queue</h1><p class="sub">3D Print It · 9 jobs · next start 15:40</p>
+<div class="board">
+ <div class="row h"><div>JOB</div><div>PART</div><div>PRINTER</div><div>START</div><div>ETA</div><div>STATUS</div></div>
+ <div class="row"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">0</span></div><div class="cell">CONTROLLER STAND ×4</div><div class="cell">X1C · 1</div><div class="cell">11:05</div><div class="cell">18:50</div><div class="cell st">PRINTING 62%</div></div>
+ <div class="row"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">1</span></div><div class="cell">WALL PANEL SET</div><div class="cell">X1C · 2</div><div class="cell">13:30</div><div class="cell">23:10</div><div class="cell st">PRINTING 18%</div></div>
+ <div class="row amber"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">3</span><span class="flap">8</span></div><div class="cell">BRACKET · CUSTOMER STL</div><div class="cell">MK4</div><div class="cell">12:30</div><div class="cell">14:20</div><div class="cell st">QC WAITING</div></div>
+ <div class="row"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">2</span></div><div class="cell">HEADSET HOOK</div><div class="cell">X1C · 1</div><div class="cell">18:55</div><div class="cell">21:00</div><div class="cell st">BOARDING</div></div>
+ <div class="row"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">4</span></div><div class="cell">VASE · SPIRAL</div><div class="cell">MK4</div><div class="cell">15:40</div><div class="cell">20:10</div><div class="cell st">SCHEDULED</div></div>
+ <div class="row red"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">3</span><span class="flap">6</span></div><div class="cell">CONTROLLER STAND ×4</div><div class="cell">ENDER 3</div><div class="cell">09:00</div><div class="cell">—</div><div class="cell st">FAILED · REPRINT</div></div>
+ <div class="row"><div class="cell"><span class="flap">1</span><span class="flap">0</span><span class="flap">4</span><span class="flap">5</span></div><div class="cell">CABLE CLIPS ×20</div><div class="cell">—</div><div class="cell">—</div><div class="cell">—</div><div class="cell st">AWAITING PRINTER</div></div>
+</div></main></body></html>

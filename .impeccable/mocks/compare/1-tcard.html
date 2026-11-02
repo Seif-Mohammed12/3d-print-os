@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>1 · T-Card Planning Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--rail:#2F4A5C;--rail-2:#3B5A6E;--board:#E7E5DF;--rack:#D6D3CB;--slot:#BEBAB1;--card:#FBFAF6;--ink:#1D2125;--ink-2:#596067;--rule:#C4C0B7;
+--draft:#FBFAF6;--quoted:#F2D04B;--approved:#8CC79A;--printing:#8FB6E0;--qc:#EE9A8A;--fail:#C8372D}
+body{width:1440px;height:900px;overflow:hidden;font:14px/1.4 Archivo,system-ui,sans-serif;background:var(--board);color:var(--ink);display:flex;font-variant-numeric:tabular-nums}
+.rail{width:224px;flex:none;background:var(--rail);color:#DCE4E9;padding:18px 12px;display:flex;flex-direction:column;gap:20px}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px;font-weight:700;font-size:15px;color:#fff}
+.brand i{width:18px;height:24px;background:var(--quoted);border-top:6px solid var(--card)}
+.shop{padding:8px 10px;background:var(--rail-2);border-radius:2px;font-size:13px}.shop small{display:block;color:#9DB2C0;font-size:12px}
+.grp h6{font-size:12px;font-weight:600;color:#9DB2C0;margin:0 8px 4px}
+.grp a{display:flex;justify-content:space-between;align-items:center;height:34px;padding:0 10px;color:#DCE4E9;border-radius:2px}
+.grp a.on{background:var(--card);color:var(--ink);font-weight:600}
+.grp a b{font-weight:500;font-size:12px;color:#9DB2C0}.grp a.on b{color:var(--ink-2)}
+.me{margin-top:auto;padding:10px;border-top:1px solid var(--rail-2);font-size:13px}.me small{display:block;color:#9DB2C0}
+main{flex:1;min-width:0;padding:20px 26px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-end}
+h1{font-size:22px;font-weight:700;letter-spacing:-.01em}.sub{color:var(--ink-2);margin-top:2px}
+.sub .alert{color:var(--fail);font-weight:600}
+.btn{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:2px;font-weight:600;background:var(--ink);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);margin-right:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
+.kpi{padding:10px 18px 12px 0;display:flex;justify-content:space-between;align-items:flex-end}
+.kpi+.kpi{padding-left:18px;border-left:1px solid var(--rule)}
+.kpi span{color:var(--ink-2);font-size:13px}.kpi strong{display:block;font-size:26px;font-weight:600;line-height:1.15;margin-top:2px}
+.kpi small{font-size:12px;color:var(--ink-2)}
+.spark{display:flex;align-items:flex-end;gap:2px;height:30px}.spark i{width:5px;background:var(--rail)}
+.cols{flex:1;min-height:0;display:grid;grid-template-columns:1fr 330px;gap:18px}
+.sec h2{font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.sec h2 a{font-size:13px;font-weight:500;color:var(--ink-2);text-decoration:underline}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-bottom:8px}.legend i{display:inline-block;width:12px;height:9px;margin-right:5px;border:1px solid #9C998F;vertical-align:0}
+.rack{background:var(--rack);border:1px solid var(--slot);padding:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;height:548px}
+.col h5{font-size:13px;font-weight:700;padding:0 2px 6px;border-bottom:2px solid var(--ink);margin-bottom:8px;display:flex;justify-content:space-between}
+.col h5 em{font-style:normal;font-weight:500;color:var(--ink-2)}.col h5 em.bad{color:var(--fail);font-weight:600}
+.slot{height:3px;background:var(--slot);margin:9px 0}
+.card{background:var(--card);border:1px solid #B2AEA5;margin-bottom:8px}
+.card.failed{outline:2px solid var(--fail);outline-offset:-1px}
+.tab{height:20px;padding:0 8px;font-size:11px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.tab.draft{background:var(--draft);border-bottom:1px solid #B2AEA5}.tab.quoted{background:var(--quoted)}.tab.approved{background:var(--approved)}.tab.printing{background:var(--printing)}.tab.qc{background:var(--qc)}.tab.fail{background:var(--fail);color:#fff}
+.body{padding:7px 8px 8px}.body p{font-weight:600;font-size:13px}.body small{display:flex;justify-content:space-between;color:var(--ink-2);font-size:12px;margin-top:3px}
+.prog{height:4px;background:#D9DEE3;margin-top:7px}.prog i{display:block;height:100%;background:var(--rail)}
+.act{margin-top:7px;font-size:12px;font-weight:600;text-decoration:underline}
+.idle{border:1px dashed #A29E95;padding:16px 8px;color:var(--ink-2);font-size:12px;text-align:center}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--rule)}
+td{padding:9px 10px;border-bottom:1px solid #E2DFD7;font-size:13px;vertical-align:top}
+td.chip{width:10px;padding:0}td.chip i{display:block;width:6px;height:38px;margin:0}
+td .n{font-weight:600}td small{display:block;color:var(--ink-2);font-size:12px}
+td.r{text-align:right;white-space:nowrap}
+</style></head><body>
+<nav class="rail">
+ <div class="brand"><i></i>3D Print OS</div>
+ <div class="shop">3D Print It<small>New Cairo · EGP</small></div>
+ <div class="grp"><h6>Sales</h6><a class="on">Dashboard</a><a>Quotes <b>12</b></a><a>Orders <b>7</b></a><a>Customers</a></div>
+ <div class="grp"><h6>Production</h6><a>Queue <b>9</b></a><a>Printers <b>5</b></a><a>Materials</a></div>
+ <div class="grp"><h6>Business</h6><a>Reports</a><a>Pricing</a><a>Settings</a></div>
+ <div class="me">Seif M.<small>Owner</small></div>
+</nav>
+<main>
+ <div class="top"><div><h1>Today on the floor</h1><p class="sub">Thursday 22 Oct · 2 printing · <span class="alert">1 failed print needs a reprint</span></p></div>
+  <div><span class="btn ghost">Upload model</span><span class="btn">New quote</span></div></div>
+ <div class="kpis">
+  <div class="kpi"><div><span>Revenue, 14 days</span><strong>EGP 48,620</strong><small>+12% vs previous 14</small></div><div class="spark"><i style="height:30%"></i><i style="height:52%"></i><i style="height:40%"></i><i style="height:66%"></i><i style="height:48%"></i><i style="height:72%"></i><i style="height:58%"></i><i style="height:90%"></i><i style="height:70%"></i><i style="height:100%"></i></div></div>
+  <div class="kpi"><div><span>Open orders</span><strong>7</strong><small>2 printing now</small></div></div>
+  <div class="kpi"><div><span>Draft quotes</span><strong>5</strong><small>waiting to be sent</small></div></div>
+  <div class="kpi"><div><span>Hours booked today</span><strong>31.5 h</strong><small>of 120 h capacity</small></div></div>
+ </div>
+ <div class="cols">
+  <section class="sec">
+   <h2>Printer rack <a>Open queue</a></h2>
+   <div class="legend"><span><i style="background:var(--draft)"></i>Draft</span><span><i style="background:var(--quoted)"></i>Quoted</span><span><i style="background:var(--approved)"></i>Approved · next</span><span><i style="background:var(--printing)"></i>Printing</span><span><i style="background:var(--qc)"></i>Quality check</span><span><i style="background:var(--fail)"></i>Failed</span></div>
+   <div class="rack">
+    <div class="col"><h5>X1C · 1 <em>printing</em></h5>
+     <div class="card"><div class="tab printing">PRINTING<span>#1040</span></div><div class="body"><p>Controller stand ×4</p><small><span>PLA Black · 188 g</span><span>3 h 10 left</span></small><div class="prog"><i style="width:62%"></i></div></div></div>
+     <div class="card"><div class="tab approved">NEXT<span>#1042</span></div><div class="body"><p>Headset hook</p><small><span>PETG · 74 g</span><span>2 h 05</span></small></div></div>
+     <div class="slot"></div><div class="slot"></div></div>
+    <div class="col"><h5>X1C · 2 <em>printing</em></h5>
+     <div class="card"><div class="tab printing">PRINTING<span>#1041</span></div><div class="body"><p>Wall panel set</p><small><span>PLA White · 412 g</span><span>9 h 40 left</span></small><div class="prog"><i style="width:18%"></i></div></div></div>
+     <div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+    <div class="col"><h5>Prusa MK4 <em>waiting</em></h5>
+     <div class="card"><div class="tab qc">QUALITY CHECK<span>#1038</span></div><div class="body"><p>Bracket, customer STL</p><small><span>PETG · 56 g</span><span>off bed 14:20</span></small><div class="act">Pass or reprint</div></div></div>
+     <div class="card"><div class="tab approved">NEXT<span>#1044</span></div><div class="body"><p>Vase, spiral</p><small><span>PLA Gray · 95 g</span><span>4 h 30</span></small></div></div>
+     <div class="slot"></div></div>
+    <div class="col"><h5>Ender 3 S1 <em class="bad">fault</em></h5>
+     <div class="card failed"><div class="tab fail">FAILED 41%<span>#1036</span></div><div class="body"><p>Phone dock ×2</p><small><span>PLA Red · 120 g</span><span>stopped 11:52</span></small><div class="act">Reprint on another printer</div></div></div>
+     <div class="slot"></div><div class="slot"></div></div>
+    <div class="col"><h5>Prusa Mini <em>idle</em></h5><div class="idle">Empty slot<br>Next approved job fits</div><div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+   </div>
+  </section>
+  <section class="sec">
+   <h2>Recent quotes <a>All quotes</a></h2>
+   <table>
+    <tr><td class="chip"><i style="background:var(--quoted)"></i></td><td><span class="n">Drone frame arms</span><small>Q-2031 · Karim Labs · sent 2 h ago</small></td><td class="r">EGP 1,240</td></tr>
+    <tr><td class="chip"><i style="background:var(--draft);border:1px solid #B2AEA5"></i></td><td><span class="n">Cosplay helmet</span><small>Q-2030 · Salma R. · slicing…</small></td><td class="r">—</td></tr>
+    <tr><td class="chip"><i style="background:var(--quoted)"></i></td><td><span class="n">Cable clips ×20</span><small>Q-2029 · Omar K. · sent yesterday</small></td><td class="r">EGP 380</td></tr>
+    <tr><td class="chip"><i style="background:var(--approved)"></i></td><td><span class="n">Headset hook</span><small>Q-2028 · Nour Studio · approved</small></td><td class="r">EGP 420</td></tr>
+    <tr><td class="chip"><i style="background:var(--approved)"></i></td><td><span class="n">Bracket, customer STL</span><small>Q-2027 · Youssef A. · approved</small></td><td class="r">EGP 310</td></tr>
+    <tr><td class="chip"><i style="background:#CFCBC2"></i></td><td><span class="n">Phone dock</span><small>Q-2026 · Mariam H. · expired</small></td><td class="r">EGP 260</td></tr>
+    <tr><td class="chip"><i style="background:var(--approved)"></i></td><td><span class="n">Wall panel set</span><small>Q-2025 · Nour Studio · approved</small></td><td class="r">EGP 2,850</td></tr>
+   </table>
+  </section>
+ </div>
+</main></body></html>

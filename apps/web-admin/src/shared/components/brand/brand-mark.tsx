@@ -1,25 +1,20 @@
 import { cn } from '../../lib/utils';
 
-/** The product mark: a single T-card, yellow head over a paper body. */
+/** The product mark: a teal tile with a stage line, three stops, the last one reached. */
 export function BrandMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 20 22" aria-hidden="true" className={cn('h-[22px] w-5 shrink-0', className)}>
-      <rect
-        x="0.5"
-        y="0.5"
-        width="19"
-        height="7"
-        fill="hsl(var(--stock-quoted))"
-        stroke="hsl(var(--stock-edge))"
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={cn('h-6 w-6 shrink-0', className)}>
+      <rect width="24" height="24" rx="7" fill="hsl(var(--brand))" />
+      <path
+        d="M6 12h12"
+        stroke="white"
+        strokeOpacity="0.55"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
-      <rect
-        x="3.5"
-        y="7.5"
-        width="13"
-        height="14"
-        fill="hsl(var(--stock-draft))"
-        stroke="hsl(var(--stock-edge))"
-      />
+      <circle cx="6" cy="12" r="2" fill="white" fillOpacity="0.75" />
+      <circle cx="12" cy="12" r="2" fill="white" fillOpacity="0.75" />
+      <circle cx="18" cy="12" r="3" fill="white" />
     </svg>
   );
 }
@@ -27,7 +22,10 @@ export function BrandMark({ className }: { className?: string }) {
 export function BrandName({ className }: { className?: string }) {
   return (
     <span
-      className={cn('flex items-center gap-2.5 whitespace-nowrap text-[15px] font-bold', className)}
+      className={cn(
+        'flex items-center gap-2.5 whitespace-nowrap text-[15px] font-bold tracking-[-0.01em]',
+        className,
+      )}
     >
       <BrandMark />
       3D Print OS

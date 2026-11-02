@@ -48,7 +48,7 @@ export function ReportsPage() {
         description="Revenue, volume and how your printers and materials are doing."
         actions={
           <div
-            className="flex rounded-sm border border-foreground"
+            className="flex gap-1 rounded-[10px] bg-muted p-1"
             role="group"
             aria-label="Date range"
           >
@@ -59,10 +59,10 @@ export function ReportsPage() {
                 onClick={() => setDays(range)}
                 aria-pressed={days === range}
                 className={cn(
-                  'h-8 px-3 text-sm transition-colors duration-150 [&+&]:border-s [&+&]:border-foreground',
+                  'h-8 rounded-lg px-3 text-sm transition-colors duration-150',
                   days === range
-                    ? 'bg-primary font-semibold text-primary-foreground'
-                    : 'font-medium text-foreground hover:bg-foreground/[0.06]',
+                    ? 'bg-card font-semibold text-foreground shadow-card'
+                    : 'font-medium text-muted-foreground hover:text-foreground',
                 )}
               >
                 {range} days

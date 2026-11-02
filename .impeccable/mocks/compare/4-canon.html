@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>4 · Category standard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/1.45 Inter,system-ui,sans-serif;background:#F6F7F9;color:#111827;display:flex;font-variant-numeric:tabular-nums}
+nav{width:236px;flex:none;background:#fff;border-right:1px solid #E5E7EB;padding:16px 12px}
+nav b{display:flex;gap:10px;align-items:center;margin:0 8px 4px}nav b i{width:28px;height:28px;border-radius:8px;background:#4F46E5;color:#fff;font:600 11px/28px Inter;text-align:center;font-style:normal}
+nav .shop{font-size:12px;color:#6B7280;margin:0 8px 18px 46px}
+nav a{display:flex;align-items:center;justify-content:space-between;height:34px;padding:0 10px;border-radius:8px;color:#4B5563;font-weight:500}nav a.on{background:#EEF2FF;color:#4338CA}
+nav a span{font-size:12px;color:#9CA3AF}nav h6{font-size:12px;color:#9CA3AF;font-weight:500;margin:16px 10px 4px}
+main{flex:1;padding:24px 30px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-end}
+h1{font-size:20px;font-weight:600}.sub{color:#6B7280;margin-top:2px}.sub b{color:#DC2626;font-weight:500}
+.btn{display:inline-flex;align-items:center;height:38px;padding:0 14px;border-radius:8px;font-weight:500;background:#4F46E5;color:#fff}.btn.o{background:#fff;color:#111827;border:1px solid #D1D5DB;margin-right:8px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.c{background:#fff;border:1px solid #E5E7EB;border-radius:12px}
+.stat{padding:16px 18px}.stat span{font-size:13px;color:#6B7280}.stat strong{display:block;font-size:24px;font-weight:600;margin-top:2px}.stat small{color:#059669;font-size:12px}.stat small.m{color:#6B7280}
+.grid{flex:1;display:grid;grid-template-columns:1fr 360px;gap:18px;min-height:0}
+.c h2{font-size:15px;font-weight:600;padding:14px 18px;border-bottom:1px solid #F1F2F4;display:flex;justify-content:space-between}.c h2 a{font-size:13px;color:#4F46E5;font-weight:500}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;color:#6B7280;font-weight:500;padding:10px 18px;background:#F9FAFB}
+td{padding:12px 18px;border-top:1px solid #F1F2F4}td small{display:block;color:#6B7280;font-size:12px}.r{text-align:right}
+.pill{display:inline-block;font-size:12px;font-weight:500;border-radius:999px;padding:2px 9px}
+.blue{background:#DBEAFE;color:#1D4ED8}.amber{background:#FEF3C7;color:#92400E}.red{background:#FEE2E2;color:#B91C1C}.gray{background:#F3F4F6;color:#4B5563}.green{background:#D1FAE5;color:#065F46}
+.bar{height:6px;background:#EEF2FF;border-radius:999px;width:120px;display:inline-block;vertical-align:middle;margin-right:8px}.bar i{display:block;height:100%;background:#4F46E5;border-radius:999px}
+.q{display:flex;justify-content:space-between;align-items:center;padding:11px 18px;border-top:1px solid #F1F2F4}.q small{display:block;color:#6B7280;font-size:12px}
+</style></head><body>
+<nav><b><i>3D</i>Print OS</b><p class="shop">3D Print It</p><a class="on">Dashboard</a><a>Quotes <span>12</span></a><a>Orders <span>7</span></a><a>Customers</a><h6>Production</h6><a>Queue <span>9</span></a><a>Printers</a><a>Materials</a><h6>Business</h6><a>Reports</a><a>Pricing</a><a>Settings</a></nav>
+<main>
+ <div class="top"><div><h1>Good afternoon, Seif</h1><p class="sub">2 prints running · 5 draft quotes waiting · <b>1 failed print</b></p></div><div><span class="btn o">Upload model</span><span class="btn">New quote</span></div></div>
+ <div class="stats">
+  <div class="c stat"><span>Revenue, 14 days</span><strong>EGP 48,620</strong><small>↑ 12% vs previous 14</small></div>
+  <div class="c stat"><span>Open orders</span><strong>7</strong><small class="m">2 printing now</small></div>
+  <div class="c stat"><span>Draft quotes</span><strong>5</strong><small class="m">Waiting to be sent</small></div>
+  <div class="c stat"><span>Hours booked today</span><strong>31.5 h</strong><small class="m">of 120 h capacity</small></div>
+ </div>
+ <div class="grid">
+  <section class="c"><h2>Printers <a>View queue</a></h2>
+   <table><tr><th>Printer</th><th>Job</th><th>Progress</th><th>Status</th></tr>
+   <tr><td>Bambu X1C · 1</td><td>Controller stand ×4<small>#1040 · PLA Black · 188 g</small></td><td><span class="bar"><i style="width:62%"></i></span>62%</td><td><span class="pill blue">Printing</span></td></tr>
+   <tr><td>Bambu X1C · 2</td><td>Wall panel set<small>#1041 · PLA White · 412 g</small></td><td><span class="bar"><i style="width:18%"></i></span>18%</td><td><span class="pill blue">Printing</span></td></tr>
+   <tr><td>Prusa MK4</td><td>Bracket, customer STL<small>#1038 · PETG · 56 g</small></td><td>Done 14:20</td><td><span class="pill amber">Needs QC</span></td></tr>
+   <tr><td>Ender 3 S1</td><td>Phone dock ×2<small>#1036 · PLA Red · 120 g</small></td><td>Stopped at 41%</td><td><span class="pill red">Failed</span></td></tr>
+   <tr><td>Prusa Mini</td><td style="color:#9CA3AF">—</td><td>—</td><td><span class="pill gray">Idle</span></td></tr>
+   </table>
+   <h2 style="border-top:1px solid #F1F2F4">Up next</h2>
+   <table><tr><td>Headset hook<small>#1042 · PETG · 74 g</small></td><td>Bambu X1C · 1</td><td class="r">2 h 05</td></tr><tr><td>Vase, spiral<small>#1044 · PLA Gray · 95 g</small></td><td>Prusa MK4</td><td class="r">4 h 30</td></tr></table>
+  </section>
+  <section class="c"><h2>Recent quotes <a>View all</a></h2>
+   <div class="q"><div>Drone frame arms<small>Karim Labs · EGP 1,240</small></div><span class="pill amber">Sent</span></div>
+   <div class="q"><div>Cosplay helmet<small>Salma R. · slicing</small></div><span class="pill gray">Draft</span></div>
+   <div class="q"><div>Cable clips ×20<small>Omar K. · EGP 380</small></div><span class="pill amber">Sent</span></div>
+   <div class="q"><div>Headset hook<small>Nour Studio · EGP 420</small></div><span class="pill green">Approved</span></div>
+   <div class="q"><div>Bracket, customer STL<small>Youssef A. · EGP 310</small></div><span class="pill green">Approved</span></div>
+   <div class="q"><div>Phone dock<small>Mariam H. · EGP 260</small></div><span class="pill gray">Expired</span></div>
+   <div class="q"><div>Wall panel set<small>Nour Studio · EGP 2,850</small></div><span class="pill green">Approved</span></div>
+  </section>
+ </div>
+</main></body></html>

@@ -158,7 +158,7 @@ export function SliceDetails({ quote }: { quote: Quote }) {
 
         <div>
           <p className="mb-2 text-[13px] font-semibold text-foreground">Where the filament goes</p>
-          <div className="flex h-3 overflow-hidden rounded-sm border border-stock-edge bg-muted">
+          <div className="flex h-3 overflow-hidden rounded-lg border border-border bg-muted">
             {estimate.features.map((feature, index) => (
               <div
                 key={feature.feature}
@@ -179,7 +179,7 @@ export function SliceDetails({ quote }: { quote: Quote }) {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        'h-2.5 w-2.5 shrink-0 rounded-sm',
+                        'h-2.5 w-2.5 shrink-0 rounded',
                         featureFill(
                           feature.feature,
                           estimate.features.findIndex((f) => f.feature === feature.feature),

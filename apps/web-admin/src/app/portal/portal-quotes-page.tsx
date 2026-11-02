@@ -53,7 +53,7 @@ export function PortalQuotesPage() {
     <>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+          <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
             Your quotes
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

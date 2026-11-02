@@ -173,7 +173,7 @@ export function NewQuotePage() {
                       <button
                         type="button"
                         onClick={clearFile}
-                        className="-m-1 rounded-sm p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        className="-m-1 rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
                         aria-label="Remove model"
                       >
                         <X className="h-4 w-4" />

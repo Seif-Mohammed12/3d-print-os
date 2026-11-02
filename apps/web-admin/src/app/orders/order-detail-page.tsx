@@ -26,6 +26,7 @@ import {
   type ProductionStatus,
   type UpdateOrderInput,
 } from '../../features/orders/model/order-types';
+import { OrderStageLine } from '../../features/orders/components/order-stage-line';
 import { usePrinters } from '../../features/printers/hooks/use-printers';
 import { getErrorMessage } from '../../shared/api/api-error-handler';
 import { useToast } from '../../shared/components/feedback/toast-provider';
@@ -92,7 +93,7 @@ function OrderDetail({ order }: { order: Order }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+            <h1 className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-foreground">
               {order.order_number}
             </h1>
             <OrderStatusBadge status={order.status} />
@@ -108,6 +109,10 @@ function OrderDetail({ order }: { order: Order }) {
           {formatMoney(order.total_cents, order.currency)}
         </p>
       </div>
+
+      <Card className="mb-6 px-5 py-5 sm:px-8">
+        <OrderStageLine order={order} labels />
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-6">
@@ -372,7 +377,7 @@ function PrintOutcomeCard({ orderId }: { orderId: string }) {
       <CardContent>
         {recorded && (
           <div className="mb-4 grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-sm border border-border bg-background p-3">
+            <div className="rounded-xl border border-border bg-background p-3">
               <p className="text-xs text-muted-foreground">Print time</p>
               <p className="tabular font-semibold">
                 {formatDuration(recorded.actual_print_minutes)}{' '}
@@ -381,7 +386,7 @@ function PrintOutcomeCard({ orderId }: { orderId: string }) {
                 </span>
               </p>
             </div>
-            <div className="rounded-sm border border-border bg-background p-3">
+            <div className="rounded-xl border border-border bg-background p-3">
               <p className="text-xs text-muted-foreground">Filament</p>
               <p className="tabular font-semibold">
                 {formatGrams(recorded.actual_filament_g)}{' '}

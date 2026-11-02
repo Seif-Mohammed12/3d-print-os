@@ -22,7 +22,7 @@ export function ThemeToggle({ onRail = false }: { onRail?: boolean }) {
       type="button"
       onClick={toggleTheme}
       className={cn(
-        'flex h-11 w-11 items-center justify-center rounded-sm transition-colors duration-150 sm:h-9 sm:w-9',
+        'flex h-11 w-11 items-center justify-center rounded-lg transition-colors duration-150 sm:h-9 sm:w-9',
         onRail
           ? 'text-sidebar-muted hover:bg-sidebar-raised hover:text-sidebar-foreground focus-visible:ring-offset-sidebar'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -64,13 +64,13 @@ export function UserMenu({ signOutTo, onRail = false }: { signOutTo: string; onR
         type="button"
         onClick={() => setOpen((value) => !value)}
         className={cn(
-          'flex min-h-11 items-center gap-2 rounded-sm p-1 pe-2 sm:min-h-9',
+          'flex min-h-11 items-center gap-2 rounded-lg p-1 pe-2 sm:min-h-9',
           onRail ? 'hover:bg-sidebar-raised focus-visible:ring-offset-sidebar' : 'hover:bg-muted',
         )}
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-sm border border-stock-edge bg-stock-draft text-xs font-bold text-stock-ink">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-stock-printing-soft text-xs font-bold text-stock-printing-ink">
           {initials(user?.full_name)}
         </span>
         <span
@@ -85,7 +85,7 @@ export function UserMenu({ signOutTo, onRail = false }: { signOutTo: string; onR
       {open && (
         <div
           role="menu"
-          className="absolute end-0 z-40 mt-1 w-56 rounded-sm border border-border bg-popover p-1 text-popover-foreground shadow-popover"
+          className="absolute end-0 z-40 mt-2 w-60 rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-popover"
         >
           <div className="px-3 py-2">
             <p className="truncate text-sm font-medium text-foreground">{user?.full_name}</p>
@@ -96,7 +96,7 @@ export function UserMenu({ signOutTo, onRail = false }: { signOutTo: string; onR
             type="button"
             role="menuitem"
             onClick={signOut}
-            className="flex w-full items-center gap-2 rounded-sm px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
           >
             <LogOut className="h-4 w-4 text-muted-foreground" />
             Sign out
