@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Archivo', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
@@ -14,7 +14,32 @@ export default {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        sidebar: 'hsl(var(--sidebar))',
+        chart: 'hsl(var(--chart))',
+        rack: 'hsl(var(--rack))',
+        slot: 'hsl(var(--slot))',
+        'slot-hi': 'hsl(var(--slot-hi))',
+        rule: 'hsl(var(--rule))',
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          muted: 'hsl(var(--sidebar-muted))',
+          raised: 'hsl(var(--sidebar-raised))',
+          active: 'hsl(var(--sidebar-active))',
+          'active-foreground': 'hsl(var(--sidebar-active-foreground))',
+        },
+        stock: {
+          draft: 'hsl(var(--stock-draft))',
+          quoted: 'hsl(var(--stock-quoted))',
+          approved: 'hsl(var(--stock-approved))',
+          printing: 'hsl(var(--stock-printing))',
+          qc: 'hsl(var(--stock-qc))',
+          failed: 'hsl(var(--stock-failed))',
+          void: 'hsl(var(--stock-void))',
+          done: 'hsl(var(--stock-done))',
+          'done-ink': 'hsl(var(--stock-done-ink))',
+          ink: 'hsl(var(--stock-ink))',
+          edge: 'hsl(var(--stock-edge))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -54,14 +79,17 @@ export default {
         },
       },
       borderRadius: {
-        xl: 'calc(var(--radius) + 4px)',
+        // The board has square-cut card stock: nothing rounds past 2px except status lamps.
+        xl: 'var(--radius)',
         lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        md: 'var(--radius)',
+        sm: 'var(--radius)',
+        DEFAULT: 'var(--radius)',
       },
       boxShadow: {
-        card: '0 1px 2px 0 rgb(15 23 42 / 0.04)',
-        popover: '0 8px 24px -4px rgb(15 23 42 / 0.12), 0 2px 6px -2px rgb(15 23 42 / 0.08)',
+        // Cards sit flat in the rack; only overlays lift off the board.
+        card: 'none',
+        popover: '0 12px 28px -8px rgb(12 22 30 / 0.35), 0 2px 6px -2px rgb(12 22 30 / 0.2)',
       },
     },
   },

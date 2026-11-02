@@ -4,12 +4,13 @@ import { cn } from '../lib/utils';
 
 export type BadgeTone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
 
+// Flags and attributes (Business, Active, Default). Statuses use StockTag instead.
 const tones: Record<BadgeTone, string> = {
-  neutral: 'bg-muted text-muted-foreground',
-  accent: 'bg-accent text-accent-foreground',
-  success: 'bg-success-soft text-success',
-  warning: 'bg-warning-soft text-warning',
-  danger: 'bg-destructive-soft text-destructive',
+  neutral: 'border-input text-muted-foreground',
+  accent: 'border-foreground text-foreground',
+  success: 'border-success/60 text-success',
+  warning: 'border-warning/60 text-warning',
+  danger: 'border-destructive/60 text-destructive',
 };
 
 export function Badge({
@@ -24,7 +25,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium',
+        'inline-flex h-[22px] items-center whitespace-nowrap rounded-sm border px-1.5 text-xs font-medium',
         tones[tone],
         className,
       )}

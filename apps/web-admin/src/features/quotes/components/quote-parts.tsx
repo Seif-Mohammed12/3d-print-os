@@ -3,12 +3,12 @@ import { AlertTriangle, Info } from 'lucide-react';
 import { formatDuration, formatGrams, formatMoney, formatNumber } from '../../../shared/lib/format';
 import { cn } from '../../../shared/lib/utils';
 import {
-  Badge,
-  type BadgeTone,
   Card,
   CardContent,
   CardHeader,
   DetailList,
+  type Stock,
+  StockTag,
 } from '../../../shared/ui';
 import {
   QUOTE_STATUS_LABEL,
@@ -17,19 +17,26 @@ import {
   type RiskFactor,
 } from '../model/quote-types';
 
-const STATUS_TONE: Record<QuoteStatus, BadgeTone> = {
-  draft: 'neutral',
-  pending: 'accent',
-  approved: 'success',
-  rejected: 'danger',
-  completed: 'success',
+const STATUS_STOCK: Record<QuoteStatus, Stock> = {
+  draft: 'draft',
+  pending: 'quoted',
+  approved: 'approved',
+  rejected: 'void',
+  completed: 'done',
 };
+
+/** Card stock for a quote: a slicer-priced draft is ready to send, so it is already yellow. */
+export function quoteStock(quote: Pick<Quote, 'status' | 'estimate_source'>): Stock {
+  return quote.status === 'draft' && quote.estimate_source === 'slicer'
+    ? 'quoted'
+    : STATUS_STOCK[quote.status];
+}
 
 export function QuoteStatusBadge({ quote }: { quote: Pick<Quote, 'status' | 'estimate_source'> }) {
   if (quote.status === 'draft' && quote.estimate_source === 'slicer') {
-    return <Badge tone="accent">Priced</Badge>;
+    return <StockTag stock="quoted">Priced</StockTag>;
   }
-  return <Badge tone={STATUS_TONE[quote.status]}>{QUOTE_STATUS_LABEL[quote.status]}</Badge>;
+  return <StockTag stock={quoteStock(quote)}>{QUOTE_STATUS_LABEL[quote.status]}</StockTag>;
 }
 
 export function PriceSummary({ quote }: { quote: Quote }) {
@@ -110,6 +117,14 @@ const FEATURE_LABEL: Record<string, string> = {
   'Support material interface': 'Support interface',
 };
 
+/** Supports are waste, so they get the yellow "look at this" stock; the part itself alternates. */
+function featureFill(feature: string, index: number): string {
+  if (feature.startsWith('Support')) {
+    return 'bg-stock-quoted';
+  }
+  return index % 2 ? 'bg-chart/55' : 'bg-chart';
+}
+
 export function SliceDetails({ quote }: { quote: Quote }) {
   const slice = quote.slice_result;
   if (!slice) {
@@ -127,33 +142,29 @@ export function SliceDetails({ quote }: { quote: Quote }) {
         description={`${slice.slicer.name} ${slice.slicer.version.replace(/\+.*/, '')}`}
       />
       <CardContent className="space-y-5">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px border-y border-border bg-border sm:grid-cols-4">
           {[
             ['Print time', formatDuration(quote.estimated_time_minutes)],
             ['Filament', formatGrams(calibration?.filament.calibrated_g ?? estimate.filament_g)],
             ['Supports', formatGrams(estimate.support_g)],
             ['Layers', formatNumber(estimate.layer_count)],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-lg bg-muted/60 p-3">
+            <div key={label} className="bg-card px-3 py-2.5">
               <p className="text-xs text-muted-foreground">{label}</p>
-              <p className="tabular mt-0.5 text-base font-semibold text-foreground">{value}</p>
+              <p className="tabular mt-0.5 text-lg font-semibold text-foreground">{value}</p>
             </div>
           ))}
         </div>
 
         <div>
-          <p className="mb-2 text-xs font-medium text-muted-foreground">Where the filament goes</p>
-          <div className="flex h-2 overflow-hidden rounded-full bg-muted">
+          <p className="mb-2 text-[13px] font-semibold text-foreground">Where the filament goes</p>
+          <div className="flex h-3 overflow-hidden rounded-sm border border-stock-edge bg-muted">
             {estimate.features.map((feature, index) => (
               <div
                 key={feature.feature}
                 className={cn(
-                  'h-full',
-                  feature.feature.startsWith('Support')
-                    ? 'bg-warning'
-                    : index % 2
-                      ? 'bg-primary/60'
-                      : 'bg-primary',
+                  'h-full border-e border-card last:border-0',
+                  featureFill(feature.feature, index),
                 )}
                 style={{ width: `${(feature.grams / total) * 100}%` }}
               />
@@ -163,9 +174,21 @@ export function SliceDetails({ quote }: { quote: Quote }) {
             {estimate.features
               .filter((feature) => feature.grams >= 0.05)
               .map((feature) => (
-                <div key={feature.feature} className="flex justify-between gap-2">
-                  <dt className="truncate text-muted-foreground">
-                    {FEATURE_LABEL[feature.feature] ?? feature.feature}
+                <div key={feature.feature} className="flex items-center justify-between gap-2">
+                  <dt className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'h-2.5 w-2.5 shrink-0 rounded-sm',
+                        featureFill(
+                          feature.feature,
+                          estimate.features.findIndex((f) => f.feature === feature.feature),
+                        ),
+                      )}
+                    />
+                    <span className="truncate">
+                      {FEATURE_LABEL[feature.feature] ?? feature.feature}
+                    </span>
                   </dt>
                   <dd className="tabular text-foreground">{formatGrams(feature.grams)}</dd>
                 </div>

@@ -3,71 +3,121 @@
 @tailwind utilities;
 
 /*
- * Design tokens (direction B: clean SaaS). Values are HSL triplets so Tailwind can apply
- * opacity modifiers (bg-primary/10). Every token has a light and a dark value.
+ * Design tokens: the T-card planning board. A steel-blue enamel rail, a warm grey board, and
+ * flat card stock whose colour is a job's status. Dark is the same rack at night: enamel-blue
+ * ground, slate card bodies, the stock colours deepened, never black and never glowing.
+ * Values are HSL triplets so Tailwind can apply opacity modifiers.
  */
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --sidebar: 0 0% 100%;
+    --background: 45 12% 90%;
+    --foreground: 210 13% 13%;
+    --card: 45 43% 98%;
+    --card-foreground: 210 13% 13%;
+    --popover: 45 43% 98%;
+    --popover-foreground: 210 13% 13%;
 
-    --primary: 243 75% 59%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 226 100% 97%;
-    --accent-foreground: 244 55% 41%;
+    /* The rail */
+    --sidebar: 205 34% 25%;
+    --sidebar-foreground: 203 26% 89%;
+    --sidebar-muted: 205 20% 66%;
+    --sidebar-raised: 203 31% 31%;
+    --sidebar-active: 45 43% 98%;
+    --sidebar-active-foreground: 210 13% 13%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --destructive-soft: 0 86% 97%;
-    --success: 142 71% 29%;
-    --success-soft: 141 79% 93%;
-    --warning: 32 95% 35%;
-    --warning-soft: 48 96% 89%;
+    --primary: 210 13% 13%;
+    --primary-foreground: 45 43% 98%;
+    --secondary: 44 13% 85%;
+    --secondary-foreground: 210 13% 13%;
+    --muted: 44 13% 85%;
+    --muted-foreground: 210 8% 31%;
+    --accent: 44 13% 85%;
+    --accent-foreground: 210 13% 13%;
 
-    --border: 220 13% 91%;
-    --input: 214 32% 88%;
-    --ring: 243 75% 59%;
-    --radius: 0.625rem;
+    --destructive: 4 64% 47%;
+    --destructive-foreground: 45 43% 98%;
+    --destructive-soft: 9 60% 91%;
+    --success: 141 40% 30%;
+    --success-soft: 134 30% 88%;
+    --warning: 36 100% 26%;
+    --warning-soft: 48 82% 86%;
+
+    /* Card stock: one colour per status */
+    --stock-draft: 45 43% 98%;
+    --stock-quoted: 48 85% 62%;
+    --stock-approved: 135 34% 67%;
+    --stock-printing: 211 56% 71%;
+    --stock-qc: 10 72% 74%;
+    --stock-failed: 4 64% 47%;
+    --stock-void: 42 9% 78%;
+    --stock-done: 205 13% 41%;
+    --stock-done-ink: 45 43% 98%;
+    --stock-ink: 210 13% 13%;
+    --stock-edge: 41 6% 64%;
+
+    --chart: 205 34% 25%;
+    --rack: 44 11% 82%;
+    --slot: 41 8% 70%;
+    --slot-hi: 45 20% 92%;
+    --border: 41 11% 76%;
+    --rule: 210 13% 13%;
+    --input: 43 5% 53%;
+    --ring: 205 34% 25%;
+    --radius: 2px;
   }
 
   .dark {
-    --background: 224 22% 7%;
-    --foreground: 210 20% 96%;
-    --card: 222 20% 10%;
-    --card-foreground: 210 20% 96%;
-    --popover: 222 20% 11%;
-    --popover-foreground: 210 20% 96%;
-    --sidebar: 222 22% 9%;
+    --background: 205 33% 11%;
+    --foreground: 43 20% 89%;
+    --card: 205 29% 15%;
+    --card-foreground: 43 20% 89%;
+    --popover: 205 28% 17%;
+    --popover-foreground: 43 20% 89%;
 
-    --primary: 239 84% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 16% 15%;
-    --secondary-foreground: 210 20% 96%;
-    --muted: 222 16% 15%;
-    --muted-foreground: 217 12% 63%;
-    --accent: 239 35% 20%;
-    --accent-foreground: 230 94% 82%;
+    --sidebar: 205 37% 19%;
+    --sidebar-foreground: 203 22% 86%;
+    --sidebar-muted: 205 16% 62%;
+    --sidebar-raised: 205 32% 25%;
+    --sidebar-active: 43 20% 89%;
+    --sidebar-active-foreground: 205 33% 11%;
 
-    --destructive: 0 72% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --destructive-soft: 0 45% 15%;
-    --success: 142 60% 55%;
-    --success-soft: 145 40% 14%;
-    --warning: 38 92% 60%;
-    --warning-soft: 35 50% 14%;
+    --primary: 43 20% 89%;
+    --primary-foreground: 205 33% 11%;
+    --secondary: 205 27% 20%;
+    --secondary-foreground: 43 20% 89%;
+    --muted: 205 27% 20%;
+    --muted-foreground: 205 14% 68%;
+    --accent: 205 27% 20%;
+    --accent-foreground: 43 20% 89%;
 
-    --border: 222 14% 18%;
-    --input: 222 14% 22%;
-    --ring: 239 84% 67%;
+    --destructive: 5 62% 60%;
+    --destructive-foreground: 205 33% 11%;
+    --destructive-soft: 5 35% 20%;
+    --success: 135 30% 62%;
+    --success-soft: 140 22% 18%;
+    --warning: 45 70% 60%;
+    --warning-soft: 42 30% 18%;
+
+    --stock-draft: 42 14% 82%;
+    --stock-quoted: 46 62% 54%;
+    --stock-approved: 135 25% 56%;
+    --stock-printing: 211 42% 61%;
+    --stock-qc: 11 54% 64%;
+    --stock-failed: 3 66% 47%;
+    --stock-void: 205 10% 56%;
+    --stock-done: 205 12% 64%;
+    --stock-done-ink: 205 33% 9%;
+    --stock-ink: 205 33% 9%;
+    --stock-edge: 205 25% 32%;
+
+    --chart: 211 42% 61%;
+    --rack: 205 20% 19%;
+    --slot: 205 18% 31%;
+    --slot-hi: 205 16% 24%;
+    --border: 205 25% 24%;
+    --rule: 43 20% 89%;
+    --input: 205 18% 40%;
+    --ring: 46 62% 54%;
   }
 
   * {
@@ -84,16 +134,62 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: 'cv11', 'ss01';
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: hsl(var(--stock-quoted));
+    color: hsl(var(--stock-ink));
+  }
+
+  input,
+  textarea {
+    caret-color: hsl(var(--foreground));
   }
 
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
+
+  * {
+    scrollbar-color: hsl(var(--slot)) transparent;
   }
 }
 
 @layer utilities {
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* A quiet underlined link in the ink colour. */
+  .link {
+    @apply inline-flex min-h-11 items-center sm:min-h-0 font-medium text-foreground underline decoration-[hsl(var(--input))] underline-offset-[3px] hover:decoration-foreground;
+  }
+}
+
+/* A card dropping into a new slot: two hard frames, like a card pushed into the rack. */
+@keyframes slot-in {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.slot-in {
+  animation: slot-in 180ms steps(2, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
   }
 }

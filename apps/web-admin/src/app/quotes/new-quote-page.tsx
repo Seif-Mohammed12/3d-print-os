@@ -153,7 +153,10 @@ export function NewQuotePage() {
                     <ModelPreview file={file} onSize={setSize} className="h-72" />
                     <div className="flex items-center gap-3 text-sm">
                       {upload.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+                        <Loader2
+                          className="h-4 w-4 animate-spin text-foreground"
+                          aria-hidden="true"
+                        />
                       ) : upload.isSuccess ? (
                         <CheckCircle2 className="h-4 w-4 text-success" aria-hidden="true" />
                       ) : null}
@@ -170,7 +173,7 @@ export function NewQuotePage() {
                       <button
                         type="button"
                         onClick={clearFile}
-                        className="rounded-md p-1 text-muted-foreground hover:bg-muted"
+                        className="-m-1 rounded-sm p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
                         aria-label="Remove model"
                       >
                         <X className="h-4 w-4" />

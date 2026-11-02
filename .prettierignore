@@ -7,3 +7,6 @@ pnpm-lock.yaml
 data
 .pnpm-store
 CHANGELOG.md
+.claude
+.agents
+.impeccable

@@ -39,7 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <AlertCircle className="h-16 w-16 text-destructive" />
+              <AlertCircle className="h-10 w-10 text-destructive" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-foreground">Something went wrong</h2>
@@ -49,10 +49,10 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <button
               onClick={this.handleRetry}
-              className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="flex items-center gap-2 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/85"
             >
               <RefreshCw className="h-4 w-4" />
-              Try Again
+              Try again
             </button>
           </div>
         </div>

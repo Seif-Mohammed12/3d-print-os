@@ -65,11 +65,11 @@ export function PrintersPage() {
               <Link
                 key={printer.id}
                 to={`/app/printers/${printer.id}`}
-                className="group rounded-xl border border-border bg-card p-5 shadow-card transition-colors hover:border-primary/40"
+                className="group rounded-sm border border-border bg-card p-4 transition-colors duration-150 hover:border-foreground"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-foreground group-hover:text-primary">
+                    <p className="truncate font-bold text-foreground group-hover:underline">
                       {printer.name}
                     </p>
                     <p className="truncate text-sm text-muted-foreground">

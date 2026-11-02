@@ -48,7 +48,7 @@ export function ReportsPage() {
         description="Revenue, volume and how your printers and materials are doing."
         actions={
           <div
-            className="flex rounded-lg border border-input bg-card p-0.5 shadow-card"
+            className="flex rounded-sm border border-foreground"
             role="group"
             aria-label="Date range"
           >
@@ -59,10 +59,10 @@ export function ReportsPage() {
                 onClick={() => setDays(range)}
                 aria-pressed={days === range}
                 className={cn(
-                  'rounded-md px-3 py-1 text-sm font-medium',
+                  'h-8 px-3 text-sm transition-colors duration-150 [&+&]:border-s [&+&]:border-foreground',
                   days === range
-                    ? 'bg-accent text-accent-foreground'
-                    : 'text-muted-foreground hover:text-foreground',
+                    ? 'bg-primary font-semibold text-primary-foreground'
+                    : 'font-medium text-foreground hover:bg-foreground/[0.06]',
                 )}
               >
                 {range} days
@@ -100,11 +100,7 @@ export function ReportsPage() {
         <CardHeader
           title="Revenue per day"
           action={
-            <button
-              type="button"
-              onClick={() => setShowTable((v) => !v)}
-              className="text-sm font-medium text-primary hover:underline"
-            >
+            <button type="button" onClick={() => setShowTable((v) => !v)} className="link text-sm">
               {showTable ? 'Show chart' : 'Show table'}
             </button>
           }

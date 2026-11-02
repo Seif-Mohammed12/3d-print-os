@@ -96,10 +96,11 @@ export function PortalUploadPage() {
     return (
       <Card className="mx-auto max-w-lg">
         <CardContent className="flex flex-col items-center py-12 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-success-soft text-success">
-            <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
+          <span className="flex h-[22px] items-center border border-stock-edge bg-stock-approved px-3 text-[11px] font-bold tracking-[0.02em] text-stock-ink">
+            <CheckCircle2 className="me-1.5 h-3.5 w-3.5" aria-hidden="true" />
+            ORDER PLACED
           </span>
-          <h1 className="mt-4 text-lg font-semibold text-foreground">Order placed</h1>
+          <h1 className="mt-4 text-xl font-bold text-foreground">Thanks, it's in the queue</h1>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             {ordered.order ? (
               <>
@@ -126,22 +127,19 @@ export function PortalUploadPage() {
   const unavailable = options.data && !options.data.available;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Get a quote</h1>
+        <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+          Get a quote
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Upload an STL and get an instant price, sliced for our printer.
         </p>
-        <ol className="mt-5 grid gap-3 sm:grid-cols-3">
+        <ol className="mt-4 flex flex-wrap gap-x-4 gap-y-1 border-y border-border py-2 text-[13px] text-muted-foreground">
           {STEPS.map((step, index) => (
-            <li
-              key={step}
-              className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-card"
-            >
-              <span className="tabular flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
-                {index + 1}
-              </span>
-              <span className="text-foreground">{step}</span>
+            <li key={step} className="flex items-center gap-1.5">
+              <span className="tabular font-bold text-foreground">{index + 1}</span>
+              {step}
             </li>
           ))}
         </ol>
@@ -163,7 +161,7 @@ export function PortalUploadPage() {
                 <ModelPreview file={file} onSize={setSize} className="h-80" />
                 <div className="flex items-center gap-3 text-sm">
                   {upload.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+                    <Loader2 className="h-4 w-4 animate-spin text-foreground" aria-hidden="true" />
                   ) : upload.isSuccess ? (
                     <CheckCircle2 className="h-4 w-4 text-success" aria-hidden="true" />
                   ) : null}
@@ -180,7 +178,7 @@ export function PortalUploadPage() {
                   <button
                     type="button"
                     onClick={reset}
-                    className="rounded-md p-1 text-muted-foreground hover:bg-muted"
+                    className="-m-1 rounded-sm p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
                     aria-label="Remove model"
                   >
                     <X className="h-4 w-4" />
@@ -231,7 +229,7 @@ export function PortalUploadPage() {
                 onQuantity={setQuantity}
               />
 
-              <div className="rounded-lg border border-border bg-muted/50 p-4" aria-live="polite">
+              <div className="border-t-2 border-rule pt-4" aria-live="polite">
                 {!upload.isSuccess ? (
                   <p className="text-sm text-muted-foreground">
                     {file ? 'Uploading your model…' : 'Upload a model to see your price.'}
@@ -331,7 +329,7 @@ function PricingPlaceholder() {
   return (
     <div className="space-y-3">
       <p className="flex items-center gap-2 text-sm text-foreground">
-        <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+        <Loader2 className="h-4 w-4 animate-spin text-foreground" aria-hidden="true" />
         Slicing your model for an exact price…
       </p>
       <Skeleton className="h-7 w-1/2" />
