@@ -73,7 +73,7 @@ export function QuoteChoices({
 
       {group && (
         <fieldset>
-          <legend className="mb-1.5 block text-sm font-medium text-foreground">Color</legend>
+          <legend className="mb-1.5 block text-[13px] font-semibold text-foreground">Colour</legend>
           <div className="flex flex-wrap gap-2">
             {group.colors.map((material) => {
               const selected = material.id === materialId;
@@ -85,15 +85,15 @@ export function QuoteChoices({
                   aria-pressed={selected}
                   onClick={() => onMaterial(material.id)}
                   className={cn(
-                    'inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs font-medium shadow-card transition-colors disabled:opacity-60',
+                    'inline-flex h-10 items-center gap-2 rounded-sm border px-3 text-sm transition-colors duration-150 disabled:opacity-60',
                     selected
-                      ? 'border-primary bg-accent text-accent-foreground'
-                      : 'border-input bg-card text-foreground hover:bg-muted',
+                      ? 'border-2 border-foreground bg-card font-semibold text-foreground'
+                      : 'border-input bg-card font-medium text-foreground hover:border-foreground',
                   )}
                 >
                   <span
                     aria-hidden="true"
-                    className="h-3.5 w-3.5 rounded-full border border-border"
+                    className="h-4 w-4 rounded-sm border border-stock-edge"
                     style={{ background: material.color_code ?? 'transparent' }}
                   />
                   {material.color ?? 'Standard'}
@@ -105,8 +105,8 @@ export function QuoteChoices({
       )}
 
       <fieldset>
-        <legend className="mb-1.5 block text-sm font-medium text-foreground">Quality</legend>
-        <div className="grid grid-cols-3 gap-1 rounded-lg border border-input bg-muted p-1">
+        <legend className="mb-1.5 block text-[13px] font-semibold text-foreground">Quality</legend>
+        <div className="grid grid-cols-3 rounded-sm border border-foreground">
           {options.qualities.map((q) => (
             <button
               key={q.code}
@@ -115,10 +115,10 @@ export function QuoteChoices({
               aria-pressed={q.code === quality}
               onClick={() => onQuality(q.code)}
               className={cn(
-                'h-7 rounded-md text-xs font-medium transition-colors disabled:opacity-60',
+                'h-10 text-sm transition-colors duration-150 disabled:opacity-60 [&+&]:border-s [&+&]:border-foreground',
                 q.code === quality
-                  ? 'bg-card text-foreground shadow-card'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-primary font-semibold text-primary-foreground'
+                  : 'font-medium text-foreground hover:bg-foreground/[0.06]',
               )}
             >
               {q.label}
@@ -140,7 +140,7 @@ export function QuoteChoices({
               aria-label="Fewer"
               disabled={disabled || quantity <= 1}
               onClick={() => onQuantity(clamp(quantity - 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-card text-foreground shadow-card hover:bg-muted disabled:opacity-50"
+              className="flex h-10 w-10 items-center justify-center rounded-sm border border-foreground bg-card text-foreground hover:bg-muted disabled:opacity-40"
             >
               <Minus className="h-4 w-4" />
             </button>
@@ -153,14 +153,14 @@ export function QuoteChoices({
               value={quantity}
               disabled={disabled}
               onChange={(e) => onQuantity(clamp(Number(e.target.value)))}
-              className="tabular block h-9 w-16 rounded-lg border border-input bg-card text-center text-sm text-foreground shadow-card disabled:opacity-60"
+              className="tabular block h-10 w-16 rounded-sm border border-input bg-card text-center text-sm font-semibold text-foreground disabled:opacity-60"
             />
             <button
               type="button"
               aria-label="More"
               disabled={disabled || quantity >= options.max_quantity}
               onClick={() => onQuantity(clamp(quantity + 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-card text-foreground shadow-card hover:bg-muted disabled:opacity-50"
+              className="flex h-10 w-10 items-center justify-center rounded-sm border border-foreground bg-card text-foreground hover:bg-muted disabled:opacity-40"
             >
               <Plus className="h-4 w-4" />
             </button>

@@ -6,11 +6,12 @@ import { cn } from '../../lib/utils';
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 const ICONS = { success: CheckCircle2, error: AlertCircle, warning: AlertTriangle, info: Info };
-const TONES: Record<ToastType, string> = {
-  success: 'text-success',
-  error: 'text-destructive',
-  warning: 'text-warning',
-  info: 'text-primary',
+// Toasts use the plain signal tones; card stock stays reserved for job status.
+const HEADS: Record<ToastType, string> = {
+  success: 'bg-success',
+  error: 'bg-destructive',
+  warning: 'bg-warning',
+  info: 'bg-foreground',
 };
 
 export function Toast({
@@ -31,18 +32,21 @@ export function Toast({
   return (
     <div
       role={type === 'error' ? 'alert' : 'status'}
-      className="flex w-[22rem] max-w-[calc(100vw-2rem)] items-start gap-3 rounded-lg border border-border bg-popover px-4 py-3 text-sm text-popover-foreground shadow-popover"
+      className="w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-sm border border-stock-edge bg-popover text-sm text-popover-foreground shadow-popover"
     >
-      <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', TONES[type])} aria-hidden="true" />
-      <p className="flex-1">{message}</p>
-      <button
-        type="button"
-        onClick={onClose}
-        className="rounded-md p-0.5 text-muted-foreground hover:text-foreground"
-        aria-label="Dismiss"
-      >
-        <X className="h-4 w-4" />
-      </button>
+      <div aria-hidden="true" className={cn('h-1.5', HEADS[type])} />
+      <div className="flex items-start gap-3 px-4 py-3">
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-foreground" aria-hidden="true" />
+        <p className="flex-1">{message}</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="-m-1.5 rounded-sm p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          aria-label="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }

@@ -113,7 +113,7 @@ function QuoteDetail({ quote }: { quote: Quote }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="truncate text-xl font-semibold tracking-tight text-foreground">
+            <h1 className="truncate text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
               {title}
             </h1>
             <QuoteStatusBadge quote={quote} />
@@ -161,8 +161,16 @@ function QuoteDetail({ quote }: { quote: Quote }) {
       </div>
 
       {analyze.isPending && (
-        <div className="mb-6 rounded-lg border border-primary/30 bg-accent px-4 py-3 text-sm text-accent-foreground">
-          Slicing the model in a few orientations. This can take a minute for big parts.
+        <div
+          className="mb-6 flex items-stretch overflow-hidden rounded-sm border border-stock-edge bg-card text-sm"
+          role="status"
+        >
+          <span className="flex items-center bg-stock-printing px-2.5 text-[11px] font-bold tracking-[0.02em] text-stock-ink">
+            SLICING
+          </span>
+          <span className="px-3 py-2.5">
+            Slicing the model in a few orientations. This can take a minute for big parts.
+          </span>
         </div>
       )}
       {quote.status === 'rejected' && quote.rejection_reason && (

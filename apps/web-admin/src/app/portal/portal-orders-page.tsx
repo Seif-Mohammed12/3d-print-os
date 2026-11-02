@@ -29,7 +29,9 @@ export function PortalOrdersPage() {
   return (
     <>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Your orders</h1>
+        <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
+          Your orders
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Follow your parts from the printer to your door.
         </p>
@@ -105,8 +107,12 @@ export function PortalOrdersPage() {
                       <li key={s}>
                         <div
                           className={cn(
-                            'h-1.5 rounded-full',
-                            index <= stage ? 'bg-primary' : 'bg-muted',
+                            'h-2 rounded-sm border border-stock-edge',
+                            index < stage
+                              ? 'bg-stock-done'
+                              : index === stage
+                                ? 'bg-stock-printing'
+                                : 'bg-transparent',
                           )}
                         />
                         <p

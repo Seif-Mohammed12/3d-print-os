@@ -10,7 +10,7 @@ import {
 import { cn } from '../lib/utils';
 
 const control =
-  'block w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground shadow-card placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-destructive';
+  'block w-full rounded-sm border border-input bg-card px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground hover:border-foreground/60 focus-visible:border-foreground focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive-soft/40';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...props }, ref) {
@@ -61,7 +61,7 @@ export function Field({
   const message = error ?? hint;
   return (
     <div className={cn('space-y-1.5', className)}>
-      <label htmlFor={id} className="block text-sm font-medium text-foreground">
+      <label htmlFor={id} className="block text-[13px] font-semibold text-foreground">
         {label}
       </label>
       {children({

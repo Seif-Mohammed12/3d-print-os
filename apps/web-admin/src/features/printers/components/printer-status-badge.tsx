@@ -1,13 +1,13 @@
-import { Badge, type BadgeTone } from '../../../shared/ui';
+import { Lamp, type LampTone } from '../../../shared/ui';
 import { PRINTER_STATUS_LABEL, type PrinterStatus } from '../model/printer-types';
 
-const TONE: Record<PrinterStatus, BadgeTone> = {
-  active: 'success',
-  maintenance: 'warning',
-  offline: 'neutral',
-  retired: 'neutral',
+const TONE: Record<PrinterStatus, LampTone> = {
+  active: 'ready',
+  maintenance: 'waiting',
+  offline: 'off',
+  retired: 'off',
 };
 
 export function PrinterStatusBadge({ status }: { status: PrinterStatus }) {
-  return <Badge tone={TONE[status]}>{PRINTER_STATUS_LABEL[status]}</Badge>;
+  return <Lamp tone={TONE[status]}>{PRINTER_STATUS_LABEL[status]}</Lamp>;
 }

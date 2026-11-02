@@ -40,7 +40,7 @@ export function ModelPreview({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, isDark ? 0x1e2230 : 0xdfe3ea, 1.6));
+    scene.add(new THREE.HemisphereLight(0xffffff, isDark ? 0x15212a : 0xd7d4cc, 1.6));
     const key = new THREE.DirectionalLight(0xffffff, 1.4);
     key.position.set(1, 1.5, 2);
     scene.add(key);
@@ -89,7 +89,7 @@ export function ModelPreview({
 
         mesh = new THREE.Mesh(
           geometry,
-          new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.55, metalness: 0.05 }),
+          new THREE.MeshStandardMaterial({ color: 0x6f9dcb, roughness: 0.6, metalness: 0.05 }),
         );
         scene.add(mesh);
 
@@ -97,8 +97,8 @@ export function ModelPreview({
         grid = new THREE.GridHelper(
           span * 2.5,
           20,
-          isDark ? 0x3a4052 : 0xc7cdd8,
-          isDark ? 0x262b38 : 0xe3e7ee,
+          isDark ? 0x3a5263 : 0xa9a59c,
+          isDark ? 0x22333f : 0xc6c2b9,
         );
         scene.add(grid);
 
@@ -126,7 +126,9 @@ export function ModelPreview({
   }, [file]);
 
   return (
-    <div className={cn('relative overflow-hidden rounded-lg bg-muted/50', className)}>
+    <div
+      className={cn('relative overflow-hidden rounded-sm border border-slot bg-rack', className)}
+    >
       <div ref={containerRef} className="absolute inset-0" />
       {error && (
         <div className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-destructive">

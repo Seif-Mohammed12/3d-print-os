@@ -96,7 +96,7 @@ export function MaterialsPage() {
                   <TD>
                     <div className="flex items-center gap-2.5">
                       <span
-                        className="h-4 w-4 shrink-0 rounded-full border border-border"
+                        className="h-4 w-4 shrink-0 rounded-sm border border-stock-edge"
                         style={{ background: material.color_code ?? 'transparent' }}
                         aria-hidden="true"
                       />
@@ -162,7 +162,7 @@ function MaterialDialog({
     brand: '',
     type: 'PLA',
     color: '',
-    colorCode: '#4f46e5',
+    colorCode: '#1f1f1f',
     density: '1.24',
     price: '',
     nozzleMin: '',
@@ -183,7 +183,7 @@ function MaterialDialog({
       brand: material?.brand ?? '',
       type: material?.material_type ?? 'PLA',
       color: material?.color ?? '',
-      colorCode: material?.color_code ?? '#4f46e5',
+      colorCode: material?.color_code ?? '#1f1f1f',
       density: material ? String(Number(material.density_g_per_cm3)) : '1.24',
       price: material ? (material.price_per_gram_cents / 100).toFixed(2) : '',
       nozzleMin: s(material?.nozzle_temperature_min_celsius),

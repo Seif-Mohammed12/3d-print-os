@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { cn } from '../../lib/utils';
+import { BrandMark } from '../brand/brand-mark';
 import { useAuthStore } from '../../stores/auth-store';
 import { ThemeToggle, UserMenu } from './user-menu';
 
@@ -15,19 +16,17 @@ export function PortalLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur">
+      <header className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4 sm:px-6">
           <NavLink to="/portal/upload" className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-semibold text-primary-foreground">
-              3D
-            </span>
-            <span className="text-sm font-semibold text-foreground">
-              {tenant?.name ?? 'Print OS'}
+            <BrandMark />
+            <span className="text-[15px] font-bold text-white dark:text-sidebar-foreground">
+              {tenant?.name ?? '3D Print OS'}
             </span>
           </NavLink>
           <div className="flex-1" />
-          <ThemeToggle />
-          <UserMenu signOutTo="/portal/login" />
+          <ThemeToggle onRail />
+          <UserMenu signOutTo="/portal/login" onRail />
         </div>
         <nav
           className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 sm:px-6"
@@ -39,10 +38,10 @@ export function PortalLayout() {
               to={link.to}
               className={({ isActive }) =>
                 cn(
-                  '-mb-px whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors',
+                  'whitespace-nowrap rounded-t-sm px-3 py-2.5 text-sm transition-colors duration-150 focus-visible:ring-offset-sidebar',
                   isActive
-                    ? 'border-primary text-foreground'
-                    : 'border-transparent text-muted-foreground hover:text-foreground',
+                    ? 'bg-background font-semibold text-foreground shadow-[inset_0_3px_0_hsl(var(--stock-quoted))]'
+                    : 'font-medium text-sidebar-foreground hover:bg-sidebar-raised',
                 )
               }
             >
@@ -51,7 +50,7 @@ export function PortalLayout() {
           ))}
         </nav>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         <Outlet />
       </main>
     </div>

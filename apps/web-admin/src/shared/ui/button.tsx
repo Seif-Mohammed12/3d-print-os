@@ -7,14 +7,16 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'icon';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-card',
-  secondary: 'bg-card text-foreground border border-input hover:bg-muted shadow-card',
+  primary: 'bg-primary text-primary-foreground hover:bg-primary/85 active:bg-primary/75',
+  secondary:
+    'border border-foreground bg-transparent text-foreground hover:bg-foreground/[0.06] active:bg-foreground/10',
   ghost: 'text-muted-foreground hover:bg-muted hover:text-foreground',
-  danger: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+  danger:
+    'border border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-destructive-foreground',
 };
 
 const sizes: Record<Size, string> = {
-  sm: 'h-8 px-3 text-xs gap-1.5',
+  sm: 'h-8 px-3 text-[13px] gap-1.5',
   md: 'h-9 px-4 text-sm gap-2',
   icon: 'h-9 w-9',
 };
@@ -34,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-lg font-medium transition-colors disabled:pointer-events-none disabled:opacity-50',
+        'inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-sm font-semibold transition-colors duration-150 disabled:pointer-events-none disabled:opacity-45',
         variants[variant],
         sizes[size],
         className,

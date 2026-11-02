@@ -53,16 +53,14 @@ export function FileDrop({
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         className={cn(
-          'flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors',
+          'flex w-full flex-col items-center justify-center rounded-sm border-2 border-dashed px-6 py-12 text-center transition-colors duration-150',
           dragging
-            ? 'border-primary bg-accent'
-            : 'border-input bg-card hover:border-primary/60 hover:bg-accent/50',
+            ? 'border-foreground bg-stock-quoted/25'
+            : 'border-input bg-card hover:border-foreground hover:bg-muted/50',
         )}
       >
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
-          <UploadCloud className="h-5 w-5" aria-hidden="true" />
-        </span>
-        <span className="mt-3 text-sm font-semibold text-foreground">{title}</span>
+        <UploadCloud className="h-7 w-7 text-foreground" aria-hidden="true" />
+        <span className="mt-3 text-[15px] font-bold text-foreground">{title}</span>
         <span className="mt-1 text-sm text-muted-foreground">
           or click to browse · STL up to 100 MB
         </span>

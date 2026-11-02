@@ -15,7 +15,7 @@ export function LoginPage({ audience = 'staff' }: { audience?: 'staff' | 'custom
       footer={
         <>
           {audience === 'staff' ? 'New to Print OS? ' : "Don't have an account? "}
-          <Link to={registerPath} className="font-medium text-primary hover:underline">
+          <Link to={registerPath} className="link">
             {audience === 'staff' ? 'Create a shop' : 'Create an account'}
           </Link>
         </>

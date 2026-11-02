@@ -92,14 +92,14 @@ function OrderDetail({ order }: { order: Order }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-mono text-xl font-semibold tracking-tight text-foreground">
+            <h1 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
               {order.order_number}
             </h1>
             <OrderStatusBadge status={order.status} />
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             {order.customer_name ?? 'Customer'} · created {formatDateTime(order.created_at)} ·{' '}
-            <Link to={`/app/quotes/${order.quote_id}`} className="text-primary hover:underline">
+            <Link to={`/app/quotes/${order.quote_id}`} className="link">
               View quote
             </Link>
           </p>
@@ -372,7 +372,7 @@ function PrintOutcomeCard({ orderId }: { orderId: string }) {
       <CardContent>
         {recorded && (
           <div className="mb-4 grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg bg-muted/60 p-3">
+            <div className="rounded-sm border border-border bg-background p-3">
               <p className="text-xs text-muted-foreground">Print time</p>
               <p className="tabular font-semibold">
                 {formatDuration(recorded.actual_print_minutes)}{' '}
@@ -381,7 +381,7 @@ function PrintOutcomeCard({ orderId }: { orderId: string }) {
                 </span>
               </p>
             </div>
-            <div className="rounded-lg bg-muted/60 p-3">
+            <div className="rounded-sm border border-border bg-background p-3">
               <p className="text-xs text-muted-foreground">Filament</p>
               <p className="tabular font-semibold">
                 {formatGrams(recorded.actual_filament_g)}{' '}

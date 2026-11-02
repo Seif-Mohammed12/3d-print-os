@@ -62,7 +62,7 @@ export function QuotesPage() {
         }
       />
 
-      <div className="mb-4 flex gap-1 overflow-x-auto">
+      <div className="mb-4 flex overflow-x-auto border-b border-border">
         {FILTERS.map((filter) => (
           <button
             key={filter.label}
@@ -72,10 +72,10 @@ export function QuotesPage() {
               setPage(1);
             }}
             className={cn(
-              'whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+              '-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm transition-colors duration-150',
               status === filter.value
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted-foreground hover:text-foreground',
+                ? 'border-rule font-semibold text-foreground'
+                : 'border-transparent font-medium text-muted-foreground hover:text-foreground',
             )}
           >
             {filter.label}

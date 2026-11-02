@@ -10,5 +10,7 @@ export {
   PageHeader,
   Skeleton,
   StatCard,
+  StatStrip,
 } from './layout-blocks';
+export { Lamp, type LampTone, type Stock, StockSwatch, StockTag, TCard } from './stock';
 export { Table, TBody, TD, TH, THead, TR } from './table';

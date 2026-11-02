@@ -20,7 +20,7 @@ export function RegisterPage({ audience = 'staff' }: { audience?: 'staff' | 'cus
       footer={
         <>
           Already have an account?{' '}
-          <Link to={loginPath} className="font-medium text-primary hover:underline">
+          <Link to={loginPath} className="link">
             Sign in
           </Link>
         </>
