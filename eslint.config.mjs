@@ -14,6 +14,9 @@ export default tseslint.config(
       '**/.vite/**',
       'pnpm-lock.yaml',
       'infra/**',
+      // Vendored agent skills and their bundled scripts
+      '.claude/**',
+      '.agents/**',
     ],
   },
   eslint.configs.recommended,
