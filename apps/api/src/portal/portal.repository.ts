@@ -32,17 +32,18 @@ export type QuotingSetup = {
   quoteValidityHours: number;
 };
 
-const PRINTER_COLUMNS = `p.id, p.shop_id, p.name, p.nozzle_diameter_mm,
+export const PRINTER_COLUMNS = `p.id, p.shop_id, p.name, p.nozzle_diameter_mm,
   p.build_volume_x_mm, p.build_volume_y_mm, p.build_volume_z_mm`;
 
 /** Quotable: an active FDM printer (the slicer pipeline is FDM only). */
-const QUOTABLE_PRINTER = `p.technology = 'FDM' AND p.status = 'active'`;
+export const QUOTABLE_PRINTER = `p.technology = 'FDM' AND p.status = 'active'`;
 
 /**
  * Customer-safe columns only. Never add cost lines, pricing_breakdown, slice_result,
- * internal_notes or risk fields here: this select is what the portal can expose.
+ * internal_notes or risk fields here: this select is what the portal (and the website
+ * embed) can expose.
  */
-const QUOTE_SELECT = `SELECT q.id, q.quote_number, q.status, q.estimate_source, q.total_cents,
+export const QUOTE_SELECT = `SELECT q.id, q.quote_number, q.status, q.estimate_source, q.total_cents,
     q.currency, q.quantity, q.print_quality, q.estimated_time_minutes, q.estimated_weight_grams,
     q.bounding_box_x_mm, q.bounding_box_y_mm, q.bounding_box_z_mm, q.customer_notes,
     q.expires_at, q.created_at,

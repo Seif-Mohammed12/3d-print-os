@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <!--
+    A stand-in for a shop's own website, to try the embeddable quoter end to end.
+    Serve it from a different origin than the web app, e.g.:
+
+      npx http-server docs/examples -p 4173      →  http://localhost:4173/embed-host.html
+
+    then add http://localhost:4173 to Settings → Website quoter → Allowed websites and open
+      http://localhost:4173/embed-host.html?key=pk_...&app=http://localhost:5173
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example shop · instant quote</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: #f6f3ee;
+        color: #1f1b16;
+      }
+      header,
+      main,
+      footer {
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 24px;
+        padding-bottom: 24px;
+      }
+      .logo {
+        font-family: Fraunces, serif;
+        font-size: 22px;
+      }
+      h1 {
+        font-family: Fraunces, serif;
+        font-size: clamp(28px, 5vw, 44px);
+        margin: 24px 0 8px;
+      }
+      .lede {
+        max-width: 36rem;
+        color: #5b5247;
+        margin: 0 0 24px;
+      }
+      #status {
+        margin: 16px 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #e5f2ea;
+        color: #1d5a35;
+        display: none;
+      }
+      footer {
+        padding-top: 48px;
+        padding-bottom: 48px;
+        color: #8a7f72;
+        font-size: 14px;
+      }
+      code {
+        background: #ece6dc;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="logo">Example Print Studio</span>
+      <nav>Services · Materials · Contact</nav>
+    </header>
+    <main>
+      <h1>Get an instant price</h1>
+      <p class="lede">
+        Upload your STL, choose a printer, material and finish, and order at the price you see.
+        Every price comes from slicing your actual file.
+      </p>
+      <p id="status" role="status"></p>
+      <div id="quoter-slot"></div>
+    </main>
+    <footer>
+      This page plays the part of a shop's own website. The quoter inside it is served by 3D Print
+      OS; use <code>?key=</code> and <code>?app=</code> to point it at your shop.
+    </footer>
+
+    <script>
+      // In a real site this is two static tags; the query string just makes the example reusable.
+      const params = new URLSearchParams(location.search);
+      const app = (params.get('app') || 'http://localhost:5173').replace(/\/+$/, '');
+      const key = params.get('key') || '';
+
+      const quoter = document.createElement('print-quoter');
+      quoter.setAttribute('data-key', key);
+      quoter.setAttribute('data-accent', '#b4532a');
+      quoter.setAttribute('data-font', 'Inter');
+      quoter.setAttribute(
+        'data-font-url',
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+      );
+      document.getElementById('quoter-slot').appendChild(quoter);
+
+      quoter.addEventListener('quoter:order', (event) => {
+        const status = document.getElementById('status');
+        const order = event.detail.order;
+        status.textContent = order
+          ? `Thanks! Order ${order.order_number} is in.`
+          : 'Thanks! Your order is in.';
+        status.style.display = 'block';
+      });
+
+      const loader = document.createElement('script');
+      loader.src = `${app}/embed.js`;
+      loader.async = true;
+      document.head.appendChild(loader);
+    </script>
+  </body>
+</html>

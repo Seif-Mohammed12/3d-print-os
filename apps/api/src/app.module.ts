@@ -21,6 +21,7 @@ import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { TenancyModule } from './tenancy/tenancy.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { PortalModule } from './portal/portal.module';
+import { EmbedModule } from './embed/embed.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { PortalModule } from './portal/portal.module';
     CustomersModule,
     PricingModule,
     PortalModule,
+    EmbedModule,
     HealthModule,
   ],
   providers: [

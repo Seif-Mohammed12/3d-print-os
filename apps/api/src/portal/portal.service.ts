@@ -42,7 +42,7 @@ function conflict(code: string, message: string): AppError {
   return new AppError({ code, message, statusCode: 409 });
 }
 
-function toCustomerError(error: unknown): unknown {
+export function toCustomerError(error: unknown): unknown {
   if (error instanceof AppError && SHOP_SETUP_ERRORS.has(error.code)) {
     return unprocessable(
       'portal.quote_unavailable',
