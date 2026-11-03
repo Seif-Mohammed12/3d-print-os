@@ -4,6 +4,10 @@ import { resolve } from 'node:path';
 import { config as loadDotenv } from 'dotenv';
 import 'reflect-metadata';
 
+import type {
+  CorsOptions,
+  CorsOptionsDelegate,
+} from '@nestjs/common/interfaces/external/cors-options.interface';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 
@@ -49,10 +53,23 @@ async function bootstrap(): Promise<void> {
       crossOriginEmbedderPolicy: false,
     }),
   );
-  app.enableCors({
-    origin: config.corsOrigins,
-    credentials: true,
-  });
+  // The website quoter's API is called from shops' own sites. Its CORS answer can't depend on
+  // the shop (that needs a database lookup), so it admits any origin without credentials and
+  // EmbedService refuses origins that aren't on the shop's allowed list.
+  const cors: CorsOptionsDelegate<{ url?: string }> = (req, callback) => {
+    if (req.url?.startsWith('/api/v1/public/embed/')) {
+      callback(null, {
+        origin: true,
+        credentials: false,
+        allowedHeaders: ['Content-Type', 'X-Embed-Session'],
+        methods: ['GET', 'POST'],
+        maxAge: 600,
+      });
+      return;
+    }
+    callback(null, { origin: config.corsOrigins, credentials: true } satisfies CorsOptions);
+  };
+  app.enableCors(cors);
   app.useGlobalPipes(createValidationPipe());
 
   await app.listen(config.port);

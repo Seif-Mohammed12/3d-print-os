@@ -14,3 +14,5 @@ Current:
 - `0002_model_files.sql` — model file metadata, models permissions, storage bucket seed
 - `012_business_rls.sql` — RLS on the business tables from 002–011 (child tables scoped through their parent), analytics views as `security_invoker`
 - `014_portal_instant_quotes.sql` — quote quantity/source/print quality, portal customer → CRM customer link, the shop's portal printer; deprecates `customer_quotes` / `customer_orders`
+- `015_embed_quoting.sql` � website quoter: per-shop embed settings (publishable key, allowed origins), anonymous visitor sessions, models/quotes owned by a session, `quotes.source = 'embed'`
+- `016_fix_document_numbers.sql` � quote/order number functions used the missing `shops.slug` and a wrong sequence lookup; now `CODE-YYYYMMDD-NNNN` from `shops.code`

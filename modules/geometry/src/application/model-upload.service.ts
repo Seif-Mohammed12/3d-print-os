@@ -51,6 +51,7 @@ export class ModelUploadService {
         id: modelId,
         tenantId: input.tenantId,
         userId: input.userId,
+        embedSessionId: input.embedSessionId ?? null,
         shopId: input.shopId ?? null,
         originalFilename: safeFilename,
         byteSize: input.byteSize,

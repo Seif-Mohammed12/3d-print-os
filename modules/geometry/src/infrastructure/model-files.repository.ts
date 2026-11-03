@@ -7,7 +7,8 @@ import type { ModelFile, ModelFileStatus } from '../domain/types';
 function mapRow(row: {
   id: string;
   tenant_id: string;
-  uploaded_by_user_id: string;
+  uploaded_by_user_id: string | null;
+  embed_session_id?: string | null;
   shop_id: string | null;
   original_filename: string;
   byte_size: string | number;
@@ -24,6 +25,7 @@ function mapRow(row: {
     id: row.id,
     tenantId: row.tenant_id,
     uploadedByUserId: row.uploaded_by_user_id,
+    embedSessionId: row.embed_session_id ?? null,
     shopId: row.shop_id,
     originalFilename: row.original_filename,
     byteSize: Number(row.byte_size),
@@ -50,7 +52,8 @@ export class ModelFilesRepository {
     input: {
       id: string;
       tenantId: string;
-      userId: string;
+      userId: string | null;
+      embedSessionId: string | null;
       shopId: string | null;
       originalFilename: string;
       byteSize: number;
@@ -62,8 +65,8 @@ export class ModelFilesRepository {
     const result = await client.query({
       text: `INSERT INTO model_files (
               id, tenant_id, uploaded_by_user_id, shop_id, original_filename, byte_size,
-              content_type, storage_bucket, storage_key, status
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending_upload')
+              content_type, storage_bucket, storage_key, status, embed_session_id
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending_upload',$10)
             RETURNING *`,
       values: [
         input.id,
@@ -75,6 +78,7 @@ export class ModelFilesRepository {
         input.contentType,
         input.storageBucket,
         input.storageKey,
+        input.embedSessionId,
       ],
     });
     return mapRow(result.rows[0]);

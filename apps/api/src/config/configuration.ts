@@ -19,6 +19,7 @@ export type AppConfig = {
   supabaseServiceRoleKey: string;
   uploadBucket: string;
   uploadMaxBytes: number;
+  embedUploadMaxBytes: number;
   uploadSignedUrlTtlSeconds: number;
   geometryServiceUrl: string;
   geometryServiceKey?: string;
@@ -46,6 +47,7 @@ export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     supabaseServiceRoleKey: parsed.SUPABASE_SERVICE_ROLE_KEY,
     uploadBucket: parsed.UPLOAD_BUCKET,
     uploadMaxBytes: parsed.UPLOAD_MAX_BYTES,
+    embedUploadMaxBytes: parsed.EMBED_UPLOAD_MAX_BYTES,
     uploadSignedUrlTtlSeconds: parsed.UPLOAD_SIGNED_URL_TTL_SECONDS,
     geometryServiceUrl: parsed.GEOMETRY_SERVICE_URL.replace(/\/+$/, ''),
     ...(parsed.GEOMETRY_SERVICE_KEY ? { geometryServiceKey: parsed.GEOMETRY_SERVICE_KEY } : {}),

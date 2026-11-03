@@ -288,7 +288,8 @@ export class QuoteService {
     id: string,
     data: Partial<Omit<Quote, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>>,
     tenantId: string,
-    userId: string,
+    /** Null for changes made by an anonymous embed visitor. */
+    userId: string | null,
   ): Promise<Quote> {
     const existing = await this.findById(id, tenantId);
 
@@ -437,7 +438,7 @@ export class QuoteService {
     });
 
     // Update quote status
-    await this.update(quoteId, { status: 'approved' }, tenantId, userId ?? 'system');
+    await this.update(quoteId, { status: 'approved' }, tenantId, userId);
 
     // Create order history
     await this.orderService.createHistory(

@@ -38,6 +38,8 @@ export const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
   UPLOAD_BUCKET: z.string().min(1).default('model-files'),
   UPLOAD_MAX_BYTES: z.coerce.number().int().positive().default(52_428_800),
+  /** Largest model a website visitor may upload through the embed (capped by UPLOAD_MAX_BYTES). */
+  EMBED_UPLOAD_MAX_BYTES: z.coerce.number().int().positive().default(52_428_800),
   UPLOAD_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(600),
   /** Base URL of the geometry service including its API prefix. */
   GEOMETRY_SERVICE_URL: z.string().url().default('http://localhost:8000/api/v1'),

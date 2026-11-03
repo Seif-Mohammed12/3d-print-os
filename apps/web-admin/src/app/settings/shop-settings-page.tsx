@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
+import { EmbedSettingsCard } from '../../features/embed/components/embed-settings-card';
 import { PortalPrinterCard } from '../../features/portal/components/portal-printer-card';
 import { useTenantSettings, useUpdateTenant } from '../../features/shop/hooks/use-shop';
 import { getErrorMessage } from '../../shared/api/api-error-handler';
@@ -143,6 +144,9 @@ export function ShopSettingsPage() {
           </Card>
           <PortalPrinterCard />
         </div>
+      </div>
+      <div className="mt-6">
+        <EmbedSettingsCard />
       </div>
     </>
   );

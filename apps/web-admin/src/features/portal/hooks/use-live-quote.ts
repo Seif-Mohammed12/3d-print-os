@@ -5,12 +5,23 @@ import { portalApi, type PortalQuote, type PortalQuoteChoices } from '../api/por
 
 const DEBOUNCE_MS = 400;
 
-const sameChoices = (a: PortalQuoteChoices | null, b: PortalQuoteChoices | null) =>
-  !!a &&
-  !!b &&
-  a.materialId === b.materialId &&
-  a.quality === b.quality &&
-  a.quantity === b.quantity;
+/** How a live quote is created and repriced: the portal API, or the website embed's. */
+export type LiveQuoteApi<C> = {
+  create: (modelFileId: string, choices: C) => Promise<PortalQuote>;
+  reprice: (quoteId: string, choices: C) => Promise<PortalQuote>;
+  /** Query to refresh after each price (the portal's quote list). */
+  invalidateKey?: readonly unknown[];
+};
+
+const portalLiveQuoteApi: LiveQuoteApi<PortalQuoteChoices> = {
+  create: (modelFileId, choices) => portalApi.createQuote({ modelFileId, ...choices }),
+  reprice: (quoteId, choices) => portalApi.repriceQuote(quoteId, choices),
+  invalidateKey: ['portal', 'quotes'],
+};
+
+/** Choices compare by value; they are small flat objects. */
+const keyOf = (choices: object | null) => (choices ? JSON.stringify(choices) : '');
+const sameChoices = (a: object | null, b: object | null) => !!a && !!b && keyOf(a) === keyOf(b);
 
 /**
  * Keeps a slicer price in step with the customer's choices. The first price creates the
@@ -18,17 +29,23 @@ const sameChoices = (a: PortalQuoteChoices | null, b: PortalQuoteChoices | null)
  * at a time (the server slices per request), and only the latest choices are ever sent, so
  * the price shown always belongs to the choices on screen.
  */
-export function useLiveQuote(modelFileId: string | null, choices: PortalQuoteChoices | null) {
+export function useLiveQuote<C extends object = PortalQuoteChoices>(
+  modelFileId: string | null,
+  choices: C | null,
+  api: LiveQuoteApi<C> = portalLiveQuoteApi as unknown as LiveQuoteApi<C>,
+) {
   const queryClient = useQueryClient();
   const [quote, setQuote] = useState<PortalQuote | null>(null);
   const [pricing, setPricing] = useState(false);
   const [error, setError] = useState<unknown>(null);
 
   const quoteRef = useRef<PortalQuote | null>(null);
-  const wantedRef = useRef<PortalQuoteChoices | null>(null);
-  const sentRef = useRef<PortalQuoteChoices | null>(null);
+  const wantedRef = useRef<C | null>(null);
+  const sentRef = useRef<C | null>(null);
   /** Choices whose last attempt failed: not retried automatically. */
-  const failedRef = useRef<PortalQuoteChoices | null>(null);
+  const failedRef = useRef<C | null>(null);
+  const apiRef = useRef(api);
+  apiRef.current = api;
   const inFlightRef = useRef(false);
   const modelRef = useRef(modelFileId);
   const [retryToken, setRetryToken] = useState(0);
@@ -45,8 +62,8 @@ export function useLiveQuote(modelFileId: string | null, choices: PortalQuoteCho
     try {
       const current = quoteRef.current;
       const next = current
-        ? await portalApi.repriceQuote(current.id, wanted)
-        : await portalApi.createQuote({ modelFileId: model, ...wanted });
+        ? await apiRef.current.reprice(current.id, wanted)
+        : await apiRef.current.create(model, wanted);
       if (modelRef.current === model) {
         quoteRef.current = next;
         failedRef.current = null;
@@ -63,7 +80,10 @@ export function useLiveQuote(modelFileId: string | null, choices: PortalQuoteCho
       }
     } finally {
       inFlightRef.current = false;
-      void queryClient.invalidateQueries({ queryKey: ['portal', 'quotes'] });
+      const invalidateKey = apiRef.current.invalidateKey;
+      if (invalidateKey) {
+        void queryClient.invalidateQueries({ queryKey: invalidateKey });
+      }
       // The customer changed something while we were slicing: price the latest choices.
       const latest = wantedRef.current;
       if (
@@ -89,7 +109,7 @@ export function useLiveQuote(modelFileId: string | null, choices: PortalQuoteCho
     setPricing(false);
   }, [modelFileId]);
 
-  const key = choices ? `${choices.materialId}|${choices.quality}|${choices.quantity}` : '';
+  const key = keyOf(choices);
   useEffect(() => {
     wantedRef.current = choices;
     if (!modelFileId || !choices) {

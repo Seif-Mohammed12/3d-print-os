@@ -5,7 +5,9 @@ export type ModelFileStatus = (typeof MODEL_FILE_STATUSES)[number];
 export type ModelFile = {
   id: string;
   tenantId: string;
-  uploadedByUserId: string;
+  /** Null for a model uploaded by an anonymous embed visitor. */
+  uploadedByUserId: string | null;
+  embedSessionId: string | null;
   shopId: string | null;
   originalFilename: string;
   byteSize: number;
@@ -21,7 +23,9 @@ export type ModelFile = {
 
 export type CreateModelUploadInput = {
   tenantId: string;
-  userId: string;
+  /** Exactly one of userId / embedSessionId owns the upload. */
+  userId: string | null;
+  embedSessionId?: string;
   shopId?: string;
   originalFilename: string;
   byteSize: number;

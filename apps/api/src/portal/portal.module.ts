@@ -24,6 +24,6 @@ import { PortalSettingsController } from './portal-settings.controller';
       useFactory: (repo: PortalRepository, quotes: QuoteService) => new PortalService(repo, quotes),
     },
   ],
-  exports: [PortalService],
+  exports: [PortalService, PortalRepository],
 })
 export class PortalModule {}

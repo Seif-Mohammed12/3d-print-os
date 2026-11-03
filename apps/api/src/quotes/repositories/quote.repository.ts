@@ -69,7 +69,7 @@ const QUOTE_SELECT = `SELECT q.*, mf.original_filename AS model_filename, c.name
   LEFT JOIN model_files mf ON mf.id = q.model_id AND mf.tenant_id = q.tenant_id
   LEFT JOIN customers c ON c.id = q.customer_id AND c.tenant_id = q.tenant_id`;
 
-export type QuoteSource = 'staff' | 'portal';
+export type QuoteSource = 'staff' | 'portal' | 'embed';
 export type PrintQuality = 'draft' | 'standard' | 'fine';
 
 export type CreateQuoteData = {
