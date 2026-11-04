@@ -85,7 +85,7 @@ export function QuoteChoices({
                   aria-pressed={selected}
                   onClick={() => onMaterial(material.id)}
                   className={cn(
-                    'inline-flex h-10 items-center gap-2 rounded-full border px-3.5 text-sm transition-colors duration-150 disabled:opacity-60',
+                    'inline-flex h-10 items-center gap-2 rounded-chip border px-3.5 text-sm transition-colors duration-150 disabled:opacity-60',
                     selected
                       ? 'border-brand bg-stock-printing-soft font-semibold text-foreground ring-1 ring-brand'
                       : 'border-input bg-card font-medium text-foreground hover:border-foreground/30',
@@ -93,7 +93,7 @@ export function QuoteChoices({
                 >
                   <span
                     aria-hidden="true"
-                    className="h-4 w-4 rounded-full border border-border"
+                    className="h-4 w-4 rounded-chip border border-border"
                     style={{ background: material.color_code ?? 'transparent' }}
                   />
                   {material.color ?? 'Standard'}
@@ -106,7 +106,7 @@ export function QuoteChoices({
 
       <fieldset>
         <legend className="mb-1.5 block text-[13px] font-semibold text-foreground">Quality</legend>
-        <div className="grid grid-cols-3 gap-1 rounded-[10px] bg-muted p-1">
+        <div className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
           {options.qualities.map((q) => (
             <button
               key={q.code}
@@ -140,7 +140,7 @@ export function QuoteChoices({
               aria-label="Fewer"
               disabled={disabled || quantity <= 1}
               onClick={() => onQuantity(clamp(quantity - 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40"
             >
               <Minus className="h-4 w-4" />
             </button>
@@ -153,14 +153,14 @@ export function QuoteChoices({
               value={quantity}
               disabled={disabled}
               onChange={(e) => onQuantity(clamp(Number(e.target.value)))}
-              className="tabular block h-10 w-16 rounded-[10px] border border-input bg-card text-center text-sm font-semibold text-foreground disabled:opacity-60"
+              className="tabular block h-10 w-16 rounded-lg border border-input bg-card text-center text-sm font-semibold text-foreground disabled:opacity-60"
             />
             <button
               type="button"
               aria-label="More"
               disabled={disabled || quantity >= options.max_quantity}
               onClick={() => onQuantity(clamp(quantity + 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40"
             >
               <Plus className="h-4 w-4" />
             </button>

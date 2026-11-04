@@ -73,7 +73,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <div className="px-4 pb-3 pt-5">
         <BrandName className="px-1 text-foreground" />
         {tenant?.name && (
-          <p className="mt-4 truncate rounded-[10px] border border-border px-3 py-2 text-[13px] font-semibold text-foreground">
+          <p className="mt-4 truncate rounded-lg border border-border px-3 py-2 text-[13px] font-semibold text-foreground">
             {tenant.name}
           </p>
         )}
@@ -91,7 +91,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   className={({ isActive }) =>
                     cn(
-                      'flex h-9 items-center gap-2.5 rounded-[10px] px-2.5 text-sm transition-colors duration-150 focus-visible:ring-offset-sidebar',
+                      'flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors duration-150 focus-visible:ring-offset-sidebar',
                       isActive
                         ? 'bg-sidebar-active font-semibold text-sidebar-active-foreground'
                         : 'font-medium text-sidebar-foreground hover:bg-sidebar-raised',

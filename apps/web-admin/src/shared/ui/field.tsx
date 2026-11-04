@@ -10,7 +10,7 @@ import {
 import { cn } from '../lib/utils';
 
 const control =
-  'block w-full rounded-[10px] border border-input bg-card px-3 text-sm text-foreground shadow-card transition-colors placeholder:text-muted-foreground hover:border-foreground/30 focus-visible:border-brand focus-visible:ring-brand/25 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive-soft/40 dark:shadow-none';
+  'block w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground shadow-card transition-colors placeholder:text-muted-foreground hover:border-foreground/30 focus-visible:border-brand focus-visible:ring-brand/25 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-destructive aria-[invalid=true]:bg-destructive-soft/40 dark:shadow-none';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...props }, ref) {
