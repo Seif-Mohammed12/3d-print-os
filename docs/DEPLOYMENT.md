@@ -58,3 +58,70 @@ Project root `apps/web-admin`, environment variables:
 
 Redeploy after changing them (they are baked in at build time). The API allows
 `https://3d-print-os.vercel.app` via CORS; pass `-WebOrigin` to the script for another domain.
+
+## Printer laptop (Linux, always on)
+
+The backend's main home: the laptop that runs the printer (`ssh klipper`, Linux Mint 22). It starts
+on boot and has a fixed address, so nothing needs republishing:
+
+    https://klipper.taila93359.ts.net:8443/api/v1
+
+The PC method above stays as the fallback. Running it republishes its own tunnel address, so
+afterwards publish the laptop's address again (below).
+
+| What              | Where                                                                          |
+| ----------------- | ------------------------------------------------------------------------------ |
+| Code              | `/opt/3d-print-os`, owned by the no-login user `printos`                       |
+| Secrets           | `/opt/3d-print-os/.env` and `apps/geometry-service/.env` there, mode 600       |
+| PrusaSlicer 2.6.1 | `/opt/prusaslicer-2.6.1` (extracted AppImage, same version as the PC)          |
+| Services          | `printos-geometry` (127.0.0.1:8000), `printos-api` (127.0.0.1:3000)            |
+| Public address    | Tailscale Funnel on port 8443; the tailnet-only Serve entry on 443 is not ours |
+| Root's scripts    | `/usr/local/lib/printos` (copies; services can't change them)                  |
+
+### Protecting the printer
+
+Both services, and every install or update, are limited to CPUs 2-3 (one physical core) at the
+lowest CPU and disk priority, with memory caps (2500 MB slicer, 700 MB API). Klipper has a drop-in
+with `CPUWeight=1000`. One slice runs at a time (`SLICER_MAX_PARALLEL=1`, shared by all requests).
+Install and update refuse to run during a print unless given `--force`.
+
+### Update
+
+Push to GitHub, then from the PC (you type the laptop's sudo password):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\deploy-laptop.ps1
+```
+
+`-Branch <name>` switches the laptop to another branch. If `tools/linux` itself changed, run the
+installer again instead.
+
+### Install or re-install
+
+Safe to repeat. From the repo root on the PC, in Git Bash (secrets are only needed the first time or
+to replace them; the installer deletes the copies):
+
+```bash
+tar c -C tools/linux . | ssh klipper 'mkdir -p -m 700 ~/printos-install && tar x -C ~/printos-install'
+ssh klipper 'umask 077; mkdir -p ~/printos-secrets; cat > ~/printos-secrets/root.env' < .env
+ssh klipper 'umask 077; cat > ~/printos-secrets/geometry.env' < apps/geometry-service/.env
+ssh -t klipper 'sudo bash ~/printos-install/install.sh --branch main --secrets ~/printos-secrets --publish'
+```
+
+Leave out `--secrets` to keep the secrets already on the laptop. Publish the address by hand with
+`sudo /usr/local/lib/printos/publish-api-address.sh https://klipper.taila93359.ts.net:8443/api/v1`.
+Also set that address as `VITE_API_BASE_URL` on Vercel, as the fallback.
+
+### Looking after it
+
+```bash
+systemctl status printos-api printos-geometry
+journalctl -u printos-api -u printos-geometry -f
+journalctl -u printos-wifi-watchdog      # Wi-Fi reconnects
+tailscale funnel --https=8443 off        # take the API off the internet (leaves other entries)
+```
+
+`printos-wifi-watchdog` checks Wi-Fi every two minutes and reconnects with the saved password: after
+a failed handshake on weak signal NetworkManager otherwise waits for someone to type the password on
+the laptop's screen. While Wi-Fi is down on purpose, stop it with
+`sudo systemctl stop printos-wifi-watchdog.timer`.

@@ -1,0 +1,7 @@
+[Unit]
+Description=Reconnect Wi-Fi when NetworkManager has given up
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/printos/wifi-watchdog.sh
+Nice=10

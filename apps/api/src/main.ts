@@ -72,7 +72,11 @@ async function bootstrap(): Promise<void> {
   app.enableCors(cors);
   app.useGlobalPipes(createValidationPipe());
 
-  await app.listen(config.port);
+  if (config.host) {
+    await app.listen(config.port, config.host);
+  } else {
+    await app.listen(config.port);
+  }
   logger.info(
     {
       port: config.port,
