@@ -94,12 +94,14 @@ export default {
         },
       },
       borderRadius: {
-        sm: '6px',
-        DEFAULT: '8px',
-        md: '8px',
+        // The fallbacks are the app's scale; the embedded quoter sets these to fit its host page.
+        sm: 'var(--radius-sm, 6px)',
+        DEFAULT: 'var(--radius-md, 8px)',
+        md: 'var(--radius-md, 8px)',
         lg: 'var(--radius)',
-        xl: '14px',
-        '2xl': '18px',
+        xl: 'var(--radius-xl, 14px)',
+        '2xl': 'var(--radius-2xl, 18px)',
+        chip: 'var(--radius-chip, 9999px)',
       },
       boxShadow: {
         // Resting cards get a hairline and the faintest contact shadow; dark mode drops it.

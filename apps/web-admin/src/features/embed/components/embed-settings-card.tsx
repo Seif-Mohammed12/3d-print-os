@@ -258,7 +258,7 @@ export function EmbedSettingsCard() {
             <p className="mt-0.5 text-xs text-muted-foreground">
               Paste this where the quoter should appear on your website.
             </p>
-            <pre className="mt-2 overflow-x-auto rounded-[10px] border border-border bg-muted p-3 font-mono text-xs leading-relaxed text-foreground">
+            <pre className="mt-2 overflow-x-auto rounded-lg border border-border bg-muted p-3 font-mono text-xs leading-relaxed text-foreground">
               {snippet}
             </pre>
             <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">

@@ -48,7 +48,7 @@ export function ReportsPage() {
         description="Revenue, volume and how your printers and materials are doing."
         actions={
           <div
-            className="flex gap-1 rounded-[10px] bg-muted p-1"
+            className="flex gap-1 rounded-lg bg-muted p-1"
             role="group"
             aria-label="Date range"
           >

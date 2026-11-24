@@ -47,6 +47,59 @@ function lightness(triplet: string): number {
   return Number(triplet.split(' ')[2]?.replace('%', '') ?? 50);
 }
 
+function parseTriplet(triplet: string): [number, number, number] {
+  const [h = '0', s = '0%', l = '0%'] = triplet.split(' ');
+  return [Number(h), Number(s.replace('%', '')), Number(l.replace('%', ''))];
+}
+
+/**
+ * The surfaces around a host page's background, so panels, fields and rules sit on the host's
+ * own colour instead of the app's. Steps go lighter on a dark background and darker on a light
+ * one, keeping the background's hue. Muted text sits between the foreground and the background.
+ */
+export function surfaceTokens(background: string, foreground?: string): Record<string, string> {
+  const [h, s, l] = parseTriplet(background);
+  const isDark = l < 50;
+  const clamp = (value: number) => Math.min(100, Math.max(0, value));
+  const step = (delta: number) => `${h} ${s}% ${clamp(isDark ? l + delta : l - delta)}%`;
+  const raised = `${h} ${s}% ${clamp(l + 3)}%`;
+  const tokens: Record<string, string> = {
+    '--card': raised,
+    '--popover': isDark ? step(6) : raised,
+    '--secondary': step(6),
+    '--muted': step(6),
+    '--accent': step(6),
+    '--border': step(11),
+    '--rule': step(11),
+    '--stock-edge': step(11),
+    '--input': step(16),
+  };
+  if (foreground) {
+    const [fh, fs, fl] = parseTriplet(foreground);
+    tokens['--muted-foreground'] = `${fh} ${fs}% ${Math.round(fl + (l - fl) * 0.35)}%`;
+  }
+  return tokens;
+}
+
+/** The corner scale for a base radius. A base of 10px gives the app's own scale. */
+export function radiusTokens(radius: number): Record<string, string> {
+  return {
+    '--radius': `${radius}px`,
+    '--radius-sm': `${Math.min(radius, 6)}px`,
+    '--radius-md': `${Math.min(radius, 8)}px`,
+    '--radius-xl': `${Math.round(radius * 1.4)}px`,
+    '--radius-2xl': `${Math.round(radius * 1.8)}px`,
+    // Pills only suit a rounded look; a square site gets square chips.
+    '--radius-chip': radius >= 10 ? '9999px' : `${radius}px`,
+  };
+}
+
+function setTokens(root: HTMLElement, tokens: Record<string, string>) {
+  for (const [token, value] of Object.entries(tokens)) {
+    root.style.setProperty(token, value);
+  }
+}
+
 function pickHex(value: string | null): string | undefined {
   return value && HEX.test(value) ? value : undefined;
 }
@@ -99,17 +152,25 @@ export function applyTheme(shop: EmbedTheme, frame: FrameOptions) {
     );
   }
   const background = theme.background ? hexToHslTriplet(theme.background) : null;
+  const foreground = theme.foreground ? hexToHslTriplet(theme.foreground) : null;
   if (background) {
     root.style.setProperty('--background', background);
     document.body.style.background = `hsl(${background})`;
+    setTokens(root, surfaceTokens(background, foreground ?? undefined));
   }
-  const foreground = theme.foreground ? hexToHslTriplet(theme.foreground) : null;
   if (foreground) {
-    root.style.setProperty('--foreground', foreground);
-    root.style.setProperty('--card-foreground', foreground);
+    for (const token of [
+      '--foreground',
+      '--card-foreground',
+      '--popover-foreground',
+      '--secondary-foreground',
+      '--accent-foreground',
+    ]) {
+      root.style.setProperty(token, foreground);
+    }
   }
   if (theme.radius !== undefined) {
-    root.style.setProperty('--radius', `${theme.radius}px`);
+    setTokens(root, radiusTokens(theme.radius));
   }
   if (theme.font_family) {
     root.style.fontFamily = `${theme.font_family}, ui-sans-serif, system-ui, sans-serif`;
