@@ -9,6 +9,7 @@ import type {
   CorsOptionsDelegate,
 } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 
 import { createLogger } from '@3d-print-os/observability';
@@ -41,10 +42,14 @@ async function bootstrap(): Promise<void> {
   const config = loadAppConfig();
   const logger = createLogger({ service: 'api', level: config.logLevel });
 
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'log'],
   });
 
+  // The tunnel (Tailscale Funnel or cloudflared) runs on this machine and passes the visitor's
+  // address in X-Forwarded-For. Trust only it, so rate limits count each visitor separately and
+  // a visitor can't pick their own address.
+  app.set('trust proxy', 'loopback');
   app.setGlobalPrefix('api/v1');
   app.use(requestIdMiddleware);
   app.use(
