@@ -124,8 +124,7 @@ class PrusaSlicerEngine:
             estimate, name, version = self._parse(gcode_path)
             return SliceOutput(estimate, SlicerInfo(name=name, version=version))
 
-    def _execute(self, command: list[str], gcode_path: str) -> str:
-        """Run the slicer and return what it printed."""
+    def _execute(self, command: list[str], gcode_path: str) -> None:
         try:
             with self._slots:
                 completed = subprocess.run(
@@ -148,7 +147,6 @@ class PrusaSlicerEngine:
                 "Slicer rejected the model",
                 details={"slicer_output": output[-_STDERR_TAIL_CHARS:]},
             )
-        return f"{completed.stdout}\n{completed.stderr}"
 
     @staticmethod
     def _parse(gcode_path: str) -> tuple[SliceEstimate, str, str]:
@@ -156,12 +154,6 @@ class PrusaSlicerEngine:
             return parse_gcode_file(gcode_path)
         except GcodeParseError as exc:
             raise SlicingFailedError(str(exc), code="gcode_parse_failed") from exc
-
-    @staticmethod
-    def _mesh_warnings(mesh: trimesh.Trimesh) -> list[str]:
-        if mesh.is_watertight:
-            return []
-        return ["Mesh is not watertight; the slicer repaired it and volumes may be off"]
 
     def _candidates(self, mesh: trimesh.Trimesh, orientation: OrientationRequest) -> list[Candidate]:
         if orientation.mode == OrientationMode.FIXED:
@@ -207,7 +199,9 @@ class PrusaSlicerEngine:
         machine = settings.machine
         bed_center = (machine.bed_x_mm / 2, machine.bed_y_mm / 2)
 
-        warnings = self._mesh_warnings(mesh)
+        warnings: list[str] = []
+        if not mesh.is_watertight:
+            warnings.append("Mesh is not watertight; the slicer repaired it and volumes may be off")
 
         candidates = self._candidates(mesh, orientation)
         results: list[CandidateResult] = []

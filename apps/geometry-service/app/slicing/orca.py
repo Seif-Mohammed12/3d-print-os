@@ -1,46 +1,36 @@
-"""Run OrcaSlicer on a mesh, letting it choose the orientation.
+"""Slice with OrcaSlicer instead of PrusaSlicer.
 
 Everything the caller doesn't set comes from `orca_base.json`, the shop's own Orca settings (no
 G-code, hosts or scripts), so a quote matches how the part will really be printed.
+
+Orientation is chosen exactly as for PrusaSlicer. Orca's own `--orient` is quicker but was dearer
+than the best of four by over 3% on a third of real models above the minimum price.
 """
 
 import copy
 import json
 import os
-import re
 import tempfile
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-import numpy as np
-import structlog
 import trimesh
 
-from app.exceptions import SlicingFailedError
 from app.slicing.config_builder import (
     SliceConfigError,
     resolve_first_layer_height,
     validate_override,
 )
-from app.slicing.engine import PrusaSlicerEngine, SliceOutput, score_estimate
-from app.slicing.gcode_parser import parse_gcode_file
+from app.slicing.engine import PrusaSlicerEngine, SliceOutput
 from app.slicing.models import (
-    CandidateResult,
-    OrientationMode,
-    OrientationRequest,
-    SelectionWeights,
-    SliceResponse,
     SliceSettings,
     SlicerInfo,
     SupportMode,
     SupportStyle,
 )
 
-logger = structlog.get_logger(__name__)
-
 _BASE = Path(__file__).with_name("orca_base.json")
-_BEST_UP = re.compile(r"^best:\s*(\S+)\s+(\S+)\s+(\S+),", re.MULTILINE)
 
 _PATTERNS = {
     "adaptivecubic": "adaptivecubic",
@@ -216,15 +206,7 @@ def build_orca_profiles(settings: SliceSettings) -> dict[str, dict[str, Any]]:
     return profiles
 
 
-def rotation_to_up(up: np.ndarray) -> np.ndarray:
-    """Rotation that turns the model-frame direction `up` to +Z."""
-    matrix = trimesh.geometry.align_vectors(up, [0.0, 0.0, 1.0])
-    return np.asarray(matrix)[:3, :3]
-
-
 class OrcaSlicerEngine(PrusaSlicerEngine):
-    """Orca picks the orientation (one slice); poses are only tried if that can't be printed."""
-
     def _prepare(self, settings: SliceSettings) -> Any:
         return build_orca_profiles(settings)
 
@@ -237,12 +219,7 @@ class OrcaSlicerEngine(PrusaSlicerEngine):
         placed = mesh.copy()
         middle = placed.bounds.mean(axis=0)
         placed.apply_translation([bed_center[0] - middle[0], bed_center[1] - middle[1], 0.0])
-        return self._orca(placed, config, orient=False)[0]
 
-    def _orca(
-        self, mesh: trimesh.Trimesh, config: dict[str, dict[str, Any]], orient: bool
-    ) -> tuple[SliceOutput, Optional[np.ndarray]]:
-        """Slice; also the model direction Orca turned upwards, when it was asked to."""
         with tempfile.TemporaryDirectory(prefix="slice-") as workdir:
             paths = {}
             for name, profile in config.items():
@@ -252,77 +229,29 @@ class OrcaSlicerEngine(PrusaSlicerEngine):
             datadir = os.path.join(workdir, "datadir")
             os.mkdir(datadir)
             model_path = os.path.join(workdir, "model.stl")
-            mesh.export(model_path, file_type="stl")
+            gcode_path = os.path.join(workdir, "plate_1.gcode")
+            placed.export(model_path, file_type="stl")
 
             command = [
                 self.executable,
+                # Isolate from any user-level slicer configuration on the host.
                 "--datadir",
                 datadir,
-                "--debug",
-                "2",
                 "--load-settings",
                 f"{paths['machine']};{paths['process']}",
                 "--load-filaments",
                 paths["filament"],
                 "--ensure-on-bed",
+                "--orient",
+                "0",
+                "--arrange",
+                "0",
+                "--slice",
+                "0",
+                "--outputdir",
+                workdir,
+                model_path,
             ]
-            if orient:
-                command += ["--orient", "1", "--arrange", "1", "--allow-rotations"]
-            else:
-                command += ["--orient", "0", "--arrange", "0"]
-            command += ["--slice", "0", "--outputdir", workdir, model_path]
-
-            gcode_path = os.path.join(workdir, "plate_1.gcode")
-            output = self._execute(command, gcode_path)
-            estimate, name, version = self._parse(gcode_path)
-
-        up = None
-        if orient:
-            match = _BEST_UP.search(output)
-            if match:
-                up = np.array([float(match.group(i)) for i in (1, 2, 3)])
-        return SliceOutput(estimate, SlicerInfo(name=name, version=version)), up
-
-    def slice(
-        self,
-        mesh: trimesh.Trimesh,
-        settings: SliceSettings,
-        orientation: OrientationRequest,
-        selection: SelectionWeights,
-    ) -> SliceResponse:
-        if orientation.mode == OrientationMode.AUTO:
-            try:
-                return self._slice_auto(mesh, settings, selection)
-            except SlicingFailedError as exc:
-                # Typically its choice is too tall for this printer; another pose may fit.
-                logger.info("Orca's own orientation failed, trying others", details=exc.details)
-        return super().slice(mesh, settings, orientation, selection)
-
-    def _slice_auto(
-        self, mesh: trimesh.Trimesh, settings: SliceSettings, selection: SelectionWeights
-    ) -> SliceResponse:
-        output, up = self._orca(mesh, self._prepare(settings), orient=True)
-        if up is None or not np.isfinite(up).all() or np.linalg.norm(up) < 0.5:
-            raise SlicingFailedError("OrcaSlicer did not report the orientation it chose")
-        as_uploaded = float(up[2] / np.linalg.norm(up)) > 0.999
-        rotation = np.eye(3) if as_uploaded else rotation_to_up(up)
-        rotated = mesh.vertices @ rotation.T
-        chosen = CandidateResult(
-            label="as_uploaded" if as_uploaded else "orca_auto_orient",
-            rotation=[[round(float(v), 6) for v in row] for row in rotation],
-            size_mm=[round(float(v), 3) for v in np.ptp(rotated, axis=0)],
-            estimate=output.estimate,
-            score=round(score_estimate(output.estimate, selection), 4),
-        )
-        warnings = self._mesh_warnings(mesh)
-        if not as_uploaded:
-            warnings.append("Model re-oriented for printing (orca_auto_orient)")
-        return SliceResponse(
-            slicer=output.slicer,
-            estimate=output.estimate,
-            orientation=chosen,
-            candidates=[chosen],
-            mesh_volume_mm3=round(float(abs(mesh.volume)), 3) if mesh.is_volume else 0.0,
-            mesh_is_watertight=bool(mesh.is_watertight),
-            warnings=warnings,
-        )
+            self._execute(command, gcode_path)
+            estimate, slicer, version = self._parse(gcode_path)
+            return SliceOutput(estimate, SlicerInfo(name=slicer, version=version))

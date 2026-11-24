@@ -8,10 +8,8 @@ import numpy as np
 import pytest
 import trimesh
 
-from app.exceptions import SlicingFailedError
 from app.slicing import orca
 from app.slicing.config_builder import SliceConfigError
-from app.slicing.engine import SliceOutput
 from app.slicing.gcode_parser import parse_gcode_lines
 from app.slicing.models import (
     FilamentSettings,
@@ -20,14 +18,12 @@ from app.slicing.models import (
     OrientationRequest,
     ProcessSettings,
     SelectionWeights,
-    SliceEstimate,
-    SlicerInfo,
     SliceSettings,
     SupportMode,
     SupportStyle,
 )
-from app.slicing.orca import OrcaSlicerEngine, build_orca_profiles, rotation_to_up
-from app.slicing.orientation import apply_rotation, stable_pose_candidates
+from app.slicing.orca import OrcaSlicerEngine, build_orca_profiles
+from app.slicing.orientation import stable_pose_candidates
 
 
 def _settings(**process) -> SliceSettings:
@@ -104,38 +100,7 @@ class TestOrcaProfiles:
         ]
 
 
-class TestOrcaOrientation:
-    @pytest.mark.parametrize("up", [(0, 0, -1), (1, 0, 0), (0, -1, 0), (0.6, 0, -0.8)])
-    def test_rotation_turns_the_chosen_direction_up(self, up):
-        rotation = rotation_to_up(np.array(up, dtype=float))
-        assert rotation @ np.array(up) == pytest.approx([0, 0, 1], abs=1e-6)
-        assert np.linalg.det(rotation) == pytest.approx(1)
-
-    def test_falls_back_to_other_poses_when_its_choice_does_not_print(self, monkeypatch):
-        engine = OrcaSlicerEngine(executable="", timeout_s=1, max_parallel=1)
-        asked = []
-
-        def fake(mesh, config, orient):
-            asked.append(orient)
-            if orient:
-                raise SlicingFailedError("too tall")
-            estimate = SliceEstimate(
-                print_time_s=60,
-                filament_mm=1,
-                filament_cm3=1,
-                filament_g=1,
-                support_g=0,
-                layer_count=1,
-                object_height_mm=1,
-                features=[],
-            )
-            return SliceOutput(estimate, SlicerInfo(name="OrcaSlicer", version="0")), None
-
-        monkeypatch.setattr(engine, "_orca", fake)
-        result = engine.slice(_table(), _settings(), OrientationRequest(), SelectionWeights())
-        assert asked[0] is True and False in asked
-        assert result.estimate.print_time_s == 60
-
+class TestPoseSearch:
     def test_broken_mesh_does_not_hang_the_pose_search(self, monkeypatch):
         mesh = _table()
         monkeypatch.setattr(type(mesh), "is_volume", property(lambda self: True))
@@ -191,20 +156,13 @@ ORCA = next(
 class TestRealOrca:
     engine = OrcaSlicerEngine(executable=ORCA or "", timeout_s=120, max_parallel=2)
 
-    def test_auto_orientation_is_reported_and_repeatable(self):
-        tilted = apply_rotation(
-            _table(), trimesh.transformations.rotation_matrix(0.5, [1, 0.3, 0])[:3, :3]
+    def test_auto_orientation_avoids_support(self):
+        result = self.engine.slice(
+            _table(), _settings(), OrientationRequest(), SelectionWeights()
         )
-        auto = self.engine.slice(tilted, _settings(), OrientationRequest(), SelectionWeights())
-        assert auto.slicer.name == "OrcaSlicer"
-        assert auto.estimate.support_g == 0
-        again = self.engine.slice(
-            tilted,
-            _settings(),
-            OrientationRequest(mode=OrientationMode.FIXED, rotation=auto.orientation.rotation),
-            SelectionWeights(),
-        )
-        assert again.estimate.filament_g == pytest.approx(auto.estimate.filament_g, rel=0.02)
+        assert result.slicer.name == "OrcaSlicer"
+        assert result.orientation.label != "as_uploaded"
+        assert result.estimate.support_g == 0
 
     def test_supports_are_weighed(self):
         as_is = self.engine.slice(
