@@ -203,7 +203,7 @@ export function SliceDetails({ quote }: { quote: Quote }) {
               value:
                 slice.orientation.label === 'as_uploaded'
                   ? 'As uploaded'
-                  : `Re-oriented (best of ${slice.candidates.filter((c) => c.estimate).length})`,
+                  : `Re-oriented (picked from ${slice.candidates.filter((c) => !c.error).length})`,
             },
             {
               label: 'Size on the bed',

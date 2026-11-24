@@ -39,6 +39,11 @@ from app.slicing.orientation import (
     fixed_candidate,
     stable_pose_candidates,
 )
+from app.slicing.orientation_score import (
+    predicted_extra_cost,
+    sample_surface,
+    worth_slicing_too,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -154,6 +159,27 @@ class PrusaSlicerEngine:
             return [Candidate("as_uploaded", np.eye(3))]
         return stable_pose_candidates(mesh, orientation.max_candidates)
 
+    @staticmethod
+    def _predict(
+        mesh: trimesh.Trimesh,
+        results: list[CandidateResult],
+        jobs: list[tuple[int, trimesh.Trimesh]],
+        settings: SliceSettings,
+        selection: SelectionWeights,
+    ) -> Optional[dict[int, float]]:
+        """Orientation-dependent cost per job, or None when the mesh can't be judged."""
+        try:
+            sample = sample_surface(mesh)
+            extras = {
+                index: predicted_extra_cost(
+                    sample, np.asarray(results[index].rotation), settings, selection
+                )
+                for index, _ in jobs
+            }
+        except (ValueError, IndexError):
+            return None
+        return extras if all(np.isfinite(list(extras.values()))) else None
+
     def slice(
         self,
         mesh: trimesh.Trimesh,
@@ -202,24 +228,62 @@ class PrusaSlicerEngine:
 
         slicer_info: Optional[SlicerInfo] = None
         hard_errors: list[Exception] = []
-        with ThreadPoolExecutor(max_workers=min(self.max_parallel, len(jobs))) as pool:
-            futures = {
-                index: pool.submit(self._run, rotated, ini_text, bed_center) for index, rotated in jobs
-            }
-            for index, future in futures.items():
-                try:
-                    output = future.result()
-                except (SlicerUnavailableError, SlicingTimeoutError) as exc:
-                    hard_errors.append(exc)
-                    results[index].error = exc.message
-                    continue
-                except SlicingFailedError as exc:
-                    results[index].error = exc.message
-                    logger.warning("Candidate failed to slice", label=results[index].label, details=exc.details)
-                    continue
-                slicer_info = output.slicer
-                results[index].estimate = output.estimate
-                results[index].score = round(score_estimate(output.estimate, selection), 4)
+
+        def run(batch: list[tuple[int, trimesh.Trimesh]]) -> None:
+            nonlocal slicer_info
+            with ThreadPoolExecutor(max_workers=min(self.max_parallel, len(batch))) as pool:
+                futures = {
+                    index: pool.submit(self._run, rotated, ini_text, bed_center)
+                    for index, rotated in batch
+                }
+                for index, future in futures.items():
+                    try:
+                        output = future.result()
+                    except (SlicerUnavailableError, SlicingTimeoutError) as exc:
+                        hard_errors.append(exc)
+                        results[index].error = exc.message
+                        continue
+                    except SlicingFailedError as exc:
+                        results[index].error = exc.message
+                        logger.warning(
+                            "Candidate failed to slice",
+                            label=results[index].label,
+                            details=exc.details,
+                        )
+                        continue
+                    slicer_info = output.slicer
+                    results[index].estimate = output.estimate
+                    results[index].score = round(score_estimate(output.estimate, selection), 4)
+
+        extras = None
+        if len(jobs) > orientation.max_slices:
+            extras = self._predict(mesh, results, jobs, settings, selection)
+        if extras is None:
+            run(jobs)
+        else:
+            # Best guess first; others only on a near tie, or if nothing has sliced yet.
+            jobs.sort(key=lambda job: extras[job[0]])
+            best_index: Optional[int] = None
+            sliced = 0
+            for index, rotated in jobs:
+                if best_index is not None:
+                    estimate = results[best_index].estimate
+                    assert estimate is not None
+                    if sliced >= orientation.max_slices or not worth_slicing_too(
+                        extras[best_index],
+                        extras[index],
+                        estimate.filament_g - estimate.support_g,
+                        selection,
+                    ):
+                        break
+                run([(index, rotated)])
+                if results[index].estimate is not None:
+                    sliced += 1
+                    if best_index is None:
+                        best_index = index
+                elif hard_errors and best_index is None:
+                    # A missing slicer or a timeout would most likely just repeat itself.
+                    break
 
         scored = [r for r in results if r.score is not None]
         if not scored:
@@ -232,7 +296,7 @@ class PrusaSlicerEngine:
 
         best = min(scored, key=lambda r: r.score)
         assert best.estimate is not None and slicer_info is not None
-        if best.label != "as_uploaded" and len(scored) > 1:
+        if best.label != "as_uploaded" and len(results) > 1:
             warnings.append(f"Model re-oriented for printing ({best.label})")
 
         return SliceResponse(

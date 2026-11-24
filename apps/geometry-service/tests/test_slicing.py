@@ -1,5 +1,6 @@
 import os
 import shutil
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -16,10 +17,17 @@ from app.slicing.models import (
     ProcessSettings,
     SelectionWeights,
     SliceEstimate,
+    SlicerInfo,
     SliceSettings,
     SupportMode,
 )
 from app.slicing.orientation import apply_rotation, fit_on_bed, stable_pose_candidates
+from app.slicing.orientation_score import (
+    predicted_extra_cost,
+    sample_surface,
+    support_volume_and_height,
+    worth_slicing_too,
+)
 
 
 def _settings(**process) -> SliceSettings:
@@ -225,3 +233,91 @@ class TestRealSlicing:
         with pytest.raises(SlicingFailedError) as info:
             self.engine.slice(mesh, _settings(), OrientationRequest(), SelectionWeights())
         assert info.value.code == "model_too_large"
+
+
+class TestOrientationScore:
+    weights = SelectionWeights(cost_per_hour=2220, cost_per_gram=400, support_penalty_per_gram=400)
+    flip = np.diag([1.0, -1.0, -1.0])
+
+    @staticmethod
+    def table():
+        post = trimesh.creation.box((6, 6, 20))
+        post.apply_translation((0, 0, 10))
+        top = trimesh.creation.box((40, 40, 5))
+        top.apply_translation((0, 0, 22.5))
+        return trimesh.util.concatenate([post, top])
+
+    def test_support_volume_matches_the_space_under_a_tabletop(self):
+        volume, height = support_volume_and_height(sample_surface(self.table()), np.eye(3), 50, 0.2)
+        assert volume == pytest.approx((40 * 40 - 6 * 6) * 20, rel=0.1)
+        assert height == pytest.approx(25, abs=0.2)
+
+    def test_flipping_the_table_is_predicted_cheaper(self):
+        sample = sample_surface(self.table())
+        upright = predicted_extra_cost(sample, np.eye(3), _settings(), self.weights)
+        flipped = predicted_extra_cost(sample, self.flip, _settings(), self.weights)
+        assert flipped < upright / 2
+
+    def test_support_is_ignored_when_supports_are_off(self):
+        sample = sample_surface(self.table())
+        settings = _settings(supports=SupportMode.OFF)
+        upright = predicted_extra_cost(sample, np.eye(3), settings, self.weights)
+        flipped = predicted_extra_cost(sample, self.flip, settings, self.weights)
+        assert upright == pytest.approx(flipped, rel=0.01)
+
+    def test_only_a_near_tie_earns_a_second_slice(self):
+        assert worth_slicing_too(100, 105, 10, self.weights)
+        assert not worth_slicing_too(100, 5000, 1, self.weights)
+
+
+class TestSliceCount:
+    weights = TestOrientationScore.weights
+
+    def _engine(self, monkeypatch, fail_first=False):
+        engine = PrusaSlicerEngine(executable="", timeout_s=1, max_parallel=1)
+        calls = []
+
+        def fake_run(mesh, ini_text, bed_center):
+            calls.append(mesh)
+            if fail_first and len(calls) == 1:
+                raise SlicingFailedError("nope")
+            base = dict(filament_mm=1, filament_cm3=1, layer_count=1, object_height_mm=1, features=[])
+            estimate = SliceEstimate(print_time_s=3600, filament_g=1, support_g=0, **base)
+            return SimpleNamespace(estimate=estimate, slicer=SlicerInfo(name="fake", version="1"))
+
+        monkeypatch.setattr(engine, "_run", fake_run)
+        return engine, calls
+
+    def test_a_clear_winner_is_sliced_once(self, monkeypatch):
+        engine, calls = self._engine(monkeypatch)
+        result = engine.slice(
+            TestOrientationScore.table(), _settings(), OrientationRequest(), self.weights
+        )
+        assert len(calls) == 1
+        assert len(result.candidates) > 1
+        assert result.orientation.label != "as_uploaded"
+
+    def test_never_more_than_max_slices(self, monkeypatch):
+        engine, calls = self._engine(monkeypatch)
+        engine.slice(
+            trimesh.creation.box((20, 20, 20)), _settings(), OrientationRequest(), self.weights
+        )
+        assert len(calls) == 2
+
+    def test_falls_through_when_the_best_guess_fails(self, monkeypatch):
+        engine, calls = self._engine(monkeypatch, fail_first=True)
+        result = engine.slice(
+            TestOrientationScore.table(), _settings(), OrientationRequest(), self.weights
+        )
+        assert len(calls) >= 2
+        assert result.orientation.estimate is not None
+
+    def test_all_candidates_can_still_be_compared(self, monkeypatch):
+        engine, calls = self._engine(monkeypatch)
+        engine.slice(
+            trimesh.creation.box((20, 30, 40)),
+            _settings(),
+            OrientationRequest(max_slices=4),
+            self.weights,
+        )
+        assert len(calls) == 4

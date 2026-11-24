@@ -99,7 +99,7 @@ class SliceSettings(BaseModel):
 
 
 class OrientationMode(str, Enum):
-    AUTO = "auto"  # slice several stable poses and keep the cheapest
+    AUTO = "auto"  # pick the cheapest of several stable poses
     AS_IS = "as_is"  # keep the uploaded orientation
     FIXED = "fixed"  # caller-supplied rotation matrix
 
@@ -110,6 +110,9 @@ class OrientationRequest(BaseModel):
         None, description="3x3 rotation matrix, required when mode is 'fixed'"
     )
     max_candidates: int = Field(4, ge=1, le=8)
+    # How many of them may be sliced. Fewer than max_candidates ranks them by geometry first;
+    # set it to max_candidates to slice and compare them all.
+    max_slices: int = Field(2, ge=1, le=8)
 
     @field_validator("rotation")
     @classmethod
