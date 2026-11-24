@@ -69,6 +69,6 @@ restart_and_check() {
   wait_http http://127.0.0.1:8000/ "The slicer"
   systemctl restart printos-api.service
   wait_http http://127.0.0.1:3000/api/v1/health "The API"
-  wait_http http://127.0.0.1:3000/api/v1/health/ready "The API readiness check"
+  wait_http http://127.0.0.1:3000/api/v1/health/ready "The API runs but its database is unreachable (is the Supabase project paused?); readiness"
   echo "Healthy."
 }
