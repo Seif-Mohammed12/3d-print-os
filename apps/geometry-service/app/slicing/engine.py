@@ -4,6 +4,7 @@ import io
 import os
 import subprocess
 import tempfile
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Optional
@@ -80,6 +81,8 @@ class PrusaSlicerEngine:
         self.executable = executable
         self.timeout_s = timeout_s
         self.max_parallel = max(1, max_parallel)
+        # Shared by every request, so simultaneous quotes queue instead of multiplying.
+        self._slots = threading.BoundedSemaphore(self.max_parallel)
 
     def _run(self, mesh: trimesh.Trimesh, ini_text: str, bed_center: tuple[float, float]) -> _SliceOutput:
         with tempfile.TemporaryDirectory(prefix="slice-") as workdir:
@@ -109,13 +112,14 @@ class PrusaSlicerEngine:
                 model_path,
             ]
             try:
-                completed = subprocess.run(
-                    command,
-                    capture_output=True,
-                    text=True,
-                    timeout=self.timeout_s,
-                    check=False,
-                )
+                with self._slots:
+                    completed = subprocess.run(
+                        command,
+                        capture_output=True,
+                        text=True,
+                        timeout=self.timeout_s,
+                        check=False,
+                    )
             except FileNotFoundError as exc:
                 raise SlicerUnavailableError(
                     f"Slicer executable not found: {self.executable}"

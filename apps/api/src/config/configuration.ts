@@ -2,6 +2,7 @@ import { parseEnv, type EnvConfig } from './env.schema';
 
 export type AppConfig = {
   nodeEnv: EnvConfig['NODE_ENV'];
+  host?: string;
   port: number;
   logLevel: EnvConfig['LOG_LEVEL'];
   databaseUrl: string;
@@ -30,6 +31,7 @@ export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const parsed = parseEnv(env);
   return {
     nodeEnv: parsed.NODE_ENV,
+    ...(parsed.API_HOST !== undefined ? { host: parsed.API_HOST } : {}),
     port: parsed.API_PORT,
     logLevel: parsed.LOG_LEVEL,
     databaseUrl: parsed.DATABASE_URL,

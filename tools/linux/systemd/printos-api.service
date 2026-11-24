@@ -1,0 +1,34 @@
+[Unit]
+Description=3D Print OS API
+Wants=network-online.target printos-geometry.service
+After=network-online.target printos-geometry.service
+StartLimitIntervalSec=0
+
+[Service]
+User=printos
+Group=printos
+WorkingDirectory=/opt/3d-print-os/apps/api
+# Secrets come from /opt/3d-print-os/.env, which the API reads itself. These win over it.
+Environment=HOME=/tmp NODE_ENV=production API_HOST=127.0.0.1 API_PORT=3000
+Environment=GEOMETRY_SERVICE_URL=http://127.0.0.1:8000/api/v1
+Environment=CORS_ORIGINS=https://3d-print-os.vercel.app,https://3dprintit-eg.com,https://www.3dprintit-eg.com,http://localhost:5173
+# No Redis on this machine.
+Environment=REDIS_URL=
+ExecStart=/usr/bin/node dist/main.js
+Restart=always
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+AllowedCPUs=2-3
+Nice=19
+CPUWeight=10
+IOSchedulingClass=idle
+MemoryMax=700M
+OOMScoreAdjust=500
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,9 @@
+[Unit]
+Description=Check Wi-Fi every two minutes
+
+[Timer]
+OnActiveSec=3min
+OnUnitInactiveSec=2min
+
+[Install]
+WantedBy=timers.target

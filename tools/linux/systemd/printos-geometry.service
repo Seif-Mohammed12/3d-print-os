@@ -1,0 +1,33 @@
+[Unit]
+Description=3D Print OS geometry and slicer service
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+User=printos
+Group=printos
+WorkingDirectory=/opt/3d-print-os/apps/geometry-service
+Environment=HOME=/tmp PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ExecStart=/opt/3d-print-os/apps/geometry-service/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+# Nothing on disk is writable except the private /tmp.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+# This machine runs a 3D printer: one physical core, lowest priority.
+AllowedCPUs=2-3
+Nice=19
+CPUWeight=10
+IOSchedulingClass=idle
+MemoryMax=2500M
+# A slice that runs out of memory fails that quote, not the whole service.
+OOMPolicy=continue
+OOMScoreAdjust=500
+
+[Install]
+WantedBy=multi-user.target
