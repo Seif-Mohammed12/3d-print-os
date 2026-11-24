@@ -74,6 +74,7 @@ afterwards publish the laptop's address again (below).
 | Code              | `/opt/3d-print-os`, owned by the no-login user `printos`                       |
 | Secrets           | `/opt/3d-print-os/.env` and `apps/geometry-service/.env` there, mode 600       |
 | PrusaSlicer 2.6.1 | `/opt/prusaslicer-2.6.1` (extracted AppImage, same version as the PC)          |
+| OrcaSlicer 2.5.1  | `/opt/orcaslicer-2.5.1` (extracted AppImage, only with `--slicer orca`)        |
 | Services          | `printos-geometry` (127.0.0.1:8000), `printos-api` (127.0.0.1:3000)            |
 | Public address    | Tailscale Funnel on port 8443; the tailnet-only Serve entry on 443 is not ours |
 | Root's scripts    | `/usr/local/lib/printos` (copies; services can't change them)                  |
@@ -107,6 +108,10 @@ ssh klipper 'umask 077; mkdir -p ~/printos-secrets; cat > ~/printos-secrets/root
 ssh klipper 'umask 077; cat > ~/printos-secrets/geometry.env' < apps/geometry-service/.env
 ssh -t klipper 'sudo bash ~/printos-install/install.sh --branch main --secrets ~/printos-secrets --publish'
 ```
+
+Add `--slicer orca` to quote with OrcaSlicer, or `--slicer prusa` to go back; without it the laptop
+keeps the slicer it has. The installer slices a test model before switching. Go back to `prusa` before
+moving the laptop to a branch that has no Orca support.
 
 Leave out `--secrets` to keep the secrets already on the laptop. Publish the address by hand with
 `sudo /usr/local/lib/printos/publish-api-address.sh https://klipper.taila93359.ts.net:8443/api/v1`.

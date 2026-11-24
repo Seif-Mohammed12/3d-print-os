@@ -2,6 +2,7 @@
 
 import io
 import os
+import signal
 import subprocess
 import tempfile
 import threading
@@ -81,6 +82,31 @@ def score_estimate(estimate: SliceEstimate, weights: SelectionWeights) -> float:
     )
 
 
+def _run_process(command: list[str], timeout_s: float) -> subprocess.CompletedProcess[str]:
+    """subprocess.run whose timeout also stops children: AppImages start through a wrapper."""
+    with subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        start_new_session=True,
+    ) as process:
+        try:
+            stdout, stderr = process.communicate(timeout=timeout_s)
+        except BaseException:
+            if os.name == "posix":
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            else:
+                process.kill()
+            raise
+    return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+
+
 class PrusaSlicerEngine:
     def __init__(self, executable: str, timeout_s: float, max_parallel: int):
         self.executable = executable
@@ -127,15 +153,7 @@ class PrusaSlicerEngine:
     def _execute(self, command: list[str], gcode_path: str) -> None:
         try:
             with self._slots:
-                completed = subprocess.run(
-                    command,
-                    capture_output=True,
-                    text=True,
-                    encoding="utf-8",
-                    errors="replace",
-                    timeout=self.timeout_s,
-                    check=False,
-                )
+                completed = _run_process(command, self.timeout_s)
         except FileNotFoundError as exc:
             raise SlicerUnavailableError(f"Slicer executable not found: {self.executable}") from exc
         except subprocess.TimeoutExpired as exc:

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Sets up the 3D Print OS backend on the printer laptop. Safe to re-run.
 #
-#   sudo ./install.sh [--branch main] [--secrets DIR] [--skip-funnel] [--publish] [--force]
+#   sudo ./install.sh [--branch main] [--secrets DIR] [--slicer orca|prusa] [--skip-funnel]
+#                     [--publish] [--force]
 #
 # --secrets DIR  holds root.env and geometry.env copied from the PC; they are moved into place and
 #                the copies deleted. Needed on the first run, or to replace the secrets.
+# --slicer       which slicer quotes use from now on; left out, it stays as it is (first run: prusa).
 # --skip-funnel  leave Tailscale alone.
 # --publish      also publish the fixed Funnel address for the web app.
 # --force        run even during a print.
@@ -20,12 +22,14 @@ confine_self "$@"
 REPO=https://github.com/Seif-Mohammed12/3d-print-os.git
 BRANCH=main
 SECRETS=
+ENGINE=
 FUNNEL=1
 PUBLISH=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --branch) BRANCH=${2:?}; shift 2 ;;
     --secrets) SECRETS=$(readlink -f "${2:?}"); shift 2 ;;
+    --slicer) ENGINE=${2:?}; shift 2 ;;
     --skip-funnel) FUNNEL=0; shift ;;
     --publish) PUBLISH=1; shift ;;
     --force) FORCE=1; shift ;;
@@ -34,12 +38,19 @@ while [ $# -gt 0 ]; do
 done
 case "$BRANCH" in -* | *[!A-Za-z0-9._/-]*) die "Not a branch name: $BRANCH" ;; esac
 
+case "$ENGINE" in "" | orca | prusa) ;; *) die "--slicer must be orca or prusa." ;; esac
+
 # Same build as the PC's PrusaSlicer, so profiles behave the same.
 SLICER_VERSION=2.6.1
 SLICER_FILE=PrusaSlicer-2.6.1+linux-x64-GTK3-202309060711.AppImage
 SLICER_SHA256=a070ea2a8f461ff7afd7fdad5711856fae5a79a502846ff683058cf72fdbd653
 SLICER_DIR=/opt/prusaslicer-$SLICER_VERSION
 SLICER_BIN=$SLICER_DIR/usr/bin/prusa-slicer
+# Same build the shop slices its prints with.
+ORCA_VERSION=2.5.1
+ORCA_SHA256=073b8105c928356141db0ddbce88b81d52c7a9e2442f9baae0a9089c89ff04eb
+ORCA_DIR=/opt/orcaslicer-$ORCA_VERSION
+ORCA_BIN=$ORCA_DIR/AppRun
 
 # ---------------------------------------------------------------------------
 say "Checking that nothing else uses our ports"
@@ -131,20 +142,25 @@ case "$(/usr/bin/node -v)" in v22.*) ;; *) die "Node 22 did not install." ;; esa
 corepack enable
 
 # ---------------------------------------------------------------------------
-say "PrusaSlicer $SLICER_VERSION"
-if [ ! -x "$SLICER_BIN" ]; then
+install_appimage() { # url sha256 directory executable
+  local tmp
+  [ ! -x "$4" ] || return 0
   tmp=$(mktemp -d)
-  curl -fsSL -o "$tmp/slicer.AppImage" \
-    "https://github.com/prusa3d/PrusaSlicer/releases/download/version_$SLICER_VERSION/${SLICER_FILE/+/%2B}"
-  echo "$SLICER_SHA256  $tmp/slicer.AppImage" | sha256sum -c --quiet || die "PrusaSlicer does not match its checksum."
+  curl -fsSL -o "$tmp/slicer.AppImage" "$1"
+  echo "$2  $tmp/slicer.AppImage" | sha256sum -c --quiet || die "$1 does not match its checksum."
   chmod +x "$tmp/slicer.AppImage"
   (cd "$tmp" && ./slicer.AppImage --appimage-extract >/dev/null)
-  rm -rf "$SLICER_DIR"
-  mv "$tmp/squashfs-root" "$SLICER_DIR"
-  chown -R root:root "$SLICER_DIR"
-  chmod -R a+rX,go-w "$SLICER_DIR"
+  rm -rf "$3"
+  mv "$tmp/squashfs-root" "$3"
+  chown -R root:root "$3"
+  chmod -R a+rX,go-w "$3"
   rm -rf "$tmp"
-fi
+}
+
+say "PrusaSlicer $SLICER_VERSION"
+install_appimage \
+  "https://github.com/prusa3d/PrusaSlicer/releases/download/version_$SLICER_VERSION/${SLICER_FILE/+/%2B}" \
+  "$SLICER_SHA256" "$SLICER_DIR" "$SLICER_BIN"
 
 # ---------------------------------------------------------------------------
 say "Code ($BRANCH)"
@@ -167,6 +183,12 @@ set_env() { # file key value (shell builtins only, so values never reach a proce
   printf '%s=%s\n' "$2" "$3" >>"$tmp"
   mv "$tmp" "$1"
 }
+unset_env() { # file key
+  local tmp
+  tmp=$(mktemp "$1.XXXXXX")
+  grep -v "^$2=" "$1" >"$tmp" || true
+  mv "$tmp" "$1"
+}
 env_of() { sed -n "s/^$2=//p" "$1" | head -1 | sed -E "s/[[:space:]]+$//; s/^[\"']//; s/[\"']$//"; }
 ROOT_ENV=$APP_DIR/.env
 GEO_ENV=$APP_DIR/apps/geometry-service/.env
@@ -184,7 +206,6 @@ host=${host%%/*}
 [ -n "$host" ] || die "SUPABASE_URL is empty."
 set_env "$ROOT_ENV" GEOMETRY_SERVICE_KEY "$key"
 set_env "$GEO_ENV" ENVIRONMENT production
-set_env "$GEO_ENV" SLICER_EXECUTABLE "$SLICER_BIN"
 set_env "$GEO_ENV" SLICER_MAX_PARALLEL 1
 set_env "$GEO_ENV" SLICER_ALLOWED_DOWNLOAD_HOSTS "$host"
 unset key
@@ -198,13 +219,33 @@ fi
 
 build_app
 
-say "Slicing a test model"
+[ -n "$ENGINE" ] || ENGINE=$(env_of "$GEO_ENV" SLICER_ENGINE)
+[ "$ENGINE" = orca ] || ENGINE=prusa
+if [ "$ENGINE" = orca ]; then
+  say "OrcaSlicer $ORCA_VERSION"
+  install_appimage \
+    "https://github.com/OrcaSlicer/OrcaSlicer/releases/download/v$ORCA_VERSION/OrcaSlicer_Linux_AppImage_Ubuntu2404_V$ORCA_VERSION.AppImage" \
+    "$ORCA_SHA256" "$ORCA_DIR" "$ORCA_BIN"
+  SLICER_BIN=$ORCA_BIN
+fi
+
+# Through the service's own code, with this slicer, before any setting points at it.
+say "Slicing a test model ($ENGINE)"
 CWD=$APP_DIR/apps/geometry-service as_printos "
-  d=\$(mktemp -d)
-  mkdir \$d/data
-  .venv/bin/python -c \"import trimesh; trimesh.creation.torus(22, 8, major_sections=160, minor_sections=80).export('\$d/t.stl')\"
-  time $SLICER_BIN --datadir \$d/data --export-gcode --center 110,110 --output \$d/t.gcode \$d/t.stl >/dev/null
-  grep -E 'generated by|estimated printing time \(normal' \$d/t.gcode"
+  export HOME=/tmp PYTHONDONTWRITEBYTECODE=1 SLICER_ENGINE=$ENGINE SLICER_EXECUTABLE=$SLICER_BIN
+  .venv/bin/python -W ignore -m app.slicing.selftest"
+
+umask 077
+set_env "$GEO_ENV" SLICER_EXECUTABLE "$SLICER_BIN"
+if [ "$ENGINE" = orca ]; then
+  set_env "$GEO_ENV" SLICER_ENGINE orca
+else
+  # Absent means prusa, and code from before this setting refuses to start with it.
+  unset_env "$GEO_ENV" SLICER_ENGINE
+fi
+chown $SERVICE_USER:$SERVICE_USER "$GEO_ENV"
+chmod 600 "$GEO_ENV"
+umask 022
 
 # ---------------------------------------------------------------------------
 say "Services"
