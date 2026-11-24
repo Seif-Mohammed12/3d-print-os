@@ -113,7 +113,7 @@ def _pair(value: float) -> str:
     return f"{_fmt(value)},{_fmt(value)}"
 
 
-def _validate_override(key: str, value: OverrideValue) -> str:
+def validate_override(key: str, value: OverrideValue) -> str:
     rule = ALLOWED_OVERRIDES.get(key)
     if rule is None:
         raise SliceConfigError(f"Slicer setting '{key}' is not allowed")
@@ -225,7 +225,7 @@ def build_config(settings: SliceSettings) -> dict[str, str]:
     }
 
     for key, value in settings.overrides.items():
-        config[key] = _validate_override(key, value)
+        config[key] = validate_override(key, value)
 
     return config
 

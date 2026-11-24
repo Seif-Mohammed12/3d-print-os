@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Literal, Optional
 
 
 class Settings(BaseSettings):
@@ -26,7 +26,8 @@ class Settings(BaseSettings):
     max_file_size_bytes: int = 100 * 1024 * 1024  # 100MB
     max_triangles: int = 1000000  # Safety limit
 
-    # Slicing (PrusaSlicer CLI)
+    # Slicing: "prusa" or "orca", and that slicer's executable
+    slicer_engine: Literal["prusa", "orca"] = "prusa"
     slicer_executable: str = "prusa-slicer"
     slicer_timeout_seconds: float = 300.0  # per orientation candidate
     slicer_max_parallel: int = 4

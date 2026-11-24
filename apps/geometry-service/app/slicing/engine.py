@@ -7,7 +7,7 @@ import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import structlog
@@ -51,7 +51,7 @@ _STDERR_TAIL_CHARS = 600
 
 
 @dataclass(frozen=True)
-class _SliceOutput:
+class SliceOutput:
     estimate: SliceEstimate
     slicer: SlicerInfo
 
@@ -89,7 +89,11 @@ class PrusaSlicerEngine:
         # Shared by every request, so simultaneous quotes queue instead of multiplying.
         self._slots = threading.BoundedSemaphore(self.max_parallel)
 
-    def _run(self, mesh: trimesh.Trimesh, ini_text: str, bed_center: tuple[float, float]) -> _SliceOutput:
+    def _prepare(self, settings: SliceSettings) -> Any:
+        """Whatever `_run` needs to know about the settings."""
+        return render_ini(build_config(settings))
+
+    def _run(self, mesh: trimesh.Trimesh, ini_text: Any, bed_center: tuple[float, float]) -> SliceOutput:
         with tempfile.TemporaryDirectory(prefix="slice-") as workdir:
             model_path = os.path.join(workdir, "model.stl")
             ini_path = os.path.join(workdir, "profile.ini")
@@ -116,36 +120,48 @@ class PrusaSlicerEngine:
                 gcode_path,
                 model_path,
             ]
-            try:
-                with self._slots:
-                    completed = subprocess.run(
-                        command,
-                        capture_output=True,
-                        text=True,
-                        timeout=self.timeout_s,
-                        check=False,
-                    )
-            except FileNotFoundError as exc:
-                raise SlicerUnavailableError(
-                    f"Slicer executable not found: {self.executable}"
-                ) from exc
-            except subprocess.TimeoutExpired as exc:
-                raise SlicingTimeoutError(
-                    f"Slicing took longer than {self.timeout_s:.0f}s"
-                ) from exc
+            self._execute(command, gcode_path)
+            estimate, name, version = self._parse(gcode_path)
+            return SliceOutput(estimate, SlicerInfo(name=name, version=version))
 
-            if completed.returncode != 0 or not os.path.exists(gcode_path):
-                output = (completed.stderr or completed.stdout or "").strip()
-                raise SlicingFailedError(
-                    "Slicer rejected the model",
-                    details={"slicer_output": output[-_STDERR_TAIL_CHARS:]},
+    def _execute(self, command: list[str], gcode_path: str) -> str:
+        """Run the slicer and return what it printed."""
+        try:
+            with self._slots:
+                completed = subprocess.run(
+                    command,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    timeout=self.timeout_s,
+                    check=False,
                 )
+        except FileNotFoundError as exc:
+            raise SlicerUnavailableError(f"Slicer executable not found: {self.executable}") from exc
+        except subprocess.TimeoutExpired as exc:
+            raise SlicingTimeoutError(f"Slicing took longer than {self.timeout_s:.0f}s") from exc
 
-            try:
-                estimate, name, version = parse_gcode_file(gcode_path)
-            except GcodeParseError as exc:
-                raise SlicingFailedError(str(exc), code="gcode_parse_failed") from exc
-            return _SliceOutput(estimate, SlicerInfo(name=name, version=version))
+        if completed.returncode != 0 or not os.path.exists(gcode_path):
+            output = (completed.stderr or completed.stdout or "").strip()
+            raise SlicingFailedError(
+                "Slicer rejected the model",
+                details={"slicer_output": output[-_STDERR_TAIL_CHARS:]},
+            )
+        return f"{completed.stdout}\n{completed.stderr}"
+
+    @staticmethod
+    def _parse(gcode_path: str) -> tuple[SliceEstimate, str, str]:
+        try:
+            return parse_gcode_file(gcode_path)
+        except GcodeParseError as exc:
+            raise SlicingFailedError(str(exc), code="gcode_parse_failed") from exc
+
+    @staticmethod
+    def _mesh_warnings(mesh: trimesh.Trimesh) -> list[str]:
+        if mesh.is_watertight:
+            return []
+        return ["Mesh is not watertight; the slicer repaired it and volumes may be off"]
 
     def _candidates(self, mesh: trimesh.Trimesh, orientation: OrientationRequest) -> list[Candidate]:
         if orientation.mode == OrientationMode.FIXED:
@@ -187,13 +203,11 @@ class PrusaSlicerEngine:
         orientation: OrientationRequest,
         selection: SelectionWeights,
     ) -> SliceResponse:
-        ini_text = render_ini(build_config(settings))
+        config = self._prepare(settings)
         machine = settings.machine
         bed_center = (machine.bed_x_mm / 2, machine.bed_y_mm / 2)
 
-        warnings: list[str] = []
-        if not mesh.is_watertight:
-            warnings.append("Mesh is not watertight; the slicer repaired it and volumes may be off")
+        warnings = self._mesh_warnings(mesh)
 
         candidates = self._candidates(mesh, orientation)
         results: list[CandidateResult] = []
@@ -233,7 +247,7 @@ class PrusaSlicerEngine:
             nonlocal slicer_info
             with ThreadPoolExecutor(max_workers=min(self.max_parallel, len(batch))) as pool:
                 futures = {
-                    index: pool.submit(self._run, rotated, ini_text, bed_center)
+                    index: pool.submit(self._run, rotated, config, bed_center)
                     for index, rotated in batch
                 }
                 for index, future in futures.items():

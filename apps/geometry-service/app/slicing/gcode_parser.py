@@ -1,4 +1,4 @@
-"""Extract print estimates from PrusaSlicer G-code.
+"""Extract print estimates from PrusaSlicer or OrcaSlicer G-code.
 
 Requires `use_relative_e_distances = 1` so each move's E value is the filament it pushes.
 """
@@ -14,7 +14,16 @@ class GcodeParseError(ValueError):
     """G-code is missing the statistics the slicer normally appends."""
 
 
-_SUPPORT_FEATURES = frozenset({"Support material", "Support material interface"})
+_SUPPORT_FEATURES = frozenset(
+    {
+        "Support material",
+        "Support material interface",
+        # OrcaSlicer
+        "Support",
+        "Support interface",
+        "Support transition",
+    }
+)
 _DURATION_PART = re.compile(r"(\d+)\s*([dhms])")
 _UNIT_SECONDS = {"d": 86400, "h": 3600, "m": 60, "s": 1}
 _E_PARAM = re.compile(r"\bE(-?\d*\.?\d+)")

@@ -49,7 +49,13 @@ def stable_pose_candidates(mesh: trimesh.Trimesh, max_candidates: int) -> list[C
 
     proposals: list[tuple[str, np.ndarray]] = []
     try:
-        center = mesh.center_mass if mesh.is_volume else mesh.convex_hull.center_mass
+        hull = mesh.convex_hull
+        center = mesh.center_mass if mesh.is_volume else hull.center_mass
+        # trimesh retries forever when the centre isn't strictly inside the hull, which
+        # broken meshes manage.
+        offsets = np.einsum("ij,ij->i", center - hull.triangles_center, hull.face_normals)
+        if not np.all(offsets < 0):
+            raise ValueError("Centre of mass is outside the hull")
         transforms, probabilities = mesh.compute_stable_poses(center_mass=center)
         order = np.argsort(probabilities)[::-1]
         for rank, index in enumerate(order):

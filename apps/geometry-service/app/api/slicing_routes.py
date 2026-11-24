@@ -9,12 +9,13 @@ from app.exceptions import AnalysisLimitExceededError, SlicingFailedError, Stora
 from app.slicing.config_builder import SliceConfigError
 from app.slicing.engine import PrusaSlicerEngine, load_mesh
 from app.slicing.models import SliceRequest, SliceResponse, SliceUploadRequest
+from app.slicing.orca import OrcaSlicerEngine
 from app.storage.client import StorageClient
 
 router = APIRouter(prefix="/slice", tags=["slicing"])
 logger = structlog.get_logger(__name__)
 
-engine = PrusaSlicerEngine(
+engine = (OrcaSlicerEngine if settings.slicer_engine == "orca" else PrusaSlicerEngine)(
     executable=settings.slicer_executable,
     timeout_s=settings.slicer_timeout_seconds,
     max_parallel=settings.slicer_max_parallel,
