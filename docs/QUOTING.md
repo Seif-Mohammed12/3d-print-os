@@ -123,6 +123,12 @@ The geometry service needs PrusaSlicer (the Docker image installs it). On Window
 SLICER_EXECUTABLE="C:\Program Files\Prusa3D\PrusaSlicer\prusa-slicer-console.exe"
 ```
 
+To slice with OrcaSlicer instead, set `SLICER_ENGINE=orca` and point `SLICER_EXECUTABLE` at
+`orca-slicer`. Quotes then follow `apps/geometry-service/app/slicing/orca_base.json` (the shop's
+own Orca settings) for speeds, shells, patterns, supports and brim; the printer profile's values
+for those are ignored. Layer height, infill, supports on/off, the printer's size and limits, and
+the material still come from the quote. Update the file when the Orca profile changes.
+
 API env: `GEOMETRY_SERVICE_URL=http://localhost:8000/api/v1`. Geometry service env:
 `SLICER_ALLOWED_DOWNLOAD_HOSTS=<project>.supabase.co`.
 

@@ -20,7 +20,6 @@ from app.slicing.models import (
     SelectionWeights,
     SliceSettings,
     SupportMode,
-    SupportStyle,
 )
 from app.slicing.orca import OrcaSlicerEngine, build_orca_profiles
 from app.slicing.orientation import stable_pose_candidates
@@ -44,14 +43,28 @@ def _table() -> trimesh.Trimesh:
 
 
 class TestOrcaProfiles:
-    def test_given_settings_replace_the_shop_base(self):
+    def test_per_quote_choices_are_used(self):
         profiles = build_orca_profiles(
-            _settings(infill_percent=35, perimeters=3, supports=SupportMode.OFF)
+            _settings(layer_height_mm=0.28, infill_percent=35, supports=SupportMode.OFF)
         )
+        assert profiles["process"]["layer_height"] == "0.28"
         assert profiles["process"]["sparse_infill_density"] == "35%"
-        assert profiles["process"]["wall_loops"] == "3"
         assert profiles["process"]["enable_support"] == "0"
         assert profiles["machine"]["printable_area"] == ["0x0", "235x0", "235x235", "0x235"]
+
+    def test_process_settings_follow_the_shop_profile(self):
+        base = orca._base()["process"]
+        process = build_orca_profiles(
+            _settings(perimeters=9, top_layers=9, perimeter_speed=9, support_threshold_deg=65)
+        )["process"]
+        for key in ("wall_loops", "top_shell_layers", "inner_wall_speed", "support_threshold_angle"):
+            assert process[key] == base[key]
+
+    def test_another_nozzle_is_refused(self):
+        settings = _settings()
+        settings.machine.nozzle_diameter_mm = 0.4
+        with pytest.raises(SliceConfigError, match="nozzle"):
+            build_orca_profiles(settings)
 
     def test_settings_not_given_come_from_the_shop_base(self):
         base = json.loads(orca._BASE.read_text(encoding="utf-8"))
@@ -63,10 +76,6 @@ class TestOrcaProfiles:
     def test_building_never_changes_the_base(self):
         build_orca_profiles(_settings(infill_percent=99))
         assert build_orca_profiles(_settings())["process"]["sparse_infill_density"] != "99%"
-
-    def test_support_style(self):
-        process = build_orca_profiles(_settings(support_style=SupportStyle.ORGANIC))["process"]
-        assert process["support_type"] == "tree(auto)"
 
     def test_filament(self):
         settings = _settings()

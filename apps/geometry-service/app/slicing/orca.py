@@ -1,7 +1,9 @@
 """Slice with OrcaSlicer instead of PrusaSlicer.
 
-Everything the caller doesn't set comes from `orca_base.json`, the shop's own Orca settings (no
-G-code, hosts or scripts), so a quote matches how the part will really be printed.
+Quotes follow `orca_base.json`, the settings the shop really prints with (no G-code, hosts or
+scripts). The caller only sets what varies per quote or machine: layer height, infill, supports
+on or off, the printer's size and limits, and the material. Its speeds, shells, patterns, support
+style and brim are ignored; `overrides` still apply.
 
 Orientation is chosen exactly as for PrusaSlicer. Orca's own `--orient` is quicker but was dearer
 than the best of four by over 3% on a third of real models above the minimum price.
@@ -19,7 +21,6 @@ import trimesh
 
 from app.slicing.config_builder import (
     SliceConfigError,
-    resolve_first_layer_height,
     validate_override,
 )
 from app.slicing.engine import PrusaSlicerEngine, SliceOutput
@@ -27,23 +28,9 @@ from app.slicing.models import (
     SliceSettings,
     SlicerInfo,
     SupportMode,
-    SupportStyle,
 )
 
 _BASE = Path(__file__).with_name("orca_base.json")
-
-_PATTERNS = {
-    "adaptivecubic": "adaptivecubic",
-    "supportcubic": "supportcubic",
-    "rectilinear": "zig-zag",
-    "triangles": "triangles",
-}
-
-_SUPPORT_STYLES = {
-    SupportStyle.GRID: ("normal(auto)", "grid"),
-    SupportStyle.SNUG: ("normal(auto)", "snug"),
-    SupportStyle.ORGANIC: ("tree(auto)", "organic"),
-}
 
 # Caller override -> (section, Orca keys). Anything else allowed for PrusaSlicer has no exact
 # Orca equivalent and is refused rather than quietly mispriced.
@@ -105,12 +92,17 @@ def build_orca_profiles(settings: SliceSettings) -> dict[str, dict[str, Any]]:
     machine, process, filament = (profiles[k] for k in ("machine", "process", "filament"))
     m, p, f = settings.machine, settings.process, settings.filament
 
-    max_layer = m.nozzle_diameter_mm * 0.8
-    first_layer = resolve_first_layer_height(settings)
-    if max(p.layer_height_mm, first_layer) > max_layer + 1e-9:
+    nozzle = float(machine["nozzle_diameter"][0])
+    if abs(m.nozzle_diameter_mm - nozzle) > 1e-6:
         raise SliceConfigError(
-            f"Layer height {_fmt(max(p.layer_height_mm, first_layer))} mm is too thick for a "
-            f"{_fmt(m.nozzle_diameter_mm)} mm nozzle (max {_fmt(max_layer)} mm)"
+            f"The Orca settings are for a {_fmt(nozzle)} mm nozzle, not "
+            f"{_fmt(m.nozzle_diameter_mm)} mm"
+        )
+    max_layer = nozzle * 0.8
+    if p.layer_height_mm > max_layer + 1e-9:
+        raise SliceConfigError(
+            f"Layer height {_fmt(p.layer_height_mm)} mm is too thick for a "
+            f"{_fmt(nozzle)} mm nozzle (max {_fmt(max_layer)} mm)"
         )
 
     bx, by = _fmt(m.bed_x_mm), _fmt(m.bed_y_mm)
@@ -119,7 +111,6 @@ def build_orca_profiles(settings: SliceSettings) -> dict[str, dict[str, Any]]:
             "gcode_flavor": m.gcode_flavor.value,
             "printable_area": ["0x0", f"{bx}x0", f"{bx}x{by}", f"0x{by}"],
             "printable_height": _fmt(m.max_height_mm),
-            "nozzle_diameter": [_fmt(m.nozzle_diameter_mm)],
             "use_relative_e_distances": "1",
             # Absent from the base; the limits then count towards time, not towards G-code.
             "emit_machine_limits_to_gcode": "0",
@@ -134,44 +125,15 @@ def build_orca_profiles(settings: SliceSettings) -> dict[str, dict[str, Any]]:
     if "max_feedrate_z_mm_s" in m.model_fields_set:
         machine["machine_max_speed_z"] = [_fmt(m.max_feedrate_z_mm_s)] * 2
 
-    given = p.model_fields_set
     process["layer_height"] = _fmt(p.layer_height_mm)
-    process["initial_layer_print_height"] = _fmt(first_layer)
-    numbers = {
-        "perimeters": ("wall_loops",),
-        "top_layers": ("top_shell_layers",),
-        "bottom_layers": ("bottom_shell_layers",),
-        "support_threshold_deg": ("support_threshold_angle",),
-        "skirts": ("skirt_loops",),
-        "perimeter_speed": ("inner_wall_speed",),
-        "external_perimeter_speed": ("outer_wall_speed",),
-        "infill_speed": ("sparse_infill_speed",),
-        "solid_infill_speed": ("internal_solid_infill_speed",),
-        "top_solid_infill_speed": ("top_surface_speed",),
-        "support_speed": ("support_speed", "support_interface_speed"),
-        "bridge_speed": ("bridge_speed",),
-        "travel_speed": ("travel_speed",),
-        "first_layer_speed": ("initial_layer_speed",),
-    }
-    for field, keys in numbers.items():
-        if field in given:
-            for key in keys:
-                process[key] = _fmt(getattr(p, field))
-    if "infill_percent" in given:
+    if p.first_layer_height_mm is not None:
+        process["initial_layer_print_height"] = _fmt(p.first_layer_height_mm)
+    if "infill_percent" in p.model_fields_set:
         process["sparse_infill_density"] = f"{_fmt(p.infill_percent)}%"
-    if "infill_pattern" in given:
-        process["sparse_infill_pattern"] = _PATTERNS.get(
-            p.infill_pattern.value, p.infill_pattern.value
-        )
-    if "brim_width_mm" in given:
-        process["brim_type"] = "outer_only" if p.brim_width_mm > 0 else "no_brim"
-        process["brim_width"] = _fmt(p.brim_width_mm)
     process["enable_support"] = "0" if p.supports == SupportMode.OFF else "1"
     process["support_on_build_plate_only"] = (
         "1" if p.supports == SupportMode.BUILDPLATE_ONLY else "0"
     )
-    if "support_style" in given:
-        process["support_type"], process["support_style"] = _SUPPORT_STYLES[p.support_style]
 
     if "diameter_mm" in f.model_fields_set:
         filament["filament_diameter"] = [_fmt(f.diameter_mm)]
@@ -202,13 +164,21 @@ def build_orca_profiles(settings: SliceSettings) -> dict[str, dict[str, Any]]:
         )
         if name != "machine":
             profile["compatible_printers"] = ["quote-machine"]
-    machine.update(printer_model="quote", printer_variant=_fmt(m.nozzle_diameter_mm))
+    machine.update(printer_model="quote", printer_variant=_fmt(nozzle))
     return profiles
 
 
 class OrcaSlicerEngine(PrusaSlicerEngine):
     def _prepare(self, settings: SliceSettings) -> Any:
         return build_orca_profiles(settings)
+
+    @staticmethod
+    def _predict(mesh, results, jobs, settings, selection):  # type: ignore[no-untyped-def]
+        # Rank poses by the support angle Orca will really use.
+        angle = float(_base()["process"]["support_threshold_angle"])
+        process = settings.process.model_copy(update={"support_threshold_deg": angle})
+        settings = settings.model_copy(update={"process": process})
+        return PrusaSlicerEngine._predict(mesh, results, jobs, settings, selection)
 
     def _run(
         self,
